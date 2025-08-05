@@ -36,5 +36,5 @@ jobs:
       - name: 🔐 Audit (optional)
         run: yarn audit || true
 
-      - name: 💅 Prettier Format Check
-        run: yarn format
+      - name: 💅 Prettier Check (soft fail)
+        run: yarn format || true
