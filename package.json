@@ -9,7 +9,15 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "format:fix": "prettier --write .",
+    "prepare": "husky",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "lint-staged": {
+    "**/*.{js,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "dependencies": {
     "next": "15.4.4",
@@ -25,6 +33,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.4",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
