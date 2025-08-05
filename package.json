@@ -10,7 +10,6 @@
     "type-check": "tsc --noEmit",
     "format": "prettier --check .",
     "format:fix": "prettier --write ."
-
   },
   "dependencies": {
     "next": "15.4.4",
@@ -26,6 +25,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.4",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
