@@ -1,6 +1,6 @@
 # 🧱 Kellon Webapp
 
-> A private Next.js website project built and maintained by the internal Kellon development team.
+> A private NEXT js DeFi project built and maintained by the internal Kellon development team.
 
 ---
 
