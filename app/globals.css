@@ -18,24 +18,27 @@
   /* colors */
   --color-white: #ffffff;
   --color-black: #000000;
+  --color-cryptoNight: #0f141a;
   --color-primary: #a7167f;
   --color-primary-0: #11020d;
   --color-primary-10: #320726;
   --color-primary-20: #540b40;
   --color-primary-30: #750f59;
   --color-primary-40: #961472;
+  --color-primary-50: #a7167f;
   --color-primary-60: #b02d8c;
   --color-primary-70: #c15ca5;
   --color-primary-80: #d38bbf;
   --color-primary-90: #e5b9d9;
   --color-primary-95: #f6e8f2;
   --color-primary-99: #fbf6fa;
-  --color-secondary: #0c122a;
+  /* --color-secondary: #0c122a; */
   --color-secondary-0: #04050d;
   --color-secondary-10: #070b19;
   --color-secondary-20: #080d1d;
   --color-secondary-30: #0a0e22;
   --color-secondary-40: #0b1026;
+  --color-secondary-50: #0c122a;
   --color-secondary-60: #242a3f;
   --color-secondary-70: #3d4155;
   --color-secondary-80: #55596a;
