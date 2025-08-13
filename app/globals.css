@@ -65,6 +65,8 @@
   --tracking-wide: 0.25em;
   --tracking-wider: 0.4em;
   --tracking-widest: 0.5em;
+  /* box shadow */
+  --shadow-topbar: 0px 0px 20px 4px rgba(167, 22, 127, 0.3);
 }
 
 @theme inline {
