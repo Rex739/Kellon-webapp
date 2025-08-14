@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Icons } from "@/components/Icons"
 import { isActive } from "@/lib/isActiveLink"
 import { usePathname } from "next/navigation"
+import Slab from "@/components/ui/slab"
 
 type BottomNavigationBarProps = HtmlHTMLAttributes<HTMLDivElement>
 
@@ -19,18 +20,19 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
     // IMP START - Bottom Navigation Wrapper (Fixed Position)
     <section className={cn(className, "fixed bottom-0 w-full")}>
       {/* IMP START - Navigation Menu Container */}
-      <nav className="flex justify-around bg-white dark:bg-secondary-60 px-5 py-3 shadow-topbar border-t border-input">
-        {/* IMP START - Render Navigation Items */}
-        {navigationListUrls.map(({ label, href, icon }, i) => {
-          const Icon = icon && Icons[icon] // IMP - Dynamically map icon string to actual component
-          return (
-            <ul key={i}>
-              <li>
+      <nav className="bg-white dark:bg-secondary-60  shadow-topbar border-t border-input ">
+        <ul className="flex justify-around ">
+          {/* IMP START - Render Navigation Items */}
+          {navigationListUrls.map(({ label, href, icon }, i) => {
+            const Icon = icon && Icons[icon] // IMP - Dynamically map icon string to actual component
+            return (
+              <li key={i}>
+                <Slab href={href} className={cn(className)} />
                 <Link
                   href={href}
                   className={cn(
                     // IMP START - Base Styling for Links
-                    "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white capitalize text-xs font-medium",
+                    "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white capitalize text-xs font-medium  ",
                     // IMP END - Base Styling for Links
 
                     // IMP START - Apply Active Link Styling
@@ -38,25 +40,28 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
                     // IMP END - Apply Active Link Styling
                   )}
                 >
-                  {/* IMP START - Render Icon if Available */}
-                  {Icon && (
-                    <Icon
-                      className={cn(
-                        "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white",
-                        isActive(pathname, href) // IMP - Apply active color to icon
-                      )}
-                    />
-                  )}
-                  {/* IMP END - Render Icon if Available */}
+                  <div className="py-2 flex flex-col space-y-1 items-center">
+                    {/* IMP START - Render Icon if Available */}
+                    {Icon && (
+                      <Icon
+                        className={cn(
+                          "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white h-4 w-4",
+                          isActive(pathname, href) &&
+                            "text-black dark:text-white" // IMP - Apply active color to icon
+                        )}
+                      />
+                    )}
+                    {/* IMP END - Render Icon if Available */}
 
-                  {/* IMP START - Render Label */}
-                  <span>{label}</span>
-                  {/* IMP END - Render Label */}
+                    {/* IMP START - Render Label */}
+                    <span>{label}</span>
+                    {/* IMP END - Render Label */}
+                  </div>
                 </Link>
               </li>
-            </ul>
-          )
-        })}
+            )
+          })}
+        </ul>
         {/* IMP END - Render Navigation Items */}
       </nav>
       {/* IMP END - Navigation Menu Container */}
