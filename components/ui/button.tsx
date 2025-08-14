@@ -24,6 +24,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
+        xs: "h-6 rounded-sm gap-1 px-2 has-[>svg]:px-1.5",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
@@ -62,7 +63,9 @@ function Button({
       disabled={isLoading || disabled}
       {...props}
     >
-      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />}
+      {isLoading && (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />
+      )}
       {children}
     </Comp>
   )
