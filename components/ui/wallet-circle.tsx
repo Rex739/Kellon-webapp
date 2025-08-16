@@ -7,7 +7,7 @@ export const WalletCircle: FC<WalletCircleProps> = ({ className }) => {
   return (
     <span
       className={cn(
-        "border  border-black dark:border-white rounded-full p-1 flex",
+        "border border-black dark:border-white rounded-full p-1 flex",
         className
       )}
     >
