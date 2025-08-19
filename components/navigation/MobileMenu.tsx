@@ -7,6 +7,8 @@ import { Icons } from "@/components/Icons"
 import { copyToClipboard } from "@/lib/copyToClipboard"
 import { truncateAddress } from "@/lib/truncateAddress"
 import { Button } from "@/components/ui/button"
+import { Separator } from "../ui/separator"
+import ModeToggle from "../ModeToggle"
 
 interface MobileMenuProps {
   isOpen: boolean
@@ -56,12 +58,11 @@ const MobileMenu: FC<MobileMenuProps> = ({
               </button>
               <Icons.Logo className="h-10 w-10 bg-white dark:bg-secondary-60 p-2 rounded-md shadow-2xl border border-black dark:border-white" />
             </div>
-
             {/* Wallet Address Card */}
             {address && (
-              <div className="rounded-lg p-3 mb-2 flex justify-between items-center border border-black dark:border-white my-4">
+              <div className="rounded-lg p-3 mb-2 flex justify-between items-center border border-primary-50 dark:border-primary-50 my-4  dark:shadow-topbar">
                 <div className="flex space-x-2">
-                  <div className=" font-medium text-sm">
+                  <div className="  text-sm font-light tracking-mid">
                     {truncatedAddress}
                   </div>
                   <button
@@ -72,7 +73,7 @@ const MobileMenu: FC<MobileMenuProps> = ({
                     {copied ? (
                       <Icons.CopySuccess className="h-4 w-4 text-green-500" />
                     ) : (
-                      <Icons.Copy className="h-4 w-4 text-black dark:text-white" />
+                      <Icons.Copy className="h-4 w-4 text-black dark:text-white " />
                     )}
                   </button>
                 </div>
@@ -95,6 +96,11 @@ const MobileMenu: FC<MobileMenuProps> = ({
                 </div>
               </div>
             )}
+            <Separator className="mt-auto" />
+            <div className="w-full py-2 flex items-center">
+              <span className="text-xs font-medium">switch network</span>
+              <ModeToggle className="w-auto ml-auto" />
+            </div>
           </motion.div>
         </motion.div>
       )}
