@@ -113,7 +113,7 @@ const Topbar: FC<TopbarProps> = ({ className }) => {
             >
               <div className="flex">
                 <span className="border border-black dark:border-white border-r-0 rounded-l-md flex items-center justify-center p-1">
-                  <Icons.Wallet className="dark:text-white w-7 h-7" />
+                  <WalletCircle className="dark:text-white w-7 h-7 flex justify-center items-center" />
                 </span>
                 <span className="border border-black dark:border-white rounded-r-md flex items-center justify-center p-1">
                   <MoreHorizontal className="dark:text-white w-7 h-7" />
