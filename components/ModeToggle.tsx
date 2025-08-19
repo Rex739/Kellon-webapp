@@ -28,7 +28,7 @@ const ModeToggle: FC<ModeToggleProps> = ({ className }) => {
   return (
     // IMP START - Theme toggle button
     <button
-      className={cn(className, "w-full")}
+      className={cn(className, "")}
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       aria-label={`Switch to ${
         resolvedTheme === "dark" ? "light" : "dark"
