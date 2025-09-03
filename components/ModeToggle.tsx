@@ -28,7 +28,7 @@ const ModeToggle: FC<ModeToggleProps> = ({ className }) => {
   return (
     // IMP START - Theme toggle button
     <button
-      className={cn(className, "")}
+      className={cn(className, "cursor-pointer")}
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       aria-label={`Switch to ${
         resolvedTheme === "dark" ? "light" : "dark"
@@ -50,7 +50,7 @@ const ModeToggle: FC<ModeToggleProps> = ({ className }) => {
         {resolvedTheme === "dark" ? (
           // IMP START - Sun icon for light mode
           <div
-            className="w-6 h-6 md:h-10 md:w-10 lg:w-10 lg:h-10 rounded-full shadow-topbar bg-secondary-60 flex justify-center items-center relative border border-input"
+            className="w-6 h-6 md:h-10 md:w-10 lg:w-10 lg:h-10 rounded-full  bg-secondary-60 flex justify-center items-center relative border border-input"
             aria-hidden="true"
           >
             <Sun className="w-2.5 h-2.5 md:w-4 md:h-4 lg:w-4 lg:h-4 text-white absolute" />
@@ -59,7 +59,7 @@ const ModeToggle: FC<ModeToggleProps> = ({ className }) => {
           // IMP END - Sun icon for light mode
           // IMP START - Moon icon for dark mode
           <div
-            className="w-6 h-6 md:h-10 md:w-10 lg:w-10 lg:h-10 rounded-full shadow-topbar bg-white flex justify-center items-center relative border dark:border-input"
+            className="w-6 h-6 md:h-10 md:w-10 lg:w-10 lg:h-10 rounded-full  bg-white flex justify-center items-center relative border dark:border-input"
             aria-hidden="true"
           >
             <Moon className="w-2.5 h-2.5 md:w-4 md:h-4 lg:w-4 lg:h-4 text-black absolute" />
