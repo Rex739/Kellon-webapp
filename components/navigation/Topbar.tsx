@@ -56,7 +56,7 @@ const Topbar: FC<TopbarProps> = ({ className }) => {
   }, [isConnected])
 
   return (
-    <section className={cn(className, "p-5")}>
+    <section className={cn(className, "p-5 fixed w-full z-50")}>
       <header className="flex justify-between items-center">
         {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-5 bg-white dark:bg-secondary-60 w-fit capitalize px-5 py-3 rounded-xl shadow-topbar border border-input">
