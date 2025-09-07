@@ -23,13 +23,13 @@ const SwapBox: FC<SwapBoxProps> = ({
   handleChainSelectOpen,
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* From Section */}
       <div
         onClick={() => handleChainSelectOpen("from")}
         className="bg-white2 dark:bg-secondary-60 rounded-lg flex flex-col p-3 space-y-4 border border-input cursor-pointer"
       >
-        <Label className="text-sm text-black dark:text-white">From</Label>
+        <Label className="text-sm text-black dark:text-white font-semibold">From</Label>
 
         {/* Show selected chain + token if available */}
         <div>
@@ -105,7 +105,7 @@ const SwapBox: FC<SwapBoxProps> = ({
         onClick={() => handleChainSelectOpen("to")}
         className="bg-white2 dark:bg-secondary-60 rounded-lg flex flex-col p-3 space-y-4 border border-input cursor-pointer"
       >
-        <Label className="text-sm text-black dark:text-white">To</Label>
+        <Label className="text-sm text-black dark:text-white font-semibold">To</Label>
 
         {/* Show selected chain + token if available */}
         <div>
