@@ -11,5 +11,10 @@ export const navigationListUrls: INavigationListUrl[] = [
     href: "/trade",
     icon: "Trade"
   },
+  {
+    label: "stocks",
+    href: "/stocks",
+    icon: "Trade"
+  }
 
 ]
