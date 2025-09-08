@@ -7,8 +7,8 @@ import { Icons } from "@/components/Icons"
 import { copyToClipboard } from "@/lib/copyToClipboard"
 import { truncateAddress } from "@/lib/truncateAddress"
 import { Button } from "@/components/ui/button"
-import { Separator } from "../ui/separator"
-import ModeToggle from "../ModeToggle"
+import { Separator } from "@/components/ui/separator"
+import ModeToggle from "@/components/ModeToggle"
 
 interface MobileMenuProps {
   isOpen: boolean
