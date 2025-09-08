@@ -37,7 +37,7 @@ const Login: FC = ({}) => {
   // IMP END - Blockchain Calls
 
   return (
-    <section className="shadow-topbar rounded-md inline-block">
+    <section className="rounded-md inline-block">
       {isConnected ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
