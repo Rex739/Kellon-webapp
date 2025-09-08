@@ -15,9 +15,14 @@
   /* media query */
   --breakpoint-2xl: 1500px;
   --breakpoint-3xl: 2000px;
+  --breakpoint-xs: 375px;
+  --breakpoint-xm: 390px;
   /* colors */
   --color-white: #ffffff;
   --color-black: #000000;
+  --color-white1: #f2f1f1;
+  --color-white2: #fafafa;
+  --color-white3: #faf8f8;
   --color-cryptoNight: #0f141a;
   --color-primary: #a7167f;
   --color-primary-0: #11020d;
@@ -176,11 +181,29 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* For Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@media (max-height: 700px) {
+  .card-scroll {
+    overflow-y: auto;
   }
 }
