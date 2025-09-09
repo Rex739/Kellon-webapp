@@ -67,7 +67,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
             {/* Header */}
             <div className="flex items-center relative w-full">
               <ArrowLeft
-          
+         onClick={()=> handleChainSelectOpen("from")}
                 className="absolute left-0"
               />
               <div className="mx-auto text-center">Swap from</div>
