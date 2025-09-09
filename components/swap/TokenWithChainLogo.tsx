@@ -20,7 +20,7 @@ const TokenWithChainLogo: FC<TokenWithChainLogoProps> = ({
   return (
     <div
       className={cn(
-        "w-11 h-11 bg-white1 dark:bg-secondary-70 rounded-full relative",
+        "min-w-11 min-h-11 max-w-11 max-h-11 bg-white1 dark:bg-secondary-70 rounded-full relative",
         className
       )}
     >
