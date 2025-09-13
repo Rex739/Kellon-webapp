@@ -184,6 +184,16 @@ const nextConfig: NextConfig = {
         hostname: "%20",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "linea.build",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "dashboard.m0.org",
+        pathname: "/**",
+      },
     ],
   },
 }
