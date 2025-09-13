@@ -36,7 +36,7 @@ const Provider: FC<ProviderProps> = async ({ children }) => {
       >
         {/* // IMP START - SSR */}
         <Web3AuthenticationProvider web3authInitialState={web3authInitialState}>
-          <main className="font-manrope bg-gray-80 dark:bg-secondary-50 text-cryptoNight dark:text-white ">
+          <main className="font-manrope bg-gray-80 dark:bg-secondary-50 text-cryptoNight dark:text-white relative">
             {children}
           </main>
         </Web3AuthenticationProvider>
