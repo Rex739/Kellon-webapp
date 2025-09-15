@@ -7,6 +7,7 @@ import { SendAmountFormSchemaType } from "@/lib/validations/form"
 import { Icons } from "@/components/Icons"
 import TokenWithChainLogo from "./TokenWithChainLogo"
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
+import FallbackTokenAndChainLogo from "./FallbackTokenAndChainLogo"
 
 interface SendAmountProps {
   fromToken: Token | null
@@ -133,7 +134,7 @@ const SendAmount: FC<SendAmountProps> = ({
         Send
       </Label>
       <div>
-        {fromChain && fromToken && (
+        {fromChain && fromToken ? (
           <div className="flex space-x-4">
             {/* Token + chain logos */}
 
@@ -156,6 +157,14 @@ const SendAmount: FC<SendAmountProps> = ({
 
                 <Icons.ArrowUpDown className="h-3 w-3 ml-1" />
               </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex  items-center space-x-4">
+            <FallbackTokenAndChainLogo />
+            <div className="flex flex-col">
+              <span  className="text-2xl">0</span>
+              <span className="text-xs">$0.00</span>
             </div>
           </div>
         )}
