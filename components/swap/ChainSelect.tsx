@@ -12,13 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { ArrowLeft, Loader2, Search, SearchX } from "lucide-react"
+import { ArrowLeft, Search, SearchX } from "lucide-react"
 import TokenSelect from "./TokenSelect"
 import { type Token } from "@lifi/sdk"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 
-// IMP START - Component Props
+// Component Props
 interface ChainSelectProps {
   side: "from" | "to"
   selectedChain: number
@@ -27,7 +27,25 @@ interface ChainSelectProps {
   loading: boolean
   selectedToken: Token | null
 }
-// IMP END - Component Props
+
+// Skeleton Item for Chain List (Dialog and Desktop)
+const ChainSkeletonItem: FC = () => {
+  return (
+    <div className="w-full flex items-center gap-3 px-4 py-3 text-left">
+      <div className="w-7 h-7 bg-gray-300 rounded-full animate-pulse"></div>
+      <div className="h-4 bg-gray-300 rounded w-24 animate-pulse"></div>
+    </div>
+  )
+}
+
+// Skeleton Item for Top Chains Grid (Mobile)
+const TopChainSkeletonItem: FC = () => {
+  return (
+    <div className="flex flex-col items-center justify-center p-2 border border-input rounded-xl">
+      <div className="w-9 h-9 bg-gray-300 rounded-full animate-pulse"></div>
+    </div>
+  )
+}
 
 const ChainSelect: FC<ChainSelectProps> = ({
   side,
@@ -37,14 +55,13 @@ const ChainSelect: FC<ChainSelectProps> = ({
   selectedToken,
   tokens,
 }) => {
-  // IMP START - Hooks & State
+  // Hooks & State
   const { chains, loading: chainsLoading } = useSupportedChains()
   const [search, setSearch] = useState("")
   const [open, setOpen] = useState(false)
   const searchParams = useSearchParams()
-  // IMP END - Hooks & State
 
-  // IMP START - Helpers
+  // Helpers
   const filteredChains = chains.filter((chain) =>
     chain.name.toLowerCase().includes(search.toLowerCase())
   )
@@ -56,18 +73,17 @@ const ChainSelect: FC<ChainSelectProps> = ({
   }
 
   const topChains = chains.slice(0, 8)
-  // IMP END - Helpers
 
   return (
     <>
-      {/* IMP START - Mobile View */}
+      {/* Mobile View */}
       <div className="block w-full md:hidden">
-        <Card className="bg-white dark:bg-secondary-10 border border-input rounded-2xl max-h-[80dvh] xm:max-h-[80dvh] sm:max-h-[80dvh] md:max-h-[70vh] card-scroll">
+        <Card className="w-[90dvw] max-w-[90dvw] bg-white dark:bg-secondary-10 border border-input rounded-2xl max-h-[80dvh] xm:max-h-[80dvh] sm:max-h-[80dvh] md:max-h-[70vh] card-scroll">
           <CardContent className="p-4 flex flex-col space-y-4">
             {/* Header */}
             <div className="flex items-center relative w-full">
               <ArrowLeft
-         onClick={()=> handleChainSelectOpen("from")}
+                onClick={() => handleChainSelectOpen("from")}
                 className="absolute left-0"
               />
               <div className="mx-auto text-center">Swap from</div>
@@ -75,37 +91,45 @@ const ChainSelect: FC<ChainSelectProps> = ({
 
             {/* Top Chains */}
             <div className="grid grid-cols-5 gap-3">
-              {topChains.map((chain) => (
-                <Link
-                  href={buildUrl(
-                    side === "from" ? "fromChain" : "toChain",
-                    chain.id.toString()
-                  )}
-                  key={chain.id}
-            
-                  className={cn(
-                    "flex flex-col items-center justify-center p-2 border border-input rounded-xl transition text-black dark:text-white cursor-pointer",
-                    selectedChain === chain.id &&
-                      "border-primary bg-accent shadow"
-                  )}
-                >
-                  <Image
-                    src={chain.logoURI ?? ""}
-                    alt={chain.name}
-                    width={36}
-                    height={36}
-                    className="rounded-full"
-                  />
-                </Link>
-              ))}
-
+              {chainsLoading
+                ? [...Array(8)].map((_, index) => (
+                    <TopChainSkeletonItem key={`top-skeleton-${index}`} />
+                  ))
+                : topChains.map((chain) => (
+                    <Link
+                      href={buildUrl(
+                        side === "from" ? "fromChain" : "toChain",
+                        chain.id.toString()
+                      )}
+                      key={chain.id}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-2 border border-input rounded-xl transition text-black dark:text-white cursor-pointer",
+                        selectedChain === chain.id &&
+                          "border-primary bg-accent shadow"
+                      )}
+                    >
+                      <Image
+                        src={chain.logoURI ?? ""}
+                        alt={chain.name}
+                        width={36}
+                        height={36}
+                        className="rounded-full"
+                      />
+                    </Link>
+                  ))}
               {/* +Others Button */}
-              <button
-                onClick={() => setOpen(true)}
-                className="flex items-center justify-center border border-input rounded-xl hover:bg-accent transition text-black dark:text-white text-xs"
-              >
-                +{chains.length - topChains.length}
-              </button>
+              {chainsLoading ? (
+                <div className="flex items-center justify-center border border-input rounded-xl">
+                  <div className="w-9 h-9 bg-gray-300 rounded-xl animate-pulse"></div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setOpen(true)}
+                  className="flex items-center justify-center border border-input rounded-xl hover:bg-accent transition text-black dark:text-white text-xs"
+                >
+                  +{chains.length - topChains.length}
+                </button>
+              )}
             </div>
 
             {/* Token Selector */}
@@ -121,7 +145,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
 
         {/* All Chains Dialog */}
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className=" bg-white dark:bg-secondary-10 border border-input">
+          <DialogContent className="bg-white dark:bg-secondary-10 border border-input">
             <DialogHeader>
               <DialogTitle className="text-black dark:text-white">
                 Select Chain
@@ -141,7 +165,11 @@ const ChainSelect: FC<ChainSelectProps> = ({
 
             {/* Search Results */}
             <div className="max-h-80 overflow-y-auto">
-              {filteredChains.length > 0 ? (
+              {chainsLoading ? (
+                [...Array(6)].map((_, index) => (
+                  <ChainSkeletonItem key={`dialog-skeleton-${index}`} />
+                ))
+              ) : filteredChains.length > 0 ? (
                 filteredChains.map((chain) => (
                   <Link
                     href={buildUrl(
@@ -149,7 +177,6 @@ const ChainSelect: FC<ChainSelectProps> = ({
                       chain.id.toString()
                     )}
                     key={chain.id}
-              
                     className={cn(
                       "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white2 dark:hover:bg-secondary-60 hover:rounded-lg transition text-black dark:text-white cursor-pointer",
                       selectedChain === chain.id &&
@@ -176,10 +203,9 @@ const ChainSelect: FC<ChainSelectProps> = ({
           </DialogContent>
         </Dialog>
       </div>
-      {/* IMP END - Mobile View */}
 
-      {/* IMP START - Desktop View */}
-      <div className="hidden md:flex ">
+      {/* Desktop View */}
+      <div className="hidden md:flex">
         <Card className="bg-white dark:bg-secondary-10 border border-input rounded-l-2xl rounded-r-none h-[600px]">
           <CardContent className="p-4 space-y-4">
             {/* Search Input */}
@@ -196,11 +222,10 @@ const ChainSelect: FC<ChainSelectProps> = ({
             {/* Chain List */}
             <div>
               {chainsLoading ? (
-                <div className="flex items-center justify-center ">
-                  <div className="flex space-x-2 items-center">
-                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-                    <p className="text-gray-400 text-sm">Loading chains</p>
-                  </div>
+                <div className="max-h-[500px] overflow-y-auto">
+                  {[...Array(6)].map((_, index) => (
+                    <ChainSkeletonItem key={`desktop-skeleton-${index}`} />
+                  ))}
                 </div>
               ) : (
                 <div className="max-h-[500px] overflow-y-auto">
@@ -212,7 +237,6 @@ const ChainSelect: FC<ChainSelectProps> = ({
                           chain.id.toString()
                         )}
                         key={chain.id}
-                  
                         className={cn(
                           "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white2 dark:hover:bg-secondary-60 hover:rounded-lg transition text-black dark:text-white cursor-pointer",
                           selectedChain === chain.id &&
@@ -252,7 +276,6 @@ const ChainSelect: FC<ChainSelectProps> = ({
           onClose={handleChainSelectOpen}
         />
       </div>
-      {/* IMP END - Desktop View */}
     </>
   )
 }
