@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { getChains, type ExtendedChain } from "@lifi/sdk"
 
 export function useSupportedChains() {
-  const [chains, setChains] = useState<ExtendedChain[]>([])
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    getChains()
-      .then((list) => setChains(list))
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+  const { data: chains = [], isLoading: loading } = useQuery<ExtendedChain[]>({
+    queryKey: ["supportedChains"],
+    queryFn: async () => await getChains(),
+    staleTime: Infinity, // never goes stale
+    gcTime: Infinity, // stays cached
+  })
+
   return { chains, loading }
 }
