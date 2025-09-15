@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { ArrowLeft, Loader2, Search, SearchX } from "lucide-react"
+import { ArrowLeft, Search, SearchX } from "lucide-react"
 import { Token } from "@lifi/sdk"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -18,6 +18,19 @@ interface TokenSelectProps {
   side: "from" | "to"
 }
 
+// Skeleton Item for Token List
+const TokenSkeletonItem: FC = () => {
+  return (
+    <div className="w-full flex items-center gap-3 px-4 py-3 text-left">
+      <div className="w-7 h-7 bg-gray-300 rounded-full animate-pulse"></div>
+      <div className="flex flex-col gap-1.5">
+        <div className="h-4 bg-gray-300 rounded w-16 animate-pulse"></div>
+        <div className="h-3 bg-gray-300 rounded w-24 animate-pulse"></div>
+      </div>
+    </div>
+  )
+}
+
 const TokenSelect: FC<TokenSelectProps> = ({
   tokens = [],
   selectedToken,
@@ -28,8 +41,7 @@ const TokenSelect: FC<TokenSelectProps> = ({
   const [search, setSearch] = useState("")
   const searchParams = useSearchParams()
 
-  // IMP START - Token Filtering
-  // Filters token list based on search query (matches by symbol, name, or address)
+  // Token Filtering
   const filteredTokens = tokens.filter((t) => {
     const query = search.toLowerCase()
     return (
@@ -38,16 +50,13 @@ const TokenSelect: FC<TokenSelectProps> = ({
       t.address.toLowerCase().includes(query)
     )
   })
-  // IMP END - Token Filtering
 
-  // IMP START - URL Builder
-  // Helper function to build query params for selected token
+  // URL Builder
   const buildUrl = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set(key, value)
     return `/?${params.toString()}`
   }
-  // IMP END - URL Builder
 
   return (
     <>
@@ -69,11 +78,10 @@ const TokenSelect: FC<TokenSelectProps> = ({
             {/* Token List */}
             <div className="max-h-[calc(70dvh-180px)] xs:max-h-[calc(70dvh-200px)] overflow-y-auto overflow-x-hidden">
               {loading ? (
-                // Loading state
-                <div className="flex space-x-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <p className="text-gray-400 text-sm">Loading tokens</p>
-                </div>
+                // Loading state with skeleton
+                [...Array(6)].map((_, index) => (
+                  <TokenSkeletonItem key={`mobile-skeleton-${index}`} />
+                ))
               ) : filteredTokens.length > 0 ? (
                 // Render token items
                 filteredTokens.map((token) => (
@@ -152,11 +160,10 @@ const TokenSelect: FC<TokenSelectProps> = ({
             {/* Token List */}
             <div className="max-h-[460px] overflow-y-auto overflow-x-hidden">
               {loading ? (
-                // Loading state
-                <div className="flex space-x-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <p className="text-gray-400 text-sm">Loading tokens</p>
-                </div>
+                // Loading state with skeleton
+                [...Array(6)].map((_, index) => (
+                  <TokenSkeletonItem key={`desktop-skeleton-${index}`} />
+                ))
               ) : filteredTokens.length > 0 ? (
                 // Render token items
                 filteredTokens.map((token) => (
