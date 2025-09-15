@@ -1,9 +1,30 @@
 "use client"
-
 import { FC, HtmlHTMLAttributes, useEffect, useState } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { Loader } from "lucide-react"
+
+// Define the skeleton item component
+const SkeletonItem: FC = () => {
+  return (
+    <div className="inline-flex items-center space-x-2 px-3 py-1 mx-1 bg-white/90 dark:bg-gray-800/90 rounded-none border border-gray-200/30 dark:border-gray-700/30 min-w-[120px] text-xs">
+      {/* Rank Circle Skeleton */}
+      <div className="flex-shrink-0 w-4 h-4 bg-gray-300 rounded-full animate-pulse"></div>
+
+      {/* Image Placeholder Skeleton */}
+      <div className="w-5 h-5 bg-gray-300 rounded-full animate-pulse"></div>
+
+      {/* Text Content Skeleton */}
+      <div className="min-w-0 flex-1 flex items-center space-x-1">
+        {/* Symbol Placeholder */}
+        <div className="h-3 bg-gray-300 rounded w-10 animate-pulse"></div>
+        {/* Price Placeholder */}
+        <div className="h-3 bg-gray-300 rounded w-14 animate-pulse"></div>
+        {/* Percentage Placeholder */}
+        <div className="h-3 bg-gray-300 rounded w-8 animate-pulse"></div>
+      </div>
+    </div>
+  )
+}
 
 interface CryptoCurrency {
   id: string
@@ -28,14 +49,12 @@ const CryptoInfiniteScroll: FC<CryptoInfiniteScrollProps> = ({ className }) => {
       try {
         setIsLoading(true)
         const response = await fetch("/api/cryptos")
-
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
           throw new Error(
             errorData.error || `HTTP error! status: ${response.status}`
           )
         }
-
         const data = await response.json()
         setCryptocurrencies(data)
         setError(null)
@@ -53,9 +72,16 @@ const CryptoInfiniteScroll: FC<CryptoInfiniteScrollProps> = ({ className }) => {
   }, [])
 
   if (isLoading) {
+    // Render skeleton UI with 10 placeholder items
     return (
-      <div className={cn("flex justify-center items-center h-12", className)}>
-        <Loader className="w-4 h-4 animate-spin" />
+      <div className={cn("w-full overflow-hidden py-2", className)}>
+        <div className="relative flex">
+          <div className="flex animate-infinite-scroll whitespace-nowrap">
+            {[...Array(10)].map((_, index) => (
+              <SkeletonItem key={`skeleton-${index}`} />
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
@@ -86,16 +112,14 @@ const CryptoInfiniteScroll: FC<CryptoInfiniteScrollProps> = ({ className }) => {
 
 const CryptoItem: FC<{ crypto: CryptoCurrency }> = ({ crypto }) => {
   const priceChange = parseFloat(crypto.changePercent24Hr)
-  const isPositive = priceChange >= 0.00
+  const isPositive = priceChange >= 0.0
   const price = parseFloat(crypto.priceUsd)
-
   const formatPrice = (price: number): string => {
     if (price < 0.01) return price.toFixed(4)
     if (price < 1) return price.toFixed(3)
     if (price < 100) return price.toFixed(2)
     return price.toFixed(1)
   }
-
   const imageUrl = crypto.image
     ? crypto.image
     : `https://assets.coincap.io/assets/icons/${crypto.symbol.toLowerCase()}@2x.png`
@@ -105,7 +129,6 @@ const CryptoItem: FC<{ crypto: CryptoCurrency }> = ({ crypto }) => {
       <div className="flex-shrink-0 w-4 h-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
         <span className="text-[10px] font-bold text-white">{crypto.rank}</span>
       </div>
-
       <Image
         src={imageUrl}
         alt={crypto.name}
@@ -117,13 +140,11 @@ const CryptoItem: FC<{ crypto: CryptoCurrency }> = ({ crypto }) => {
           target.src = `https://via.placeholder.com/20/3B82F6/FFFFFF?text=${crypto.symbol.charAt(0)}`
         }}
       />
-
-      <div className=" min-w-0 flex-1">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center space-x-1">
           <span className="font-semibold text-gray-900 dark:text-white truncate">
             ${crypto.symbol.toUpperCase()}
           </span>
-
           <span className="text-gray-600 dark:text-gray-400">
             ${formatPrice(price)}
           </span>
