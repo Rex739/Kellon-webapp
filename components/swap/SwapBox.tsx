@@ -4,6 +4,7 @@ import { type ExtendedChain, type Token } from "@lifi/sdk"
 import { FC } from "react"
 import { Label } from "@/components/ui/label"
 import TokenWithChainLogo from "./TokenWithChainLogo"
+import FallbackTokenAndChainLogo from "./FallbackTokenAndChainLogo"
 
 interface SwapBoxProps {
   chains: ExtendedChain[]
@@ -27,7 +28,7 @@ const SwapBox: FC<SwapBoxProps> = ({
       {/* From Section */}
       <div
         onClick={() => handleChainSelectOpen("from")}
-        className="bg-white2 dark:bg-secondary-60 rounded-lg flex flex-col p-3 space-y-4 border border-input cursor-pointer"
+        className="bg-white2 dark:bg-secondary-60 rounded-lg flex flex-col p-3 space-y-4 border border-input cursor-pointer "
       >
         <Label className="text-sm text-black dark:text-white font-semibold">
           From
@@ -61,9 +62,7 @@ const SwapBox: FC<SwapBoxProps> = ({
           ) : (
             // Empty state when nothing is selected
             <div className="flex items-center space-x-2">
-              <div className="w-11 h-11 bg-white1 dark:bg-secondary-70 rounded-full relative">
-                <div className="w-5 h-5 bg-white1 dark:bg-secondary-70 rounded-full border-white2 dark:border-secondary-60 border-2 absolute -bottom-1.5 right-0" />
-              </div>
+              <FallbackTokenAndChainLogo />
               <span>Select chain and token</span>
             </div>
           )}
@@ -107,9 +106,7 @@ const SwapBox: FC<SwapBoxProps> = ({
           ) : (
             // Empty state when nothing is selected
             <div className="flex items-center space-x-2">
-              <div className="w-11 h-11 bg-white1 dark:bg-secondary-70 rounded-full relative">
-                <div className="w-5 h-5 bg-white1 dark:bg-secondary-70 rounded-full border-white2 dark:border-secondary-60 border-2 absolute -bottom-1.5 right-0" />
-              </div>
+              <FallbackTokenAndChainLogo />
               <span>Select chain and token</span>
             </div>
           )}
