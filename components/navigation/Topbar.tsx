@@ -59,7 +59,7 @@ const Topbar: FC<TopbarProps> = ({ className }) => {
     <section className={cn(className, "p-5 fixed w-full z-50")}>
       <header className="flex justify-between items-center">
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-5 bg-white dark:bg-secondary-60 w-fit capitalize px-5 py-3 rounded-xl shadow-topbar border border-input">
+        <nav className="hidden md:flex gap-5 bg-white dark:bg-secondary-60 w-fit capitalize px-5 py-3 rounded-xl border border-input">
           <Icons.Logo className="h-6 w-6" />
 
           {navigationListUrls.map(({ label, href }, i) => (
