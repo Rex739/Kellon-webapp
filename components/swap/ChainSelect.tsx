@@ -32,8 +32,8 @@ interface ChainSelectProps {
 const ChainSkeletonItem: FC = () => {
   return (
     <div className="w-full flex items-center gap-3 px-4 py-3 text-left">
-      <div className="w-7 h-7 bg-gray-300 rounded-full animate-pulse"></div>
-      <div className="h-4 bg-gray-300 rounded w-24 animate-pulse"></div>
+      <div className="w-7 h-7 bg-gray-300 dark:bg-secondary-60 rounded-full animate-pulse"></div>
+      <div className="h-4 bg-gray-300 dark:bg-secondary-60 rounded w-24 animate-pulse"></div>
     </div>
   )
 }
@@ -76,7 +76,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
 
   return (
     <>
-      {/* Mobile View */}
+      {/* =================== MOBILE VIEW =================== */}
       <div className="block w-full md:hidden">
         <Card className="w-[90dvw] max-w-[90dvw] bg-white dark:bg-secondary-10 border border-input rounded-2xl max-h-[80dvh] xm:max-h-[80dvh] sm:max-h-[80dvh] md:max-h-[70vh] card-scroll">
           <CardContent className="p-4 flex flex-col space-y-4">
@@ -204,7 +204,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
         </Dialog>
       </div>
 
-      {/* Desktop View */}
+      {/* =================== DESKTOP VIEW =================== */}
       <div className="hidden md:flex">
         <Card className="bg-white dark:bg-secondary-10 border border-input rounded-l-2xl rounded-r-none h-[600px]">
           <CardContent className="p-4 space-y-4">
@@ -238,7 +238,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
                         )}
                         key={chain.id}
                         className={cn(
-                          "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white2 dark:hover:bg-secondary-60 hover:rounded-lg transition text-black dark:text-white cursor-pointer",
+                          "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary-99 dark:hover:bg-secondary-60 rounded-lg hover:rounded-lg transition text-black dark:text-white cursor-pointer",
                           selectedChain === chain.id &&
                             "bg-purple-100 dark:bg-secondary-70 rounded-lg"
                         )}
