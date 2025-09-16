@@ -22,10 +22,10 @@ interface TokenSelectProps {
 const TokenSkeletonItem: FC = () => {
   return (
     <div className="w-full flex items-center gap-3 px-4 py-3 text-left">
-      <div className="w-7 h-7 bg-gray-300 rounded-full animate-pulse"></div>
+      <div className="w-7 h-7 bg-gray-300 dark:bg-secondary-60 rounded-full animate-pulse"></div>
       <div className="flex flex-col gap-1.5">
-        <div className="h-4 bg-gray-300 rounded w-16 animate-pulse"></div>
-        <div className="h-3 bg-gray-300 rounded w-24 animate-pulse"></div>
+        <div className="h-4 bg-gray-300 dark:bg-secondary-60 rounded w-16 animate-pulse"></div>
+        <div className="h-3 bg-gray-300 dark:bg-secondary-60 rounded w-24 animate-pulse"></div>
       </div>
     </div>
   )
@@ -93,7 +93,7 @@ const TokenSelect: FC<TokenSelectProps> = ({
                     )}
                     onClick={() => onClose(side)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white2 dark:hover:bg-secondary-60 hover:rounded-lg transition text-black dark:text-white cursor-pointer",
+                      "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary-99 dark:hover:bg-secondary-60 rounded-lg hover:rounded-lg transition text-black dark:text-white cursor-pointer",
                       selectedToken?.address === token.address &&
                         "bg-purple-100 dark:bg-secondary-70 rounded-lg"
                     )}
@@ -175,7 +175,7 @@ const TokenSelect: FC<TokenSelectProps> = ({
                     )}
                     onClick={() => onClose(side)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white2 dark:hover:bg-secondary-60 hover:rounded-lg transition text-black dark:text-white cursor-pointer",
+                      "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary-99 dark:hover:bg-secondary-60 rounded-lg hover:rounded-lg transition text-black dark:text-white cursor-pointer",
                       selectedToken?.address === token.address &&
                         "bg-purple-100 dark:bg-secondary-70 rounded-lg"
                     )}
