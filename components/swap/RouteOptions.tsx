@@ -3,53 +3,36 @@
 import { FC, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { RotateCw, ChevronDown, Clock } from "lucide-react"
-import { ExtendedChain, Route, RoutesResponse } from "@lifi/sdk"
+import { ExtendedChain, Route } from "@lifi/sdk"
 import TokenWithChainLogo from "./TokenWithChainLogo"
-import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 import { useFormatTokenAmount } from "@/hooks/useFormatTokenAmount"
-import Image from "next/image"
 import { Icons } from "@/components/Icons"
 import { formatTime } from "@/lib/formatTime"
-
-// Simple AggregatorLogo component
-const AggregatorLogo: FC<{ logoURI: string }> = ({ logoURI }) => (
-  <Image
-    src={logoURI}
-    width={100}
-    height={100}
-    alt="Aggregator Logo"
-    className="w-4 h-4 rounded-full mr-2"
-    onError={(e) => {
-      ;(e.target as HTMLImageElement).src = "https://via.placeholder.com/20"
-    }}
-  />
-)
+import AggregatorLogo from "./AggregatorLogo"
+import Dot from "@/components/ui/dot"
 
 interface RouteOptionsProps {
   routes: Route[]
   chains: ExtendedChain[]
-  refetchRoutes: (
-    options?: RefetchOptions
-  ) => Promise<QueryObserverResult<RoutesResponse | { routes: never[] }, Error>>
   onRouteSelect: (route: Route) => void
+  isRefetched: boolean
+  handleRefetchRoute: () => void
 }
 
 const RouteOptions: FC<RouteOptionsProps> = ({
   routes,
   chains,
-  refetchRoutes,
+  isRefetched,
+  handleRefetchRoute,
   onRouteSelect,
 }) => {
-  const [isRefetched, setIsRefetched] = useState(false)
+
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
   const { formatTokenAmount } = useFormatTokenAmount()
   const [isReversed, setIsReversed] = useState(false)
 
-  const handleRefetchRoute = () => {
-    setIsRefetched((prev) => !prev)
-    refetchRoutes()
-  }
+
 
   const toggleDropdown = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation()
@@ -103,7 +86,6 @@ const RouteOptions: FC<RouteOptionsProps> = ({
             toChainId,
             toAmountUSD,
             toAmount,
-            toAmountMin,
             steps,
             gasCostUSD,
             fromAmount,
@@ -125,10 +107,7 @@ const RouteOptions: FC<RouteOptionsProps> = ({
             ? `+${percentageChange.toFixed(2)}%`
             : `${percentageChange.toFixed(2)}%`
 
-          const formattedMinAmount = formatTokenAmount(
-            toAmountMin,
-            toToken.decimals
-          )
+
           const fromAmountBigInt = BigInt(fromAmount)
           const toAmountBigInt = BigInt(toAmount)
 
@@ -176,11 +155,11 @@ const RouteOptions: FC<RouteOptionsProps> = ({
 
                       <div className="flex space-x-1 text-xs items-center">
                         <span>{`$${Number(toAmountUSD).toFixed(2)}`}</span>
-                        <div className="rounded-full h-1 w-1 bg-gray-20 dark:bg-gray-40" />
+                        <Dot />
                         <span className={cn("font-medium")}>
                           {percentageText}
                         </span>
-                        <div className="rounded-full h-1 w-1 bg-gray-20 dark:bg-gray-40" />
+                        <Dot />
                         {logoURI && <AggregatorLogo logoURI={logoURI} />}
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           {aggregator}
@@ -216,7 +195,7 @@ const RouteOptions: FC<RouteOptionsProps> = ({
 
                         let actionType: string
                         if (step.type === "protocol") {
-                          actionType = `Deduct fee on ${fromChainName} via ${stepAggregator}`
+                          return null
                         } else if (step.type === "swap") {
                           actionType = `Swap on ${fromChainName} via ${stepAggregator}`
                         } else if (step.type === "cross" || !isSameChain) {
