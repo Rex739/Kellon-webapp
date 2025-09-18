@@ -9,6 +9,7 @@ import { ArrowLeft, Search, SearchX } from "lucide-react"
 import { Token } from "@lifi/sdk"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { TokenSkeletonItem } from "@/components/Skeletons"
 
 interface TokenSelectProps {
   tokens?: Token[]
@@ -19,17 +20,7 @@ interface TokenSelectProps {
 }
 
 // Skeleton Item for Token List
-const TokenSkeletonItem: FC = () => {
-  return (
-    <div className="w-full flex items-center gap-3 px-4 py-3 text-left">
-      <div className="w-7 h-7 bg-gray-300 dark:bg-secondary-60 rounded-full animate-pulse"></div>
-      <div className="flex flex-col gap-1.5">
-        <div className="h-4 bg-gray-300 dark:bg-secondary-60 rounded w-16 animate-pulse"></div>
-        <div className="h-3 bg-gray-300 dark:bg-secondary-60 rounded w-24 animate-pulse"></div>
-      </div>
-    </div>
-  )
-}
+
 
 const TokenSelect: FC<TokenSelectProps> = ({
   tokens = [],
