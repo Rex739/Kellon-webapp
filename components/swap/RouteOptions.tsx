@@ -11,6 +11,7 @@ import { Icons } from "@/components/Icons"
 import { formatTime } from "@/lib/formatTime"
 import AggregatorLogo from "./AggregatorLogo"
 import Dot from "@/components/ui/dot"
+import { formatUSD } from "@/lib/formatNumber"
 
 interface RouteOptionsProps {
   routes: Route[]
@@ -27,12 +28,9 @@ const RouteOptions: FC<RouteOptionsProps> = ({
   handleRefetchRoute,
   onRouteSelect,
 }) => {
-
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
   const { formatTokenAmount } = useFormatTokenAmount()
   const [isReversed, setIsReversed] = useState(false)
-
-
 
   const toggleDropdown = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation()
@@ -107,7 +105,6 @@ const RouteOptions: FC<RouteOptionsProps> = ({
             ? `+${percentageChange.toFixed(2)}%`
             : `${percentageChange.toFixed(2)}%`
 
-
           const fromAmountBigInt = BigInt(fromAmount)
           const toAmountBigInt = BigInt(toAmount)
 
@@ -154,7 +151,7 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                       </p>
 
                       <div className="flex space-x-1 text-xs items-center">
-                        <span>{`$${Number(toAmountUSD).toFixed(2)}`}</span>
+                        <span>{formatUSD(toAmountUSD)}</span>
                         <Dot />
                         <span className={cn("font-medium")}>
                           {percentageText}
@@ -204,8 +201,13 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                           actionType = `Action on ${fromChainName} via ${stepAggregator}`
                         }
 
-                        const formattedStepFromAmount = formatTokenAmount(
-                          step.estimate.fromAmount,
+                        // const formattedStepFromAmount = formatTokenAmount(
+                        //   step.estimate.fromAmount,
+                        //   fromToken.decimals
+                        // )
+
+                        const formattedFromAmount = formatTokenAmount(
+                          fromAmount,
                           fromToken.decimals
                         )
                         const formattedStepToAmount = formatTokenAmount(
@@ -230,7 +232,7 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                                 {actionType} ({formattedTime})
                               </p>
                               <p className="text-xs text-gray-500 dark:text-gray-400 tracking-tighter">
-                                {formattedStepFromAmount} {fromToken.symbol} →{" "}
+                                {formattedFromAmount} {fromToken.symbol} →{" "}
                                 {formattedStepToAmount} {toToken.symbol}
                               </p>
                             </div>
