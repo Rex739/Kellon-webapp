@@ -7,9 +7,14 @@ import { cn } from "@/lib/utils"
 interface SendAmountFormProps {
   form: UseFormReturn<SendAmountFormSchemaType>
   showNativeValue: boolean
+  disabled?: boolean // Add disabled prop
 }
 
-const SendAmountForm: FC<SendAmountFormProps> = ({ form, showNativeValue }) => {
+const SendAmountForm: FC<SendAmountFormProps> = ({
+  form,
+  showNativeValue,
+  disabled = false, // Default to false
+}) => {
   return (
     <Form {...form}>
       <div>
@@ -33,10 +38,12 @@ const SendAmountForm: FC<SendAmountFormProps> = ({ form, showNativeValue }) => {
                     autoCorrect="off"
                     spellCheck={false}
                     required
+                    disabled={disabled} // Pass disabled prop
                     {...field}
                     className={cn(
                       "border-0 focus:ring-0 focus:outline-none shadow-none bg-transparent p-0 text-2xl font-semibold text-black dark:text-white w-full",
-                      showNativeValue && "pl-5"
+                      showNativeValue && "pl-5",
+                      disabled && "opacity-50 cursor-not-allowed" // Add disabled styles
                     )}
                     placeholder="0"
                   />
