@@ -17,7 +17,6 @@ import { useQuery } from "@tanstack/react-query"
 import { useAccount, useChainId, useSwitchChain, useWalletClient } from "wagmi"
 import { parseUnits } from "viem"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowLeft, FileClock, RotateCw, Settings } from "lucide-react"
 import { toast } from "react-hot-toast"
 import {
@@ -40,10 +39,12 @@ import {
 import { useRouter, useSearchParams } from "next/navigation"
 import SendAmount from "./SendAmount"
 import { Icons } from "@/components/Icons"
-import RouteDetails from "./RouteDetails"
 import RouteOptions from "./RouteOptions"
 import { useDebounce } from "@/hooks/useDebounce"
 import SelectedRoute from "./SelectedRoute"
+import NoRoutesAvailable from "./noRoutesAvalibale"
+import { RouteOptionSkeleton } from "@/components/Skeletons"
+
 
 type SwapInterfaceProps = HtmlHTMLAttributes<HTMLDivElement>
 
@@ -75,7 +76,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
   const [isChainSelectOpen, setIsChainSelectOpen] = useState<boolean>(false)
   const [selectingSide, setSelectingSide] = useState<"from" | "to" | null>(null)
   const [isRefetched, setIsRefetched] = useState(false)
-
+  const [routesQueryExecuted, setRoutesQueryExecuted] = useState(false) // Track if getRoutes was called
   // ✅ Form with zod
   const form = useForm<SendAmountFormSchemaType>({
     resolver: zodResolver(sendAmountFormSchema),
@@ -174,7 +175,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
           maxPriceImpact: 0.1,
         },
       }
-
+      setRoutesQueryExecuted(true) // Mark that getRoutes was called
       return await getRoutes(request)
     },
     enabled: Boolean(
@@ -285,6 +286,11 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
     refetchRoutes()
   }
 
+  const isModifyBorderRadius =
+    isRouteOptionsActive ||
+    routesLoading ||
+    (routesQueryExecuted && !routesLoading && fromAmount !== "")
+
   return (
     <section className={cn(className)}>
       {isChainSelectOpen ? (
@@ -307,14 +313,17 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
           <Card
             className={cn(
               "w-[90dvw] xm:max-w-[350px] md:max-w-[414px] lg:w-md xl:max-w-lg mx-auto bg-white dark:bg-secondary-10 rounded-2xl text-gray-20 dark:text-gray-40 border-input  px-0!",
-              isRouteOptionsActive && "lg:rounded-r-none"
+              isModifyBorderRadius && !selectedRoute && "lg:rounded-r-none"
             )}
           >
             {/* Header */}
             <CardHeader className="px-2 xs:px-4 md:px-6">
               {selectedRoute ? (
                 <div className="flex justify-between items-center text-black dark:text-white">
-                  <ArrowLeft className="cursor-pointer" />
+                  <ArrowLeft
+                    onClick={() => setSelectedRoute(null)}
+                    className="cursor-pointer"
+                  />
                   <CardTitle className="text-xl font-semibold">
                     {isBridge ? "Review bridge" : "Review swap"}
                   </CardTitle>
@@ -371,19 +380,10 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
                 <SendAmount
                   fromChain={fromChain}
                   fromToken={fromToken}
+                  toToken={toToken}
                   chains={chains}
                   form={form}
                 />
-                {/* Route Details */}
-                {routesLoading && (
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                  </div>
-                )}
-                {selectedRoute && !routesLoading && (
-                  <RouteDetails route={selectedRoute} />
-                )}
               </CardContent>
             )}
 
@@ -408,8 +408,20 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
               </Button>
             </CardFooter>
           </Card>
-
-          {routes?.length > 0 ? (
+          {/* Route Options or Skeleton or NoRoutesAvailable */}
+          {routesLoading ? (
+            <Card
+              className={
+                "w-[90dvw] xm:max-w-[350px] md:max-w-[414px] lg:w-md xl:max-w-lg mx-auto bg-white dark:bg-secondary-10 rounded-2xl lg:rounded-l-none text-gray-20 dark:text-gray-40 border-input"
+              }
+            >
+              <CardContent className="p-4 space-y-3">
+                {[...Array(3)].map((_, index) => (
+                  <RouteOptionSkeleton key={`route-skeleton-${index}`} />
+                ))}
+              </CardContent>
+            </Card>
+          ) : routes?.length > 0 && !selectedRoute ? (
             <RouteOptions
               routes={routes}
               chains={chains}
@@ -417,7 +429,16 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
               handleRefetchRoute={handleRefetchRoute}
               isRefetched={isRefetched}
             />
-          ) : <div>ssd</div>}
+          ) : routesQueryExecuted &&
+            !selectedRoute &&
+            !routesLoading &&
+            fromAmount !== "" ? (
+            <NoRoutesAvailable
+              onRetry={refetchRoutes}
+              isLoading={routesLoading}
+              className={cn(isModifyBorderRadius && "lg:rounded-l-none")}
+            />
+          ) : null}
         </div>
       )}
     </section>
@@ -425,24 +446,3 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
 }
 
 export default SwapInterface
-
-// {
-//   /* Balance check */
-// }
-// {
-//   !hasEnoughBalance && (
-//     <div className="bg-yellow-100 text-yellow-800 text-xs p-2 rounded-md">
-//       You don&apos;t have enough funds to complete the transaction.
-//     </div>
-//   )
-// }
-
-// {
-//   /* CTA */
-// }
-// ;<button
-//   className="w-full py-2 bg-purple-600 text-white rounded-lg disabled:opacity-50"
-//   disabled={!hasEnoughBalance}
-// >
-//   {isBridging ? "Start bridging" : "Start swapping"}
-// </button>
