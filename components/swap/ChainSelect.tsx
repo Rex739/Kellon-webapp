@@ -17,6 +17,10 @@ import TokenSelect from "./TokenSelect"
 import { type Token } from "@lifi/sdk"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
+import {
+  ChainSkeletonItem,
+  TopChainSkeletonItem,
+} from "@/components/Skeletons"
 
 // Component Props
 interface ChainSelectProps {
@@ -26,25 +30,6 @@ interface ChainSelectProps {
   tokens?: Token[]
   loading: boolean
   selectedToken: Token | null
-}
-
-// Skeleton Item for Chain List (Dialog and Desktop)
-const ChainSkeletonItem: FC = () => {
-  return (
-    <div className="w-full flex items-center gap-3 px-4 py-3 text-left">
-      <div className="w-7 h-7 bg-gray-300 dark:bg-secondary-60 rounded-full animate-pulse"></div>
-      <div className="h-4 bg-gray-300 dark:bg-secondary-60 rounded w-24 animate-pulse"></div>
-    </div>
-  )
-}
-
-// Skeleton Item for Top Chains Grid (Mobile)
-const TopChainSkeletonItem: FC = () => {
-  return (
-    <div className="flex flex-col items-center justify-center p-2 border border-input rounded-xl">
-      <div className="w-9 h-9 bg-gray-300 rounded-full animate-pulse"></div>
-    </div>
-  )
 }
 
 const ChainSelect: FC<ChainSelectProps> = ({
