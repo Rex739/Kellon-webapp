@@ -12,7 +12,7 @@ export const RouteOptionSkeleton: FC = () => {
       {/* Route Details (Amount, Fees) */}
       <div className="flex-1 space-y-1.5">
         <div className="h-4 bg-gray-300 dark:bg-secondary-20  rounded w-3/4 animate-pulse"></div>
-        <div className="h-3 bg-gray-300 rounded w-1/2 animate-pulse"></div>
+        <div className="h-3 bg-gray-300 dark:bg-secondary-20 rounded w-1/2 animate-pulse"></div>
       </div>
       {/* Select Button */}
       <div className="h-8 w-20 bg-gray-300 dark:bg-secondary-20  rounded animate-pulse"></div>
