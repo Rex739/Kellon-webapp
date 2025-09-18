@@ -11,6 +11,7 @@ import FallbackTokenAndChainLogo from "./FallbackTokenAndChainLogo"
 
 interface SendAmountProps {
   fromToken: Token | null
+  toToken: Token | null
   fromChain: number
   chains: ExtendedChain[]
   form: UseFormReturn<SendAmountFormSchemaType>
@@ -19,6 +20,7 @@ interface SendAmountProps {
 const SendAmount: FC<SendAmountProps> = ({
   fromChain,
   fromToken,
+  toToken,
   chains,
   form,
 }) => {
@@ -27,7 +29,7 @@ const SendAmount: FC<SendAmountProps> = ({
   const pathname = usePathname()
   const router = useRouter()
   const { setValue } = form
-
+  const isFormDisabled = !fromToken || !toToken
   // Use ref to track previous relevant params
   const previousRelevantParamsRef = useRef<string>("")
 
@@ -146,7 +148,11 @@ const SendAmount: FC<SendAmountProps> = ({
 
             {/* send amount */}
             <div className="flex flex-col  items-start">
-              <SendAmountForm form={form} showNativeValue={showNativeValue} />
+              <SendAmountForm
+                form={form}
+                showNativeValue={showNativeValue}
+                disabled={isFormDisabled}
+              />
               <button
                 onClick={toggleValueDisplay}
                 className="text-xs flex items-center cursor-pointer px-1 hover:rounded-lg hover:bg-input dark:hover:bg-secondary-70 hover:px-1"
@@ -163,7 +169,7 @@ const SendAmount: FC<SendAmountProps> = ({
           <div className="flex  items-center space-x-4">
             <FallbackTokenAndChainLogo />
             <div className="flex flex-col">
-              <span  className="text-2xl">0</span>
+              <span className="text-2xl">0</span>
               <span className="text-xs">$0.00</span>
             </div>
           </div>
