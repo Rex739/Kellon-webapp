@@ -155,7 +155,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
             />
           )}
           <span>{aggregator} </span>
-          <div className="flex items-center space-x-2 bg-input rounded-full justify-center ml-auto p-1">
+          <div className="flex items-center space-x-2 bg-input rounded-full justify-center ml-auto p-1 cursor-pointer">
             <ChevronDown
               onClick={(e) => toggleDropdown(id, e)}
               className={cn(
