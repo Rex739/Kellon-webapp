@@ -8,6 +8,7 @@ import { Icons } from "@/components/Icons"
 import TokenWithChainLogo from "./TokenWithChainLogo"
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import FallbackTokenAndChainLogo from "./FallbackTokenAndChainLogo"
+import { formatUSD } from "@/lib/formatNumber"
 
 interface SendAmountProps {
   fromToken: Token | null
@@ -111,7 +112,7 @@ const SendAmount: FC<SendAmountProps> = ({
       return "<$0.01"
     }
 
-    return `$${ENTERED_VALUE.toFixed(2)}`
+    return formatUSD(ENTERED_VALUE)
   }
 
   const fromTokenNativeValue = (fromToken: Token) => {
