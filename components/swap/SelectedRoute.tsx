@@ -1,7 +1,7 @@
 "use client"
 
 import { FC, useState } from "react"
-import { CardContent } from "../ui/card"
+import { CardContent } from "@/components/ui/card"
 import { ChevronDown, Clock } from "lucide-react"
 import { Route, ExtendedChain } from "@lifi/sdk"
 import TokenWithChainLogo from "./TokenWithChainLogo"
@@ -11,6 +11,8 @@ import { formatTime } from "@/lib/formatTime"
 import AggregatorLogo from "./AggregatorLogo"
 import Dot from "@/components/ui/dot"
 import { cn } from "@/lib/utils"
+import { formatUSD } from "@/lib/formatNumber"
+
 
 interface SelectedRouteProps {
   selectedRoute: Route | null
@@ -26,7 +28,6 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
   const { formatTokenAmount } = useFormatTokenAmount()
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
   const [isReversed, setIsReversed] = useState(false)
-
 
   // Calculate percentage change between fromAmountUSD and toAmountUSD
   const calculatePercentageChange = (
@@ -136,7 +137,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
               {fromAmountFormatted}
             </p>
             <div className="flex space-x-1 text-xs items-center">
-              <p>{`$${Number(toAmountUSD).toFixed(2)}`}</p>
+              <p>{formatUSD(fromAmountUSD)}</p>
               <Dot />
               <p className=" ">
                 {fromToken.symbol} on{" "}
@@ -192,10 +193,15 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
                   actionType = `Action on ${fromChainName} via ${stepAggregator}`
                 }
 
-                const formattedStepFromAmount = formatTokenAmount(
-                  step.estimate.fromAmount,
-                  fromToken.decimals
-                )
+                // const formattedStepFromAmount = formatTokenAmount(
+                //   step.estimate.fromAmount,
+                //   fromToken.decimals
+                // )
+                  const formattedFromAmount = formatTokenAmount(
+                    fromAmount,
+                    fromToken.decimals
+                  )
+                
                 const formattedStepToAmount = formatTokenAmount(
                   step.estimate.toAmount,
                   toToken.decimals
@@ -216,7 +222,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
                         {actionType} ({formattedTime})
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 tracking-tighter">
-                        {formattedStepFromAmount} {fromToken.symbol} →{" "}
+                        {formattedFromAmount} {fromToken.symbol} →{" "}
                         {formattedStepToAmount} {toToken.symbol}
                       </p>
                     </div>
@@ -238,10 +244,16 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
             <p className="text-lg font-semibold text-black dark:text-white">
               {toAmountFormatted}
             </p>
-            <p className="text-xs">
-              ${Number(toAmountUSD).toFixed(2)} • {toToken.symbol} on{" "}
-              {chains.find((c) => c.id === toChainId)?.name}
-            </p>
+            <div className="flex space-x-1 text-xs items-center">
+              <p className="">{formatUSD(toAmountUSD)}</p>
+              <Dot />
+              <p>{percentageText}</p>
+              <Dot />
+              <p>
+                {toToken.symbol} on{" "}
+                {chains.find((c) => c.id === toChainId)?.name}
+              </p>
+            </div>
           </div>
         </div>
       </div>
