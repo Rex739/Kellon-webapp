@@ -7,12 +7,20 @@ import { Route, ExtendedChain } from "@lifi/sdk"
 import TokenWithChainLogo from "./TokenWithChainLogo"
 import { useFormatTokenAmount } from "@/hooks/useFormatTokenAmount"
 import { Icons } from "@/components/Icons"
-import { formatTime } from "@/lib/formatTime"
 import AggregatorLogo from "./AggregatorLogo"
 import Dot from "@/components/ui/dot"
 import { cn } from "@/lib/utils"
 import { formatUSD } from "@/lib/formatNumber"
-
+import {
+  calculatePriceImpact,
+  getPriceImpactText,
+  calculateConversion,
+  getStepDetails,
+  getAggregatorInfo,
+  extractRouteData,
+  getChainName,
+} from "@/lib/routeHelpers"
+import { formatTime } from "@/lib/formatTime"
 
 interface SelectedRouteProps {
   selectedRoute: Route | null
@@ -29,27 +37,21 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
   const [isReversed, setIsReversed] = useState(false)
 
-  // Calculate percentage change between fromAmountUSD and toAmountUSD
-  const calculatePercentageChange = (
-    fromAmountUSD: string,
-    toAmountUSD: string
-  ): number => {
-    const fromUSD = parseFloat(fromAmountUSD)
-    const toUSD = parseFloat(toAmountUSD)
-
-    if (fromUSD === 0) return 0
-
-    const percentageChange = ((toUSD - fromUSD) / fromUSD) * 100
-    return percentageChange
-  }
-
   const handleToggleConversion = (e: React.MouseEvent) => {
     e.stopPropagation()
     setIsReversed((prev) => !prev)
   }
 
+  const toggleDropdown = (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
+    setOpenDropdownId(openDropdownId === id ? null : id)
+  }
+
   if (!selectedRoute) return null
 
+  const routeData = extractRouteData(selectedRoute)
+  const { aggregator, logoURI, executionDuration } =
+    getAggregatorInfo(selectedRoute)
   const {
     id,
     fromToken,
@@ -63,53 +65,25 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
     gasCostUSD,
     steps,
     toAmountMin,
-  } = selectedRoute
-
-  const aggregator = steps[0].toolDetails?.name || steps[0].tool
-  const aggregatorLogo = steps[0].toolDetails?.logoURI || ""
-  const executionDuration = steps[0].estimate.executionDuration || 0
+  } = routeData
 
   const fromAmountFormatted = formatTokenAmount(fromAmount, fromToken.decimals)
   const toAmountFormatted = formatTokenAmount(toAmount, toToken.decimals)
   const detailedSteps = steps.flatMap((step) => step.includedSteps || [step])
-  const toggleDropdown = (id: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation()
-    setOpenDropdownId(openDropdownId === id ? null : id)
-  }
-  const getChainName = (chainId: number): string => {
-    return chains.find((chain) => chain.id === chainId)?.name || "Unknown"
-  }
+  const formattedMinAmount = formatTokenAmount(toAmountMin, toToken.decimals)
 
-  const fromAmountBigInt = BigInt(fromAmount)
-  const toAmountBigInt = BigInt(toAmount)
+  const priceImpact = calculatePriceImpact(fromAmountUSD, toAmountUSD)
+  const priceImpactText = getPriceImpactText(priceImpact)
 
-  const fromAmountNum =
-    Number(fromAmountBigInt) / Math.pow(10, fromToken.decimals)
-  const toAmountNum = Number(toAmountBigInt) / Math.pow(10, toToken.decimals)
-
-  const rateToFrom = fromAmountNum / toAmountNum
-  const rateFromTo = toAmountNum / fromAmountNum
-
-  const rateToFromFormatted = BigInt(
-    Math.round(rateToFrom * Math.pow(10, fromToken.decimals))
+  const conversionText = calculateConversion(
+    fromAmount,
+    toAmount,
+    fromToken,
+    toToken,
+    isReversed
   )
-  const rateFromToFormatted = BigInt(
-    Math.round(rateFromTo * Math.pow(10, toToken.decimals))
-  )
-  const conversionText = isReversed
-    ? `1 ${toToken.symbol} ≈ ${formatTokenAmount(rateToFromFormatted, fromToken.decimals)} ${fromToken.symbol}`
-    : `1 ${fromToken.symbol} ≈ ${formatTokenAmount(rateFromToFormatted, toToken.decimals)} ${toToken.symbol}`
 
   const slippage = steps.map((step) => step.action.slippage)
-
-  // Calculate percentage change
-  const percentageChange = calculatePercentageChange(fromAmountUSD, toAmountUSD)
-  const isPositive = percentageChange >= 0
-  const percentageText = isPositive
-    ? `+${percentageChange.toFixed(2)}%`
-    : `${percentageChange.toFixed(2)}%`
-
-  const formattedMinAmount = formatTokenAmount(toAmountMin, toToken.decimals)
 
   return (
     <CardContent className="px-2 xs:px-4 md:px-6 space-y-4 ">
@@ -140,8 +114,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
               <p>{formatUSD(fromAmountUSD)}</p>
               <Dot />
               <p className=" ">
-                {fromToken.symbol} on{" "}
-                {chains.find((c) => c.id === fromChainId)?.name}
+                {fromToken.symbol} on {getChainName(fromChainId, chains)}
               </p>
             </div>
           </div>
@@ -149,9 +122,9 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
 
         {/* Aggregator */}
         <div className="flex items-center text-sm">
-          {aggregatorLogo && (
+          {logoURI && (
             <AggregatorLogo
-              logoURI={aggregatorLogo}
+              logoURI={logoURI}
               className="min-w-11 min-h-11 max-w-11 max-h-11"
             />
           )}
@@ -171,44 +144,21 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-3">
             <div className="border-t pt-3 space-y-2">
               {detailedSteps.map((step, stepIndex) => {
-                const fromChainId = step.action.fromChainId
-                const toChainId = step.action.toChainId
-                const fromChainName = getChainName(fromChainId)
-                const toChainName = getChainName(toChainId)
-                const fromToken = step.action.fromToken
-                const toToken = step.action.toToken
-                const stepAggregator =
-                  step.toolDetails?.name || step.tool || "Unknown"
-                const stepLogoURI = step.toolDetails?.logoURI || ""
-                const isSameChain = fromChainId === toChainId
-
-                let actionType: string
-                if (step.type === "protocol") {
-                  return null
-                } else if (step.type === "swap") {
-                  actionType = `Swap on ${fromChainName} via ${stepAggregator}`
-                } else if (step.type === "cross" || !isSameChain) {
-                  actionType = `Bridge from ${fromChainName} to ${toChainName} via ${stepAggregator}`
-                } else {
-                  actionType = `Action on ${fromChainName} via ${stepAggregator}`
-                }
-
-                // const formattedStepFromAmount = formatTokenAmount(
-                //   step.estimate.fromAmount,
-                //   fromToken.decimals
-                // )
-                  const formattedFromAmount = formatTokenAmount(
-                    fromAmount,
-                    fromToken.decimals
-                  )
-                
-                const formattedStepToAmount = formatTokenAmount(
-                  step.estimate.toAmount,
-                  toToken.decimals
+                const stepDetails = getStepDetails(
+                  step,
+                  chains,
+                  fromAmount,
+                  fromToken
                 )
-                const stepExecutionDuration =
-                  step.estimate?.executionDuration || 0
-                const formattedTime = formatTime(stepExecutionDuration)
+                if (!stepDetails) return null
+
+                const {
+                  actionType,
+                  formattedFromAmount,
+                  formattedToAmount,
+                  formattedTime,
+                  stepLogoURI,
+                } = stepDetails
 
                 return (
                   <div
@@ -222,8 +172,8 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
                         {actionType} ({formattedTime})
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 tracking-tighter">
-                        {formattedFromAmount} {fromToken.symbol} →{" "}
-                        {formattedStepToAmount} {toToken.symbol}
+                        {formattedFromAmount} {step.action.fromToken.symbol} →{" "}
+                        {formattedToAmount} {step.action.toToken.symbol}
                       </p>
                     </div>
                   </div>
@@ -247,11 +197,10 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
             <div className="flex space-x-1 text-xs items-center">
               <p className="">{formatUSD(toAmountUSD)}</p>
               <Dot />
-              <p>{percentageText}</p>
+              <p>{priceImpactText}</p>
               <Dot />
               <p>
-                {toToken.symbol} on{" "}
-                {chains.find((c) => c.id === toChainId)?.name}
+                {toToken.symbol} on {getChainName(toChainId, chains)}
               </p>
             </div>
           </div>
@@ -302,7 +251,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
             <div className="flex justify-between items-center">
               <span className="">Price Impact</span>
               <span className="text-black dark:text-white">
-                {percentageText}
+                {priceImpactText}
               </span>
             </div>
             <div className="flex justify-between items-center">

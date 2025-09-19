@@ -8,10 +8,18 @@ import TokenWithChainLogo from "./TokenWithChainLogo"
 import { cn } from "@/lib/utils"
 import { useFormatTokenAmount } from "@/hooks/useFormatTokenAmount"
 import { Icons } from "@/components/Icons"
-import { formatTime } from "@/lib/formatTime"
 import AggregatorLogo from "./AggregatorLogo"
 import Dot from "@/components/ui/dot"
 import { formatUSD } from "@/lib/formatNumber"
+import {
+  calculatePriceImpact,
+  getPriceImpactText,
+  calculateConversion,
+  getStepDetails,
+  getAggregatorInfo,
+  extractRouteData,
+} from "@/lib/routeHelpers"
+import { formatTime } from "@/lib/formatTime"
 
 interface RouteOptionsProps {
   routes: Route[]
@@ -42,24 +50,6 @@ const RouteOptions: FC<RouteOptionsProps> = ({
     setIsReversed((prev) => !prev)
   }
 
-  const getChainName = (chainId: number): string => {
-    return chains.find((chain) => chain.id === chainId)?.name || "Unknown"
-  }
-
-  // Calculate percentage change between fromAmountUSD and toAmountUSD
-  const calculatePercentageChange = (
-    fromAmountUSD: string,
-    toAmountUSD: string
-  ): number => {
-    const fromUSD = parseFloat(fromAmountUSD)
-    const toUSD = parseFloat(toAmountUSD)
-
-    if (fromUSD === 0) return 0
-
-    const percentageChange = ((toUSD - fromUSD) / fromUSD) * 100
-    return percentageChange
-  }
-
   return (
     <Card className="hidden lg:flex w-md xl:max-w-lgbg-white dark:bg-secondary-10 rounded-2xl lg:rounded-l-none text-gray-20 dark:text-gray-40 border-input px-0!">
       <CardHeader className="px-2 xs:px-4 md:px-6">
@@ -78,56 +68,33 @@ const RouteOptions: FC<RouteOptionsProps> = ({
       </CardHeader>
       <CardContent className="px-2 xs:px-4 md:px-6 relative space-y-2 max-h-[420px] overflow-y-auto">
         {routes.map((route) => {
+          const routeData = extractRouteData(route)
+          const { aggregator, logoURI, executionDuration } =
+            getAggregatorInfo(route)
           const {
             id,
             toToken,
             toChainId,
             toAmountUSD,
             toAmount,
-            steps,
             gasCostUSD,
             fromAmount,
             fromToken,
             fromAmountUSD,
-          } = route
+          } = routeData
 
-          const aggregator = steps[0].toolDetails.name || steps[0].tool
-          const logoURI = steps[0].toolDetails.logoURI || ""
-          const executionDuration = steps[0].estimate.executionDuration || 0
+          const priceImpact = calculatePriceImpact(fromAmountUSD, toAmountUSD)
+          const priceImpactText = getPriceImpactText(priceImpact)
 
-          // Calculate percentage change
-          const percentageChange = calculatePercentageChange(
-            fromAmountUSD,
-            toAmountUSD
-          )
-          const isPositive = percentageChange >= 0
-          const percentageText = isPositive
-            ? `+${percentageChange.toFixed(2)}%`
-            : `${percentageChange.toFixed(2)}%`
-
-          const fromAmountBigInt = BigInt(fromAmount)
-          const toAmountBigInt = BigInt(toAmount)
-
-          const fromAmountNum =
-            Number(fromAmountBigInt) / Math.pow(10, fromToken.decimals)
-          const toAmountNum =
-            Number(toAmountBigInt) / Math.pow(10, toToken.decimals)
-
-          const rateToFrom = fromAmountNum / toAmountNum
-          const rateFromTo = toAmountNum / fromAmountNum
-
-          const rateToFromFormatted = BigInt(
-            Math.round(rateToFrom * Math.pow(10, fromToken.decimals))
-          )
-          const rateFromToFormatted = BigInt(
-            Math.round(rateFromTo * Math.pow(10, toToken.decimals))
+          const conversionText = calculateConversion(
+            fromAmount,
+            toAmount,
+            fromToken,
+            toToken,
+            isReversed
           )
 
-          const conversionText = isReversed
-            ? `1 ${toToken.symbol} ≈ ${formatTokenAmount(rateToFromFormatted, fromToken.decimals)} ${fromToken.symbol}`
-            : `1 ${fromToken.symbol} ≈ ${formatTokenAmount(rateFromToFormatted, toToken.decimals)} ${toToken.symbol}`
-
-          const detailedSteps = steps.flatMap(
+          const detailedSteps = route.steps.flatMap(
             (step) => step.includedSteps || [step]
           )
 
@@ -153,9 +120,7 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                       <div className="flex space-x-1 text-xs items-center">
                         <span>{formatUSD(toAmountUSD)}</span>
                         <Dot />
-                        <span className={cn("font-medium")}>
-                          {percentageText}
-                        </span>
+                        <span>{priceImpactText}</span>
                         <Dot />
                         {logoURI && <AggregatorLogo logoURI={logoURI} />}
                         <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -179,44 +144,21 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                   <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-3">
                     <div className="border-t pt-3 space-y-2">
                       {detailedSteps.map((step, stepIndex) => {
-                        const fromChainId = step.action.fromChainId
-                        const toChainId = step.action.toChainId
-                        const fromChainName = getChainName(fromChainId)
-                        const toChainName = getChainName(toChainId)
-                        const fromToken = step.action.fromToken
-                        const toToken = step.action.toToken
-                        const stepAggregator =
-                          step.toolDetails?.name || step.tool || "Unknown"
-                        const stepLogoURI = step.toolDetails?.logoURI || ""
-                        const isSameChain = fromChainId === toChainId
-
-                        let actionType: string
-                        if (step.type === "protocol") {
-                          return null
-                        } else if (step.type === "swap") {
-                          actionType = `Swap on ${fromChainName} via ${stepAggregator}`
-                        } else if (step.type === "cross" || !isSameChain) {
-                          actionType = `Bridge from ${fromChainName} to ${toChainName} via ${stepAggregator}`
-                        } else {
-                          actionType = `Action on ${fromChainName} via ${stepAggregator}`
-                        }
-
-                        // const formattedStepFromAmount = formatTokenAmount(
-                        //   step.estimate.fromAmount,
-                        //   fromToken.decimals
-                        // )
-
-                        const formattedFromAmount = formatTokenAmount(
+                        const stepDetails = getStepDetails(
+                          step,
+                          chains,
                           fromAmount,
-                          fromToken.decimals
+                          fromToken
                         )
-                        const formattedStepToAmount = formatTokenAmount(
-                          step.estimate.toAmount,
-                          toToken.decimals
-                        )
-                        const stepExecutionDuration =
-                          step.estimate?.executionDuration || 0
-                        const formattedTime = formatTime(stepExecutionDuration)
+                        if (!stepDetails) return null
+
+                        const {
+                          actionType,
+                          formattedFromAmount,
+                          formattedToAmount,
+                          formattedTime,
+                          stepLogoURI,
+                        } = stepDetails
 
                         return (
                           <div
@@ -232,8 +174,9 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                                 {actionType} ({formattedTime})
                               </p>
                               <p className="text-xs text-gray-500 dark:text-gray-400 tracking-tighter">
-                                {formattedFromAmount} {fromToken.symbol} →{" "}
-                                {formattedStepToAmount} {toToken.symbol}
+                                {formattedFromAmount}
+                                {step.action.fromToken.symbol} →{" "}
+                                {formattedToAmount} {step.action.toToken.symbol}
                               </p>
                             </div>
                           </div>
