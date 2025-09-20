@@ -7,11 +7,11 @@ import {
   executeRoute,
   getTokenAllowance,
   setTokenAllowance,
-  type RoutesRequest,
-  type Route,
-  type Token,
-  type TokensResponse,
-  type RoutesResponse,
+  RoutesRequest,
+  Route,
+  Token,
+  TokensResponse,
+  RoutesResponse,
 } from "@lifi/sdk"
 import { useQuery } from "@tanstack/react-query"
 import { useAccount, useChainId, useSwitchChain, useWalletClient } from "wagmi"
@@ -44,7 +44,6 @@ import { useDebounce } from "@/hooks/useDebounce"
 import SelectedRoute from "./SelectedRoute"
 import NoRoutesAvailable from "./noRoutesAvalibale"
 import { RouteOptionSkeleton } from "@/components/Skeletons"
-
 
 type SwapInterfaceProps = HtmlHTMLAttributes<HTMLDivElement>
 
