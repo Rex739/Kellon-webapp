@@ -1,5 +1,5 @@
 import { FC, useState } from "react"
-import { CardContent } from "../ui/card"
+import { CardContent } from "@/components/ui/card"
 import {
   calculateConversion,
   calculatePriceImpact,
@@ -23,16 +23,16 @@ interface RouteOptionsProps {
   routes: Route[]
   chains: ExtendedChain[]
   onRouteSelect: (route: Route) => void
-  isRefetched: boolean
-  handleRefetchRoute: () => void
+  showAllRoutes: boolean
+  toggleShowAllRoutes: () => void
 }
 
 const RouteOptions: FC<RouteOptionsProps> = ({
   routes,
   chains,
-  isRefetched,
-  handleRefetchRoute,
   onRouteSelect,
+  showAllRoutes,
+  toggleShowAllRoutes,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
   const { formatTokenAmount } = useFormatTokenAmount()
@@ -81,11 +81,16 @@ const RouteOptions: FC<RouteOptionsProps> = ({
           (step) => step.includedSteps || [step]
         )
 
+        const handleRouteSelect = (route: Route) => {
+          onRouteSelect(route)
+          if (showAllRoutes) toggleShowAllRoutes()
+        }
+
         return (
           <div
             key={id}
-            className="bg-white2 dark:bg-secondary-60 rounded-lg flex flex-col p-3 border border-input cursor-pointer"
-            onClick={() => onRouteSelect(route)}
+            className="bg-white2 dark:bg-secondary-60 rounded-lg flex flex-col p-3 border border-input cursor-pointer space-y-2"
+            onClick={() => handleRouteSelect(route)}
           >
             <div className="flex flex-col space-y-4">
               <div className="flex items-center justify-between">
@@ -106,20 +111,24 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                       <span>{priceImpactText}</span>
                       <Dot />
                       {logoURI && <AggregatorLogo logoURI={logoURI} />}
-                      <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      <span className="truncate max-w-[60px] xs:max-w-[80px] lg:max-w-full ">
                         {aggregator}
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 bg-input rounded-full justify-center p-1">
-                  <ChevronDown
-                    onClick={(e) => toggleDropdown(id, e)}
-                    className={cn(
-                      "w-4 h-4 transition-transform duration-200",
-                      openDropdownId === id && "rotate-180"
-                    )}
-                  />
+
+                {/* Right side - Dropdown icon */}
+                <div className="flex-shrink-0">
+                  <div className="flex items-center bg-input rounded-full justify-center p-1">
+                    <ChevronDown
+                      onClick={(e) => toggleDropdown(id, e)}
+                      className={cn(
+                        "w-4 h-4 transition-transform duration-200 flex-shrink-0",
+                        openDropdownId === id && "rotate-180"
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -139,7 +148,6 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                         actionType,
                         formattedFromAmount,
                         formattedToAmount,
-                        formattedTime,
                         stepLogoURI,
                       } = stepDetails
 
@@ -153,8 +161,8 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                             <AggregatorLogo logoURI={stepLogoURI} />
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-xs text-gray-700 dark:text-gray-300 mb-1 truncate">
-                              {actionType} ({formattedTime})
+                            <p className="font-medium text-xs text-gray-700 dark:text-gray-300 mb-1  flex-1 flex-wrap">
+                              {actionType}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 tracking-tighter">
                               {formattedFromAmount}
@@ -169,7 +177,7 @@ const RouteOptions: FC<RouteOptionsProps> = ({
                 </div>
               )}
 
-              <div className="flex justify-between text-sm">
+              <div className={cn("flex justify-between text-sm")}>
                 <span
                   className="flex items-center space-x-1 cursor-pointer"
                   onClick={handleToggleConversion}
