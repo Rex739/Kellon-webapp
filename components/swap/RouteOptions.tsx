@@ -1,25 +1,23 @@
-"use client"
-
 import { FC, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { RotateCw, ChevronDown, Clock } from "lucide-react"
-import { ExtendedChain, Route } from "@lifi/sdk"
-import TokenWithChainLogo from "./TokenWithChainLogo"
-import { cn } from "@/lib/utils"
-import { useFormatTokenAmount } from "@/hooks/useFormatTokenAmount"
-import { Icons } from "@/components/Icons"
-import AggregatorLogo from "./AggregatorLogo"
-import Dot from "@/components/ui/dot"
-import { formatUSD } from "@/lib/formatNumber"
+import { CardContent } from "../ui/card"
 import {
-  calculatePriceImpact,
-  getPriceImpactText,
   calculateConversion,
-  getStepDetails,
-  getAggregatorInfo,
+  calculatePriceImpact,
   extractRouteData,
+  getAggregatorInfo,
+  getPriceImpactText,
+  getStepDetails,
 } from "@/lib/routeHelpers"
+import TokenWithChainLogo from "./TokenWithChainLogo"
+import { useFormatTokenAmount } from "@/hooks/useFormatTokenAmount"
+import { formatUSD } from "@/lib/formatNumber"
+import { ChevronDown, Clock } from "lucide-react"
+import { Icons } from "@/components/Icons"
 import { formatTime } from "@/lib/formatTime"
+import { ExtendedChain, Route } from "@lifi/sdk"
+import Dot from "@/components/ui/dot"
+import AggregatorLogo from "./AggregatorLogo"
+import { cn } from "@/lib/utils"
 
 interface RouteOptionsProps {
   routes: Route[]
@@ -51,169 +49,153 @@ const RouteOptions: FC<RouteOptionsProps> = ({
   }
 
   return (
-    <Card className="hidden lg:flex w-md xl:max-w-lgbg-white dark:bg-secondary-10 rounded-2xl lg:rounded-l-none text-gray-20 dark:text-gray-40 border-input px-0!">
-      <CardHeader className="px-2 xs:px-4 md:px-6">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-semibold text-black dark:text-white">
-            Receive
-          </CardTitle>
-          <RotateCw
-            onClick={handleRefetchRoute}
-            className={cn(
-              "w-5 h-5 cursor-pointer",
-              isRefetched && "rotate-360 duration-300"
-            )}
-          />
-        </div>
-      </CardHeader>
-      <CardContent className="px-2 xs:px-4 md:px-6 relative space-y-2 max-h-[420px] overflow-y-auto">
-        {routes.map((route) => {
-          const routeData = extractRouteData(route)
-          const { aggregator, logoURI, executionDuration } =
-            getAggregatorInfo(route)
-          const {
-            id,
-            toToken,
-            toChainId,
-            toAmountUSD,
-            toAmount,
-            gasCostUSD,
-            fromAmount,
-            fromToken,
-            fromAmountUSD,
-          } = routeData
+    <CardContent className="px-2 xs:px-4 md:px-6 relative space-y-2 max-h-[420px] overflow-y-auto">
+      {routes.map((route) => {
+        const routeData = extractRouteData(route)
+        const { aggregator, logoURI, executionDuration } =
+          getAggregatorInfo(route)
+        const {
+          id,
+          toToken,
+          toChainId,
+          toAmountUSD,
+          toAmount,
+          gasCostUSD,
+          fromAmount,
+          fromToken,
+          fromAmountUSD,
+        } = routeData
 
-          const priceImpact = calculatePriceImpact(fromAmountUSD, toAmountUSD)
-          const priceImpactText = getPriceImpactText(priceImpact)
+        const priceImpact = calculatePriceImpact(fromAmountUSD, toAmountUSD)
+        const priceImpactText = getPriceImpactText(priceImpact)
 
-          const conversionText = calculateConversion(
-            fromAmount,
-            toAmount,
-            fromToken,
-            toToken,
-            isReversed
-          )
+        const conversionText = calculateConversion(
+          fromAmount,
+          toAmount,
+          fromToken,
+          toToken,
+          isReversed
+        )
 
-          const detailedSteps = route.steps.flatMap(
-            (step) => step.includedSteps || [step]
-          )
+        const detailedSteps = route.steps.flatMap(
+          (step) => step.includedSteps || [step]
+        )
 
-          return (
-            <div
-              key={id}
-              className="bg-white2 dark:bg-secondary-60 rounded-lg flex flex-col p-3 border border-input cursor-pointer"
-              onClick={() => onRouteSelect(route)}
-            >
-              <div className="flex flex-col space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <TokenWithChainLogo
-                      token={toToken}
-                      chains={chains}
-                      chainId={toChainId}
-                    />
-                    <div className="flex flex-col">
-                      <p className="text-lg font-semibold text-black dark:text-white">
-                        {formatTokenAmount(toAmount, toToken.decimals)}
-                      </p>
+        return (
+          <div
+            key={id}
+            className="bg-white2 dark:bg-secondary-60 rounded-lg flex flex-col p-3 border border-input cursor-pointer"
+            onClick={() => onRouteSelect(route)}
+          >
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <TokenWithChainLogo
+                    token={toToken}
+                    chains={chains}
+                    chainId={toChainId}
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-lg font-semibold text-black dark:text-white">
+                      {formatTokenAmount(toAmount, toToken.decimals)}
+                    </p>
 
-                      <div className="flex space-x-1 text-xs items-center">
-                        <span>{formatUSD(toAmountUSD)}</span>
-                        <Dot />
-                        <span>{priceImpactText}</span>
-                        <Dot />
-                        {logoURI && <AggregatorLogo logoURI={logoURI} />}
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {aggregator}
-                        </span>
-                      </div>
+                    <div className="flex space-x-1 text-xs items-center">
+                      <span>{formatUSD(toAmountUSD)}</span>
+                      <Dot />
+                      <span>{priceImpactText}</span>
+                      <Dot />
+                      {logoURI && <AggregatorLogo logoURI={logoURI} />}
+                      <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {aggregator}
+                      </span>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-2 bg-input rounded-full justify-center p-1">
-                    <ChevronDown
-                      onClick={(e) => toggleDropdown(id, e)}
-                      className={cn(
-                        "w-4 h-4 transition-transform duration-200",
-                        openDropdownId === id && "rotate-180"
-                      )}
-                    />
                   </div>
                 </div>
+                <div className="flex items-center space-x-2 bg-input rounded-full justify-center p-1">
+                  <ChevronDown
+                    onClick={(e) => toggleDropdown(id, e)}
+                    className={cn(
+                      "w-4 h-4 transition-transform duration-200",
+                      openDropdownId === id && "rotate-180"
+                    )}
+                  />
+                </div>
+              </div>
 
-                {openDropdownId === id && (
-                  <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-3">
-                    <div className="border-t pt-3 space-y-2">
-                      {detailedSteps.map((step, stepIndex) => {
-                        const stepDetails = getStepDetails(
-                          step,
-                          chains,
-                          fromAmount,
-                          fromToken
-                        )
-                        if (!stepDetails) return null
+              {openDropdownId === id && (
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-3">
+                  <div className="border-t pt-3 space-y-2">
+                    {detailedSteps.map((step, stepIndex) => {
+                      const stepDetails = getStepDetails(
+                        step,
+                        chains,
+                        fromAmount,
+                        fromToken
+                      )
+                      if (!stepDetails) return null
 
-                        const {
-                          actionType,
-                          formattedFromAmount,
-                          formattedToAmount,
-                          formattedTime,
-                          stepLogoURI,
-                        } = stepDetails
+                      const {
+                        actionType,
+                        formattedFromAmount,
+                        formattedToAmount,
+                        formattedTime,
+                        stepLogoURI,
+                      } = stepDetails
 
-                        return (
-                          <div
-                            key={stepIndex}
-                            className="flex items-start space-x-3 p-3 rounded-lg"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {stepLogoURI && (
-                              <AggregatorLogo logoURI={stepLogoURI} />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-xs text-gray-700 dark:text-gray-300 mb-1 truncate">
-                                {actionType} ({formattedTime})
-                              </p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 tracking-tighter">
-                                {formattedFromAmount}
-                                {step.action.fromToken.symbol} →{" "}
-                                {formattedToAmount} {step.action.toToken.symbol}
-                              </p>
-                            </div>
+                      return (
+                        <div
+                          key={stepIndex}
+                          className="flex items-start space-x-3 p-3 rounded-lg"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {stepLogoURI && (
+                            <AggregatorLogo logoURI={stepLogoURI} />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-xs text-gray-700 dark:text-gray-300 mb-1 truncate">
+                              {actionType} ({formattedTime})
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 tracking-tighter">
+                              {formattedFromAmount}
+                              {step.action.fromToken.symbol} →{" "}
+                              {formattedToAmount} {step.action.toToken.symbol}
+                            </p>
                           </div>
-                        )
-                      })}
-                    </div>
+                        </div>
+                      )
+                    })}
                   </div>
-                )}
+                </div>
+              )}
 
-                <div className="flex justify-between text-sm">
-                  <span
-                    className="flex items-center space-x-1 cursor-pointer"
-                    onClick={handleToggleConversion}
-                  >
-                    <p className="hover:text-black dark:hover:text-white duration-100 tracking-tighter">
-                      {conversionText}
+              <div className="flex justify-between text-sm">
+                <span
+                  className="flex items-center space-x-1 cursor-pointer"
+                  onClick={handleToggleConversion}
+                >
+                  <p className="hover:text-black dark:hover:text-white duration-100 tracking-tighter">
+                    {conversionText}
+                  </p>
+                </span>
+                <div className="flex">
+                  <span className="flex items-center space-x-1 ml-2">
+                    <Icons.GasIcon className="w-4 h-4" />
+                    <p className="text-black dark:text-white">{`$${Number(gasCostUSD).toFixed(2)}`}</p>
+                  </span>
+                  <span className="flex items-center space-x-1 ml-2">
+                    <Clock className="w-4 h-4" />
+                    <p className="text-black dark:text-white">
+                      {formatTime(executionDuration)}
                     </p>
                   </span>
-                  <div className="flex">
-                    <span className="flex items-center space-x-1 ml-2">
-                      <Icons.GasIcon className="w-4 h-4" />
-                      <p className="text-black dark:text-white">{`$${Number(gasCostUSD).toFixed(2)}`}</p>
-                    </span>
-                    <span className="flex items-center space-x-1 ml-2">
-                      <Clock className="w-4 h-4" />
-                      <p className="text-black dark:text-white">
-                        {formatTime(executionDuration)}
-                      </p>
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
-          )
-        })}
-      </CardContent>
-    </Card>
+          </div>
+        )
+      })}
+    </CardContent>
   )
 }
 
