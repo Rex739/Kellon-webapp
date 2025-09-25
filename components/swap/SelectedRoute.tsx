@@ -113,7 +113,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
             <div className="flex space-x-1 text-xs items-center">
               <p>{formatUSD(fromAmountUSD)}</p>
               <Dot />
-              <p className=" ">
+              <p className="flex flex-wrap ">
                 {fromToken.symbol} on {getChainName(fromChainId, chains)}
               </p>
             </div>
@@ -125,10 +125,12 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
           {logoURI && (
             <AggregatorLogo
               logoURI={logoURI}
-              className="min-w-11 min-h-11 max-w-11 max-h-11"
+              className="min-w-10 min-h-10 max-w-10 max-h-10 lg:min-w-11 lg:min-h-11 lg:max-w-11 lg:max-h-11"
             />
           )}
-          <span>{aggregator} </span>
+          <span className="text-lg font-semibold text-black dark:text-white">
+            {aggregator}
+          </span>
           <div className="flex items-center space-x-2 bg-input rounded-full justify-center ml-auto p-1 cursor-pointer">
             <ChevronDown
               onClick={(e) => toggleDropdown(id, e)}
@@ -156,7 +158,6 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
                   actionType,
                   formattedFromAmount,
                   formattedToAmount,
-                  formattedTime,
                   stepLogoURI,
                 } = stepDetails
 
@@ -168,11 +169,11 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
                   >
                     {stepLogoURI && <AggregatorLogo logoURI={stepLogoURI} />}
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-xs text-gray-700 dark:text-gray-300 mb-1 truncate">
-                        {actionType} ({formattedTime})
+                      <p className="font-medium text-xs text-gray-700 dark:text-gray-300 mb-1">
+                        {actionType}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 tracking-tighter">
-                        {formattedFromAmount} {step.action.fromToken.symbol} →{" "}
+                        {formattedFromAmount} {step.action.fromToken.symbol} →
                         {formattedToAmount} {step.action.toToken.symbol}
                       </p>
                     </div>
@@ -194,7 +195,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
             <p className="text-lg font-semibold text-black dark:text-white">
               {toAmountFormatted}
             </p>
-            <div className="flex space-x-1 text-xs items-center">
+            <div className="flex flex-wrap space-x-1 text-xs items-center">
               <p className="">{formatUSD(toAmountUSD)}</p>
               <Dot />
               <p>{priceImpactText}</p>
@@ -208,12 +209,12 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
       </div>
       {/* Rates & gas */}
       <div className="bg-white2 dark:bg-secondary-60 rounded-lg  p-3 border border-input cursor-default">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center text-sm">
           <div
             className="flex items-center space-x-1 cursor-pointer"
             onClick={handleToggleConversion}
           >
-            <p className="hover:text-black dark:hover:text-white duration-100 tracking-tighter text-base">
+            <p className="hover:text-black dark:hover:text-white duration-100 tracking-tighter ">
               {conversionText}
             </p>
           </div>
