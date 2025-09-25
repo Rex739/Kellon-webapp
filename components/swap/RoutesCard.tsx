@@ -2,9 +2,8 @@
 
 import { FC } from "react"
 import { Card, CardHeader, CardTitle } from "../ui/card"
-import { RotateCw } from "lucide-react"
+import { ArrowLeft, RotateCw } from "lucide-react"
 import { ExtendedChain, Route } from "@lifi/sdk"
-
 import { cn } from "@/lib/utils"
 import RouteOptions from "./RouteOptions"
 
@@ -14,6 +13,8 @@ interface RoutesCardProps {
   onRouteSelect: (route: Route) => void
   isRefetched: boolean
   handleRefetchRoute: () => void
+  showAllRoutes: boolean
+  toggleShowAllRoutes: () => void
 }
 
 const RoutesCard: FC<RoutesCardProps> = ({
@@ -22,12 +23,22 @@ const RoutesCard: FC<RoutesCardProps> = ({
   isRefetched,
   handleRefetchRoute,
   onRouteSelect,
+  showAllRoutes,
+  toggleShowAllRoutes,
 }) => {
   return (
-    <Card className="lg:flex w-md xl:max-w-lgbg-white dark:bg-secondary-10 rounded-2xl lg:rounded-l-none text-gray-20 dark:text-gray-40 border-input px-0!">
+    <Card
+      className={cn(
+        "w-[80dw] h-full max-w-[80dw] lg:flex lg:w-md xl:max-w-lg bg-white dark:bg-secondary-10 rounded-2xl lg:rounded-l-none text-gray-20 dark:text-gray-40 border-input px-0!"
+      )}
+    >
       <CardHeader className="px-2 xs:px-4 md:px-6">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-semibold text-black dark:text-white">
+        <div className="flex justify-between items-center text-black dark:text-white">
+          <ArrowLeft
+            className="lg:hidden cursor-pointer "
+            onClick={() => toggleShowAllRoutes()}
+          />
+          <CardTitle className="text-lg lg:text-xl font-semibold">
             Receive
           </CardTitle>
           <RotateCw
@@ -42,9 +53,9 @@ const RoutesCard: FC<RoutesCardProps> = ({
       <RouteOptions
         routes={routes}
         chains={chains}
-        isRefetched={isRefetched}
-        handleRefetchRoute={handleRefetchRoute}
         onRouteSelect={onRouteSelect}
+        showAllRoutes={showAllRoutes}
+        toggleShowAllRoutes={toggleShowAllRoutes}
       />
     </Card>
   )
