@@ -48,6 +48,11 @@ const RouteOptions: FC<RouteOptionsProps> = ({
     setIsReversed((prev) => !prev)
   }
 
+  const handleRouteSelect = (route: Route) => {
+    onRouteSelect(route)
+    if (showAllRoutes) toggleShowAllRoutes()
+  }
+
   return (
     <CardContent className="px-2 xs:px-4 md:px-6 relative space-y-2 max-h-[420px] overflow-y-auto">
       {routes.map((route) => {
@@ -80,11 +85,6 @@ const RouteOptions: FC<RouteOptionsProps> = ({
         const detailedSteps = route.steps.flatMap(
           (step) => step.includedSteps || [step]
         )
-
-        const handleRouteSelect = (route: Route) => {
-          onRouteSelect(route)
-          if (showAllRoutes) toggleShowAllRoutes()
-        }
 
         return (
           <div
