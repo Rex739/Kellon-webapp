@@ -4,7 +4,7 @@ export const RouteOptionSkeleton: FC = () => {
   return (
     <div
       className={
-        "w-full flex items-center gap-3 px-4 py-3 border border-input rounded-2xl bg-white dark:bg-secondary-60  "
+        "w-full flex items-center gap-3 px-4 py-8 border border-input rounded-2xl bg-white dark:bg-secondary-60  "
       }
     >
       {/* Protocol/Bridge Icon */}
