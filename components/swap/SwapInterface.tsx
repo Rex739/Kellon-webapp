@@ -39,11 +39,13 @@ import {
 import { useRouter, useSearchParams } from "next/navigation"
 import SendAmount from "./SendAmount"
 import { Icons } from "@/components/Icons"
-import RouteOptions from "./RouteOptions"
 import { useDebounce } from "@/hooks/useDebounce"
 import SelectedRoute from "./SelectedRoute"
 import NoRoutesAvailable from "./noRoutesAvalibale"
 import { RouteOptionSkeleton } from "@/components/Skeletons"
+import RoutesCard from "./RoutesCard"
+import RouteOptionsMobile from "./RouteOptionMobile"
+import { useIsMobile } from "@/hooks/useIsMobile"
 
 type SwapInterfaceProps = HtmlHTMLAttributes<HTMLDivElement>
 
@@ -54,7 +56,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
   const { switchChain } = useSwitchChain()
   const searchParams = useSearchParams()
   const router = useRouter()
-
+  const isMobile = useIsMobile(1024)
   // Chains (as numbers)
   const fromChain = searchParams.get("fromChain")
     ? Number(searchParams.get("fromChain"))
@@ -75,6 +77,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
   const [isChainSelectOpen, setIsChainSelectOpen] = useState<boolean>(false)
   const [selectingSide, setSelectingSide] = useState<"from" | "to" | null>(null)
   const [isRefetched, setIsRefetched] = useState(false)
+  const [showAllRoutes, setShowAllRoutes] = useState(false)
   const [routesQueryExecuted, setRoutesQueryExecuted] = useState(false) // Track if getRoutes was called
   // ✅ Form with zod
   const form = useForm<SendAmountFormSchemaType>({
@@ -290,6 +293,18 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
     routesLoading ||
     (routesQueryExecuted && !routesLoading && fromAmount !== "")
 
+  const toggleShowAllRoutes = () => {
+    setShowAllRoutes((prev) => !prev)
+  }
+
+  const handleGoBackToRouteOptions = () => {
+    setSelectedRoute(null)
+    // Only toggle showAllRoutes on mobile screens
+    if (isMobile && !showAllRoutes) {
+      toggleShowAllRoutes()
+    }
+  }
+
   return (
     <section className={cn(className)}>
       {isChainSelectOpen ? (
@@ -307,11 +322,21 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
           }
           selectedToken={selectingSide === "from" ? fromToken : toToken}
         />
+      ) : showAllRoutes ? (
+        <RoutesCard
+          routes={routes}
+          chains={chains}
+          onRouteSelect={handleRouteSelect}
+          handleRefetchRoute={handleRefetchRoute}
+          isRefetched={isRefetched}
+          showAllRoutes={showAllRoutes}
+          toggleShowAllRoutes={toggleShowAllRoutes}
+        />
       ) : (
-        <div className=" lg:flex space-x-1">
+        <div className="lg:flex space-x-1">
           <Card
             className={cn(
-              "w-[90dvw] xm:max-w-[350px] md:max-w-[414px] lg:w-md xl:max-w-lg mx-auto bg-white dark:bg-secondary-10 rounded-2xl text-gray-20 dark:text-gray-40 border-input  px-0!",
+              "w-[90dvw] xm:max-w-[350px] md:max-w-[414px] lg:w-md xl:max-w-lg mx-auto bg-white dark:bg-secondary-10 rounded-2xl text-gray-20 dark:text-gray-40 border-input px-0!",
               isModifyBorderRadius && !selectedRoute && "lg:rounded-r-none"
             )}
           >
@@ -320,10 +345,10 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
               {selectedRoute ? (
                 <div className="flex justify-between items-center text-black dark:text-white">
                   <ArrowLeft
-                    onClick={() => setSelectedRoute(null)}
+                    onClick={() => handleGoBackToRouteOptions()}
                     className="cursor-pointer"
                   />
-                  <CardTitle className="text-xl font-semibold">
+                  <CardTitle className="text-lg font-semibold">
                     {isBridge ? "Review bridge" : "Review swap"}
                   </CardTitle>
                   <RotateCw
@@ -336,7 +361,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
                 </div>
               ) : (
                 <div className="flex justify-between items-center text-black dark:text-white">
-                  <CardTitle className="text-xl font-semibold ">Swap</CardTitle>
+                  <CardTitle className="text-lg font-semibold ">Swap</CardTitle>
                   <div className="flex items-center space-x-3 cursor-pointer">
                     <FileClock className="w-5 h-5" />
                     <Settings className="w-5 h-5" />
@@ -346,7 +371,6 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
             </CardHeader>
 
             {/* Content */}
-
             {selectedRoute ? (
               <SelectedRoute
                 selectedRoute={selectedRoute}
@@ -354,36 +378,67 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
                 isBridging={isBridge}
               />
             ) : (
-              <CardContent className="px-2 xs:px-4 md:px-6 relative">
-                <div className="relative space-y-2">
-                  {/* From + To Section */}
-                  <SwapBox
-                    chains={chains}
+              <>
+                <CardContent className="px-2 xs:px-4 md:px-6 relative">
+                  <div className="relative space-y-2">
+                    {/* From + To Section */}
+                    <SwapBox
+                      chains={chains}
+                      fromChain={fromChain}
+                      toChain={toChain}
+                      fromToken={fromToken}
+                      toToken={toToken}
+                      handleChainSelectOpen={handleChainSelectOpen}
+                    />
+
+                    {/* Switch Button */}
+                    <button
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg z-10 bg-white dark:bg-secondary-60 border-3 border-white1 dark:border-secondary-10 h-9 w-17 lg:h-12 lg:w-20 flex items-center justify-center ring ring-inset ring-input dark:ring-input cursor-pointer group"
+                      onClick={swapChains}
+                    >
+                      <Icons.ArrowUpDown className="h-6 w-6 text-black dark:text-white group-hover:rotate-180 group-hover:duration-300" />
+                    </button>
+                  </div>
+
+                  {/* send */}
+                  <SendAmount
                     fromChain={fromChain}
-                    toChain={toChain}
                     fromToken={fromToken}
                     toToken={toToken}
-                    handleChainSelectOpen={handleChainSelectOpen}
+                    chains={chains}
+                    form={form}
                   />
+                </CardContent>
 
-                  {/* Switch Button */}
-                  <button
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg z-10 bg-white dark:bg-secondary-60 border-3 border-white1 dark:border-secondary-10 h-9 w-17 lg:h-12 lg:w-20 flex items-center justify-center ring ring-inset ring-input dark:ring-input cursor-pointer group"
-                    onClick={swapChains}
-                  >
-                    <Icons.ArrowUpDown className="h-6 w-6 text-black dark:text-white group-hover:rotate-180 group-hover:duration-300" />
-                  </button>
+                {/* Mobile Route Options - Inside the main card */}
+                <div className="lg:hidden">
+                  {routesLoading ? (
+                    <CardContent className="p-4 space-y-3 border-t">
+                      {[...Array(2)].map((_, index) => (
+                        <RouteOptionSkeleton key={`mobile-skeleton-${index}`} />
+                      ))}
+                    </CardContent>
+                  ) : routes?.length > 0 ? (
+                    <RouteOptionsMobile
+                      routes={routes}
+                      chains={chains}
+                      isRefetched={isRefetched}
+                      handleRefetchRoute={handleRefetchRoute}
+                      onRouteSelect={handleRouteSelect}
+                      showAllRoutes={showAllRoutes}
+                      toggleShowAllRoutes={toggleShowAllRoutes}
+                    />
+                  ) : routesQueryExecuted && fromAmount !== "" ? (
+                    <CardContent className="p-4 border-t">
+                      <NoRoutesAvailable
+                        onRetry={refetchRoutes}
+                        isLoading={routesLoading}
+                        // compact={true}
+                      />
+                    </CardContent>
+                  ) : null}
                 </div>
-
-                {/* send */}
-                <SendAmount
-                  fromChain={fromChain}
-                  fromToken={fromToken}
-                  toToken={toToken}
-                  chains={chains}
-                  form={form}
-                />
-              </CardContent>
+              </>
             )}
 
             {/* Footer */}
@@ -407,37 +462,38 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
               </Button>
             </CardFooter>
           </Card>
-          {/* Route Options or Skeleton or NoRoutesAvailable */}
-          {routesLoading ? (
-            <Card
-              className={
-                "w-[90dvw] xm:max-w-[350px] md:max-w-[414px] lg:w-md xl:max-w-lg mx-auto bg-white dark:bg-secondary-10 rounded-2xl lg:rounded-l-none text-gray-20 dark:text-gray-40 border-input"
-              }
-            >
-              <CardContent className="p-4 space-y-3">
-                {[...Array(3)].map((_, index) => (
-                  <RouteOptionSkeleton key={`route-skeleton-${index}`} />
-                ))}
-              </CardContent>
-            </Card>
-          ) : routes?.length > 0 && !selectedRoute ? (
-            <RouteOptions
-              routes={routes}
-              chains={chains}
-              onRouteSelect={handleRouteSelect}
-              handleRefetchRoute={handleRefetchRoute}
-              isRefetched={isRefetched}
-            />
-          ) : routesQueryExecuted &&
-            !selectedRoute &&
-            !routesLoading &&
-            fromAmount !== "" ? (
-            <NoRoutesAvailable
-              onRetry={refetchRoutes}
-              isLoading={routesLoading}
-              className={cn(isModifyBorderRadius && "lg:rounded-l-none")}
-            />
-          ) : null}
+
+          {/* Desktop Route Options - Outside the main card */}
+          <div className="hidden lg:block">
+            {routesLoading ? (
+              <Card className="w-md xl:max-w-lg h-full bg-white dark:bg-secondary-10 rounded-2xl lg:rounded-l-none border-input">
+                <CardContent className="p-4 space-y-3">
+                  {[...Array(3)].map((_, index) => (
+                    <RouteOptionSkeleton key={`desktop-skeleton-${index}`} />
+                  ))}
+                </CardContent>
+              </Card>
+            ) : routes?.length > 0 && !selectedRoute ? (
+              <RoutesCard
+                routes={routes}
+                chains={chains}
+                onRouteSelect={handleRouteSelect}
+                handleRefetchRoute={handleRefetchRoute}
+                isRefetched={isRefetched}
+                showAllRoutes={showAllRoutes}
+                toggleShowAllRoutes={toggleShowAllRoutes}
+              />
+            ) : routesQueryExecuted &&
+              !selectedRoute &&
+              !routesLoading &&
+              fromAmount !== "" ? (
+              <NoRoutesAvailable
+                onRetry={refetchRoutes}
+                isLoading={routesLoading}
+                className={cn(isModifyBorderRadius && "lg:rounded-l-none")}
+              />
+            ) : null}
+          </div>
         </div>
       )}
     </section>
