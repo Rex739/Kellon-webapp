@@ -12,6 +12,7 @@ import {
   Token,
   TokensResponse,
   RoutesResponse,
+  getTokenBalance,
 } from "@lifi/sdk"
 import { useQuery } from "@tanstack/react-query"
 import { useAccount, useChainId, useSwitchChain, useWalletClient } from "wagmi"
@@ -41,11 +42,13 @@ import SendAmount from "./SendAmount"
 import { Icons } from "@/components/Icons"
 import { useDebounce } from "@/hooks/useDebounce"
 import SelectedRoute from "./SelectedRoute"
-import NoRoutesAvailable from "./noRoutesAvalibale"
+import NoRoutesAvailable from "./NoRoutesAvailable"
 import { RouteOptionSkeleton } from "@/components/Skeletons"
 import RoutesCard from "./RoutesCard"
 import RouteOptionsMobile from "./RouteOptionMobile"
 import { useIsMobile } from "@/hooks/useIsMobile"
+
+// import { getAPIKey } from "@/lib/APIConfig"
 
 type SwapInterfaceProps = HtmlHTMLAttributes<HTMLDivElement>
 
@@ -167,15 +170,6 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
         toTokenAddress: toToken.address,
         fromAddress: address,
         toAddress: address,
-        options: {
-          integrator: "Kellon",
-          slippage: 0.005,
-          fee: 0.002,
-          order: "CHEAPEST",
-          insurance: true,
-          allowSwitchChain: false,
-          maxPriceImpact: 0.1,
-        },
       }
       setRoutesQueryExecuted(true) // Mark that getRoutes was called
       return await getRoutes(request)
@@ -302,6 +296,22 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
     // Only toggle showAllRoutes on mobile screens
     if (isMobile && !showAllRoutes) {
       toggleShowAllRoutes()
+    }
+  }
+
+  const fetchTokenBalance = async () => {
+    try {
+      if (!address || !fromToken) {
+        console.log("Missing address or token")
+        return
+      }
+
+      console.log("chain__id", fromToken.chainId)
+      console.log("address", address)
+      const tokenBalance = await getTokenBalance(address, fromToken)
+      console.log("token_balance:", tokenBalance)
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -460,6 +470,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
               >
                 {routesLoading ? "Finding routes..." : "Swap"}
               </Button>
+              <Button onClick={() => fetchTokenBalance()}>check balance</Button>
             </CardFooter>
           </Card>
 
