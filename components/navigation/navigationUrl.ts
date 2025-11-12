@@ -1,20 +1,19 @@
-import { INavigationListUrl } from "@/types/navigation";
+import { INavigationListUrl } from "@/types/navigation"
 
 export const navigationListUrls: INavigationListUrl[] = [
   {
     label: "swap",
     href: "/",
-    icon: "Swap"
+    icon: "Swap",
   },
   {
     label: "trade",
     href: "/trade",
-    icon: "Trade"
+    icon: "Trade",
   },
   {
     label: "stocks",
     href: "/stocks",
-    icon: "Trade"
-  }
-
+    icon: "Trade",
+  },
 ]
