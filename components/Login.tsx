@@ -47,7 +47,7 @@ const Login: FC = ({}) => {
               size={"lg"}
               variant={"outline"}
             >
-              <WalletCircle/> {truncatedAddress}
+              <WalletCircle /> {truncatedAddress}
               <ChevronDown className="h-5 w-5 text-gray-30 transition-colors group-hover:text-gray-30" />
             </Button>
           </DropdownMenuTrigger>
