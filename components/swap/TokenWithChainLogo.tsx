@@ -31,7 +31,7 @@ const TokenWithChainLogo: FC<TokenWithChainLogoProps> = ({
           alt={token.symbol}
           width={100}
           height={100}
-          className="rounded-full"
+          className="rounded-full min-w-10 min-h-10 max-w-10 max-h-10 lg:min-w-11 lg:min-h-11 lg:max-w-11 lg:max-h-11"
         />
       ) : (
         <div className="rounded-full flex justify-center items-center bg-blue-950 text-white p-2 w-11 h-11">
@@ -47,7 +47,7 @@ const TokenWithChainLogo: FC<TokenWithChainLogoProps> = ({
             alt={chain.name || "Chain"}
             width={100}
             height={100}
-            className="rounded-full"
+            className="rounded-full "
           />
         </div>
       ) : (
