@@ -1,4 +1,4 @@
-// "use server"
+"use server"
 
 import { wagmiConfig } from "@/components/providers/wagmi-provider"
 import { EVM, createConfig, ChainId } from "@lifi/sdk"
