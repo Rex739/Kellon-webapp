@@ -1,8 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { FC, HtmlHTMLAttributes, useState } from "react"
-import { useEffect } from "react"
+import { FC, HtmlHTMLAttributes, useState, useEffect } from "react"
 
 // IMP START - App Imports
 import { navigationListUrls } from "./navigationUrl"
@@ -10,82 +9,105 @@ import { cn } from "@/lib/utils"
 import { Icons } from "@/components/Icons"
 import { usePathname } from "next/navigation"
 import { isActive } from "@/lib/isActiveLink"
-import Login from "@/components/Login"
 import ModeToggle from "@/components/ModeToggle"
 import { Button } from "@/components/ui/button"
-import {
-  useWeb3AuthConnect,
-  useWeb3AuthDisconnect,
-} from "@web3auth/modal/react"
 import { WalletCircle } from "@/components/ui/wallet-circle"
 import MobileMenu from "./MobileMenu"
 import { useAccount } from "wagmi"
 import { MoreHorizontal } from "lucide-react"
-// IMP END - App Imports
+import Image from "next/image"
+// IMP START - Privy Auth Import
+import { usePrivy } from "@privy-io/react-auth"
+import { useUser } from "@/hooks/useUser"
+import { getGreeting } from "@/lib/utils/helpers"
+// IMP END - Privy Auth Import
 
 type TopbarProps = HtmlHTMLAttributes<HTMLDivElement>
 
 const Topbar: FC<TopbarProps> = ({ className }) => {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { data: user } = useUser()
 
-  // IMP START - Web3Auth connection state
-  const {
-    connect,
-    isConnected,
-    loading: connectLoading,
-    error: connectError,
-  } = useWeb3AuthConnect()
-  // IMP END - Web3Auth connection state
+  // IMP START - Privy connection state
+  const { login, authenticated, ready, logout } = usePrivy()
+  // IMP END - Privy connection state
 
   // IMP START - Blockchain Calls
   const { address } = useAccount()
-  const {
-    disconnect,
-    // loading: disconnectLoading,
-    // error: disconnectError,
-  } = useWeb3AuthDisconnect()
-
   // IMP END - Blockchain Calls
 
+  const greeting = getGreeting()
   useEffect(() => {
-    // Whenever connection status changes, close the menu
-    if (isConnected) {
+    // Whenever connection status changes to authenticated, close the menu
+    if (authenticated) {
       setIsMenuOpen(false)
     }
-  }, [isConnected])
+  }, [authenticated])
+
+  const HIDDEN_PATHS = ["/continue"]
+
+  if (HIDDEN_PATHS.includes(pathname)) {
+    return null
+  }
 
   return (
     <section className={cn(className, "p-5 fixed w-full z-50")}>
       <header className="flex justify-between items-center">
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-5 bg-white dark:bg-secondary-60 w-fit capitalize px-5 py-3 rounded-xl border border-input">
-          <Icons.Logo className="h-6 w-6" />
+        <div className="flex gap-2">
+          <nav className="hidden md:flex gap-5 bg-white dark:bg-secondary-60 w-fit capitalize px-5 py-3 rounded-xl border border-input">
+            <Icons.Logo className="h-6 w-6" />
 
-          {navigationListUrls.map(({ label, href }, i) => (
-            <ul key={i}>
-              <li>
-                <Link
-                  href={href}
-                  className={cn(
-                    "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white font-medium",
-                    isActive(pathname, href) && "text-black dark:text-white"
-                  )}
-                >
-                  {label}
-                </Link>
-              </li>
-            </ul>
-          ))}
-        </nav>
+            {navigationListUrls.map(({ label, href }, i) => (
+              <ul key={i}>
+                <li>
+                  <Link
+                    href={href}
+                    className={cn(
+                      "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white font-medium",
+                      isActive(pathname, href) && "text-black dark:text-white",
+                    )}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              </ul>
+            ))}
+          </nav>
+          {/* <ModeToggle /> */}
+        </div>
 
         {/* Desktop Controls */}
-        <ul className="hidden md:flex items-center gap-3">
-          <li className="flex">
-            <ModeToggle />
-          </li>
+        <ul className="hidden md:flex items-center">
           <li>
-            <Login />
+            <div className="flex  items-center  gap-3">
+              {/* Avatar Placeholder */}
+              <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center overflow-hidden">
+                {user?.image ? (
+                  <Image
+                    src={user.image}
+                    alt={user.name || "User"}
+                    className="w-full h-full object-cover"
+                    width={100}
+                    height={100}
+                  />
+                ) : (
+                  <span className="text-xs text-white font-medium">
+                    {user?.name?.charAt(0).toUpperCase() || "?"}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <span className="text-sm text-muted-foreground leading-tight">
+                  {greeting}
+                </span>
+                <span className="font-semibold text-sm leading-tight">
+                  {user?.name ? user.name.split(" ")[0] : "Guest"}
+                </span>
+              </div>
+            </div>
           </li>
         </ul>
 
@@ -93,12 +115,11 @@ const Topbar: FC<TopbarProps> = ({ className }) => {
         <div className="flex md:hidden w-full justify-between items-center">
           <Icons.Logo className="h-10 w-10  p-2 rounded-md shadow-2xl border border-black dark:border-white" />
 
-          {!isConnected ? (
+          {!authenticated ? (
             // Show connect button if NOT connected
             <Button
-              onClick={() => connect()}
-              isLoading={connectLoading}
-              disabled={connectLoading}
+              onClick={login}
+              disabled={!ready}
               className="shadow-2xl  font-semibold inline-flex gap-2 justify-center items-center text-white"
             >
               <WalletCircle className="border-white" />
@@ -123,17 +144,14 @@ const Topbar: FC<TopbarProps> = ({ className }) => {
           )}
         </div>
       </header>
-      {/* Mobile Menu */}
 
+      {/* Mobile Menu */}
       <MobileMenu
-        isOpen={isMenuOpen && isConnected}
+        isOpen={isMenuOpen && authenticated}
         onClose={() => setIsMenuOpen(false)}
-        onDisconnect={disconnect}
+        onDisconnect={logout}
         address={address}
       />
-      {connectError && (
-        <p className="text-red-500 text-sm mt-2">{connectError.message}</p>
-      )}
     </section>
   )
 }
