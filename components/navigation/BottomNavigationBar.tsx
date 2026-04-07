@@ -15,6 +15,11 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
   // IMP START - Get Current Route Pathname for Active Link Highlighting
   const pathname = usePathname()
   // IMP END - Get Current Route Pathname for Active Link Highlighting
+  const HIDDEN_PATHS = ["/continue"]
+
+  if (HIDDEN_PATHS.includes(pathname)) {
+    return null
+  }
 
   return (
     // IMP START - Bottom Navigation Wrapper (Fixed Position)
@@ -36,7 +41,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
                     // IMP END - Base Styling for Links
 
                     // IMP START - Apply Active Link Styling
-                    isActive(pathname, href) && "text-black dark:text-white"
+                    isActive(pathname, href) && "text-black dark:text-white",
                     // IMP END - Apply Active Link Styling
                   )}
                 >
@@ -47,7 +52,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
                         className={cn(
                           "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white h-4 w-4",
                           isActive(pathname, href) &&
-                            "text-black dark:text-white" // IMP - Apply active color to icon
+                            "text-black dark:text-white", // IMP - Apply active color to icon
                         )}
                       />
                     )}
