@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "raw.githubusercontent.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "flagsapi.com",
         pathname: "/**",
       },
       {
@@ -194,10 +199,35 @@ const nextConfig: NextConfig = {
         hostname: "dashboard.m0.org",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "assets.apyx.fi",
+        pathname: "/**",
+      },
     ],
+  },
+
+  async rewrites() {
+    const getBaseUrl = () => {
+      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL
+
+      if (!apiUrl || apiUrl.length === 0) {
+        throw new Error(
+          "Missing environment variable NEXT_PUBLIC_BACKEND_API_URL!!",
+        )
+      }
+
+      return apiUrl
+    }
+
+    const BASE_URL = getBaseUrl()
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${BASE_URL}/:path*`,
+      },
+    ]
   },
 }
 
-
-
-export default nextConfig;
+export default nextConfig
