@@ -1,7 +1,15 @@
-import { LucideProps } from "lucide-react"
+import {
+  LucideProps,
+  LayoutTemplateIcon,
+  CreditCard,
+  TrendingUp,
+} from "lucide-react"
 import React from "react"
 
 export const Icons = {
+  Dashboard: (props: LucideProps) => (
+    <LayoutTemplateIcon {...props} width="24" height="24" />
+  ),
   GasIcon: (props: LucideProps) => (
     <svg
       {...props}
@@ -352,6 +360,8 @@ export const Icons = {
       />
     </svg>
   ),
+  Card: (props: LucideProps) => <CreditCard {...props} />,
+  Earn: (props: LucideProps) => <TrendingUp {...props} />,
 }
 
 export type Icon = keyof typeof Icons
