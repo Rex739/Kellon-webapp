@@ -2,18 +2,29 @@ import { INavigationListUrl } from "@/types/navigation"
 
 export const navigationListUrls: INavigationListUrl[] = [
   {
-    label: "swap",
+    label: "wallet",
     href: "/",
+    icon: "Wallet",
+  },
+  {
+    label: "swap",
+    href: "/swap",
     icon: "Swap",
   },
   {
-    label: "trade",
-    href: "/trade",
-    icon: "Trade",
+    label: "cards",
+    href: "/cards",
+    icon: "Card",
   },
   {
-    label: "stocks",
-    href: "/stocks",
-    icon: "Trade",
-  },
+    label: "earn",
+    href: "/earn",
+    icon: "Earn",
+  
+  }
+  // {
+  //   label: "stocks",
+  //   href: "/stocks",
+  //   icon: "Trade",
+  // },
 ]
