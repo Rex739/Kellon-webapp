@@ -25,9 +25,11 @@ const BankItem = ({ bank, onEdit, onDelete }: BankItemProps) => {
       toast.success("Bank account deleted")
       router.refresh()
       setIsDeleting(false)
-    } catch (error) {
+    } catch (err) {
       toast.error("Failed to delete account")
       setIsDeleting(false)
+      throw err
+      
     }
   }
 
