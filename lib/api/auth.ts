@@ -1,54 +1,5 @@
-/**
- * @file Auth Service Utilities
- * Handles authentication flows between the Next.js frontend (Client & Server)
- * and the backend API, specifically managing Privy-based sessions.
- */
-
-
-type ApiError = {
-  message?: string
-  error?: string
-}
-
-/**
- * Validates and retrieves the backend API base URL.
- * @throws Error if the environment variable is missing.
- */
-const getBaseUrl = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL
-
-  if (!apiUrl || apiUrl.length === 0) {
-    throw new Error(
-      "Missing environment variable NEXT_PUBLIC_BACKEND_API_URL!!",
-    )
-  }
-
-  return apiUrl
-}
-
-const BASE_URL = getBaseUrl()
-
-/**
- * Standardized handler for fetch responses.
- * Parses JSON on success or extracts error messages on failure.
- * @param res - Fetch Response object
- * @returns Parsed JSON body or null if empty
- * @throws Error with message from backend or default fallback
- */
-async function handleResponse(res: Response) {
-  if (!res.ok) {
-    let error: ApiError = {}
-    try {
-      error = await res.json()
-    } catch {
-      // Fallback for non-JSON error responses
-    }
-
-    throw new Error(error.message || error.error || "Something went wrong")
-  }
-
-  return res.json().catch(() => null)
-}
+import Cookies from "js-cookie"
+import { BASE_URL, handleResponse } from "."
 
 /**
  * 🔐 Login with Privy
@@ -62,36 +13,44 @@ export async function loginWithPrivy(token: string) {
     headers: {
       "Content-Type": "application/json",
     },
-
-    body: JSON.stringify({
-      token,
-      device: "web-browser",
-      deviceInfo: {
-        platform: "web",
-        userAgent:
-          typeof window !== "undefined" ? navigator.userAgent : "unknown",
-        timestamp: new Date().toISOString(),
-      },
-    }),
-    credentials: "include", // Ensure cookies are set/sent
+    body: JSON.stringify({ token }),
+    credentials: "include",
   })
 
-  return handleResponse(res)
+  const user = await handleResponse(res)
+
+  // Using js-cookie to set the deviceToken if it exists in the response
+  if (user?.data?.deviceToken) {
+    Cookies.set("deviceToken", user.data.deviceToken, {
+      expires: 365, // Sets cookie for 1 year, adjust as needed
+      path: "/",
+      sameSite: "strict",
+      secure: true, // Only sent over HTTPS
+    })
+  }
+
+  return user
 }
+
+
 
 /**
  * 🚪 Logout User
  * Notifies the backend to invalidate the session and clear cookies.
  */
-export async function logout() {
+export async function logout(device: string) {
+  console.log("token", device)
   const res = await fetch(`/api/auth/logout`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json", // This is the missing piece
+    },
     credentials: "include",
+    body: JSON.stringify({ device }),
   })
 
   return handleResponse(res)
 }
-
 /**
  * 🔎 Get Current Session
  * Server-side utility to check authentication status by forwarding
