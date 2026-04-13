@@ -14,6 +14,7 @@ import {
   Pencil,
   LucideIcon,
   ArrowLeft,
+  Loader2,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -26,7 +27,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
 import { toast } from "sonner"
@@ -34,8 +35,12 @@ import { useRouter } from "next/navigation"
 import { useUser } from "@/hooks/useUser"
 import BankAccountModal from "./BankAccountModal"
 import { getBanks } from "@/lib/api/bank"
-import { BankDetail } from "@/types/db"
+import { BankDetail, User } from "@/types/db"
+import { updateProfile } from "@/lib/api/user"
 
+interface ProfilePageProps {
+  initialProfile: User
+}
 const profileSchema = z.object({
   displayName: z.string().min(2, "Name is too short"),
   kellonTag: z
@@ -46,21 +51,26 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>
 
-const ProfilePage: FC = () => {
+const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
-  const { data: user } = useUser()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { data: profile } = useUser(initialProfile)
 
   // --- Bank State Lifted Here ---
   const [banks, setBanks] = useState<BankDetail[]>([])
   const [isBanksLoading, setIsBanksLoading] = useState(true)
 
   const fetchBanks = async () => {
+    setIsBanksLoading(true)
     try {
       const response = await getBanks()
-      if (response?.data) setBanks(response.data)
+      if (response?.data) {
+        setBanks(response.data)
+      }
+      return response
     } catch (error) {
-      console.error("Failed to load banks")
+      throw error
     } finally {
       setIsBanksLoading(false)
     }
@@ -69,19 +79,38 @@ const ProfilePage: FC = () => {
   useEffect(() => {
     fetchBanks()
   }, [])
-  // ------------------------------
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      displayName: user?.name || "",
-      kellonTag: `@${user?.tag}` || "",
+      displayName: profile?.name || "",
+      kellonTag: `@${profile?.tag}` || "",
     },
   })
 
-  const onSubmit = (data: ProfileFormValues) => {
-    setIsEditing(false)
-    toast.success("Profile updated successfully!")
+  const onSubmit = async (data: ProfileFormValues) => {
+    setIsSubmitting(true)
+
+    try {
+      const res = await updateProfile({
+        name: data.displayName,
+        tag: data.kellonTag.replace("@", ""),
+      })
+
+      if (res.success) {
+        toast.success("Profile updated successfully!")
+
+        setIsEditing(false)
+        router.refresh()
+      } else {
+        toast.error(res.message || "Failed to update profile")
+      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      toast.error("An unexpected error occurred")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -106,7 +135,7 @@ const ProfilePage: FC = () => {
           <div className="relative">
             <Avatar className="w-28 h-28 border-4 border-white dark:border-none bg-primary-70 shadow-md">
               <AvatarFallback className="text-3xl font-bold bg-primary-70 text-white">
-                {user?.name
+                {profile?.name
                   ?.split(" ")
                   .map((n: string) => n[0])
                   .join("")
@@ -123,7 +152,7 @@ const ProfilePage: FC = () => {
               {form.getValues("displayName")}
             </h2>
             <p className="text-slate-500 dark:text-gray-400 text-sm">
-              {user?.email}
+              {profile?.email}
             </p>
           </div>
           <Badge className="bg-slate-100 dark:bg-[#1a1f2e] text-primary-70 py-1.5 px-4 rounded-full border-none">
@@ -166,7 +195,7 @@ const ProfilePage: FC = () => {
                     Email
                   </p>
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">{user?.email}</p>
+                    <p className="text-sm font-medium">{profile?.email}</p>
                     <Badge className="bg-green-500/10 text-green-600 border-none flex gap-1 items-center px-2 py-0.5">
                       <CheckCircle2 className="w-3 h-3" /> Verified
                     </Badge>
@@ -201,6 +230,27 @@ const ProfilePage: FC = () => {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="kellonTag"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-500">
+                        Kellon Tag
+                      </FormLabel>
+                      <div className="relative">
+                        <UserIcon className="absolute left-4 top-3 w-5 h-5 text-primary-70" />
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="bg-slate-50 dark:bg-[#1a1f2e] border-slate-200 h-12 pl-12 rounded-xl"
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <div className="flex gap-4 pt-4">
                   <Button
                     type="button"
@@ -212,9 +262,17 @@ const ProfilePage: FC = () => {
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 bg-primary-70 text-white rounded-xl h-12 font-bold"
+                    disabled={isSubmitting} // Prevent double-clicks
+                    className="flex-1 bg-primary-70 text-white rounded-xl h-12 font-bold flex items-center justify-center gap-2"
                   >
-                    Save Changes
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      "Save Changes"
+                    )}
                   </Button>
                 </div>
               </form>
@@ -226,7 +284,9 @@ const ProfilePage: FC = () => {
         <BankAccountModal
           banks={banks}
           isLoading={isBanksLoading}
-          onRefresh={fetchBanks}
+          onRefresh={async () => {
+            await fetchBanks()
+          }}
         />
       </div>
     </section>

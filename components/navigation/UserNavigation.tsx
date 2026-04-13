@@ -38,7 +38,7 @@ import Signout from "../auth/Signout"
 import { toast } from "sonner"
 
 interface UserNavigationProps {
-  user: User
+  profile: User
 }
 
 interface DropdownItemProps {
@@ -50,7 +50,7 @@ interface DropdownItemProps {
   isExternal?: boolean
 }
 
-const UserNavigation: FC<UserNavigationProps> = ({ user }) => {
+const UserNavigation: FC<UserNavigationProps> = ({ profile }) => {
   const [open, setOpen] = useState(false)
 
   // Modal States
@@ -89,17 +89,17 @@ const UserNavigation: FC<UserNavigationProps> = ({ user }) => {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-3 outline-none pr-3 rounded-full transition-colors group">
               <div className="w-10 h-10 rounded-full bg-primary-95 dark:bg-primary-70 flex items-center justify-center overflow-hidden border border-gray-80 dark:border-white transition-all group-hover:border-primary-50">
-                {user?.image ? (
+                {profile?.image ? (
                   <Image
-                    src={user.image}
-                    alt={user.name || "User"}
+                    src={profile.image}
+                    alt={profile.name || "User"}
                     className="w-full h-full object-cover"
                     width={40}
                     height={40}
                   />
                 ) : (
                   <span className="text-sm text-primary-50 dark:text-white font-bold">
-                    {user?.name?.charAt(0).toUpperCase() || "?"}
+                    {profile?.name?.charAt(0).toUpperCase() || "?"}
                   </span>
                 )}
               </div>
@@ -115,10 +115,10 @@ const UserNavigation: FC<UserNavigationProps> = ({ user }) => {
           <DropdownMenuLabel className="font-normal p-3">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-semibold text-black dark:text-white">
-                {user.name}
+                {profile.name}
               </p>
               <p className="text-xs text-gray-20 dark:text-secondary-90">
-                {user.email}
+                {profile.email}
               </p>
 
               <Link

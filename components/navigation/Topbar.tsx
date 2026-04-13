@@ -30,7 +30,7 @@ type TopbarProps = HtmlHTMLAttributes<HTMLDivElement>
 const Topbar: FC<TopbarProps> = ({ className }) => {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { data: user } = useUser()
+  const { data: profile } = useUser()
 
   // IMP START - Privy connection state
   const { login, authenticated, ready, logout } = usePrivy()
@@ -98,7 +98,7 @@ const Topbar: FC<TopbarProps> = ({ className }) => {
             </div>
           </li>
 
-          <li>{user && <UserNavigation user={user} />}</li>
+          <li>{profile && <UserNavigation profile={profile} />}</li>
         </ul>
         {/* Mobile Topbar */}
         <div className="flex md:hidden w-full justify-between items-center">
