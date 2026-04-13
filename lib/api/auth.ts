@@ -1,5 +1,6 @@
 import Cookies from "js-cookie"
-import { BASE_URL, handleResponse } from "."
+import { ApiResponse, BASE_URL, handleResponse, LoginResponseData } from "."
+import { User } from "@/types/db"
 
 /**
  * 🔐 Login with Privy
@@ -7,7 +8,9 @@ import { BASE_URL, handleResponse } from "."
  * to establish a session.
  * * @param token - The Privy identity token (JWT)
  */
-export async function loginWithPrivy(token: string) {
+export async function loginWithPrivy(
+  token: string,
+): Promise<ApiResponse<LoginResponseData>> {
   const res = await fetch("/api/auth/login", {
     method: "POST",
     headers: {
@@ -17,22 +20,19 @@ export async function loginWithPrivy(token: string) {
     credentials: "include",
   })
 
-  const user = await handleResponse(res)
+  const user = await handleResponse<LoginResponseData>(res) // ✅ generic added
 
-  // Using js-cookie to set the deviceToken if it exists in the response
   if (user?.data?.deviceToken) {
     Cookies.set("deviceToken", user.data.deviceToken, {
-      expires: 365, // Sets cookie for 1 year, adjust as needed
+      expires: 365,
       path: "/",
       sameSite: "strict",
-      secure: true, // Only sent over HTTPS
+      secure: true,
     })
   }
 
   return user
 }
-
-
 
 /**
  * 🚪 Logout User
@@ -58,7 +58,9 @@ export async function logout(device: string) {
  * * @note This function must be called within a Next.js Server Component or Action.
  * @returns User object if authenticated, otherwise null.
  */
-export async function getSession(sessionToken?: string) {
+export async function getSession(
+  sessionToken?: string,
+): Promise<ApiResponse<User> | null> {
   // 1. Retrieve the session token from the browser's request cookies
 
   // Early exit if no token is present to avoid unnecessary API calls
