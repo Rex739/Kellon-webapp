@@ -14,7 +14,6 @@ import { addBank, deleteBank, updateBank } from "@/lib/api/bank"
 import BankList from "./BankList"
 import BankForm, { BankFormValues } from "./BankForm"
 
-
 interface BankAccountModalProps {
   banks: BankDetail[]
   isLoading: boolean
@@ -31,42 +30,46 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
   const [selectedBank, setSelectedBank] = useState<BankDetail | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
- const handleFormSubmit = async (values: BankFormValues) => {
-   setIsSubmitting(true)
-   try {
-     const payload = {
-       bankName: values.bankName,
-       accountName: values.accountHolderName,
-       accountNumber: values.accountNumber,
-       bankCode: "",
-     }
+  const handleFormSubmit = async (values: BankFormValues) => {
+    setIsSubmitting(true)
+    try {
+      const payload = {
+        bankName: values.bankName,
+        accountName: values.accountHolderName,
+        accountNumber: values.accountNumber,
+        bankCode: "",
+      }
 
-     const res =
-       view === "edit" && selectedBank?.id
-         ? await updateBank(selectedBank.id, payload)
-         : await addBank(payload as BankDetail)
+      const res =
+        view === "edit" && selectedBank?.id
+          ? await updateBank(selectedBank.id, payload)
+          : await addBank(payload as BankDetail)
 
-     if (res.success) {
-       toast.success(view === "edit" ? "Account updated" : "Account added")
-       await onRefresh()
-       setView("list")
-     }
-   } catch (err) {
-     toast.error("Operation failed")
-   } finally {
-     setIsSubmitting(false)
-   }
- }
+      if (res.success) {
+        toast.success(
+          view === "edit"
+            ? "Bank account updated successfully"
+            : "Bank account added successfully",
+        )
+
+        await onRefresh()
+        setView("list")
+      }
+    } catch (err) {
+      toast.error("Operation failed")
+      throw err
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const handleDelete = async (id: string) => {
     try {
       const res = await deleteBank(id)
       if (res.success) {
-        toast.success("Account removed")
         await onRefresh()
       }
     } catch (err) {
-      toast.error("Failed to delete account")
       throw err
     }
   }
@@ -131,6 +134,7 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
           <div className="flex-1 overflow-y-auto px-6 pb-10">
             {view === "list" ? (
               <BankList
+                key={banks.length}
                 banks={banks}
                 isLoading={isLoading}
                 onAddNew={() => setView("add")}
