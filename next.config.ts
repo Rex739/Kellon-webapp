@@ -1,4 +1,5 @@
 import type { NextConfig } from "next"
+import { BASE_URL } from "./lib/api"
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -208,19 +209,7 @@ const nextConfig: NextConfig = {
   },
 
   async rewrites() {
-    const getBaseUrl = () => {
-      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL
-
-      if (!apiUrl || apiUrl.length === 0) {
-        throw new Error(
-          "Missing environment variable NEXT_PUBLIC_BACKEND_API_URL!!",
-        )
-      }
-
-      return apiUrl
-    }
-
-    const BASE_URL = getBaseUrl()
+    
     return [
       {
         source: "/api/:path*",
