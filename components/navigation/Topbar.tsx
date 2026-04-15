@@ -20,7 +20,7 @@ import { usePrivy } from "@privy-io/react-auth"
 import { useUser } from "@/hooks/useUser"
 
 import NotificationBell from "../notification/NotificationBell"
-import UserNavigation from "./UserNavigation"
+import UserNavigation from "./user-navigation/UserNavigation"
 import ModeToggle from "../ModeToggle"
 import SearchBar from "../SearchBar"
 // IMP END - Privy Auth Import
