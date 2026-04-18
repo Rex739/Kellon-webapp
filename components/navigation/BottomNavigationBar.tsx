@@ -8,10 +8,17 @@ import { Icons } from "@/components/Icons"
 import { isActive } from "@/lib/isActiveLink"
 import { usePathname } from "next/navigation"
 import Slab from "@/components/ui/slab"
+import UserNavigation from "./user-navigation/UserNavigation"
+import { User } from "@/types/db"
 
-type BottomNavigationBarProps = HtmlHTMLAttributes<HTMLDivElement>
+interface BottomNavigationBarProps extends HtmlHTMLAttributes<HTMLDivElement> {
+  profile: User
+}
 
-const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
+const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
+  className,
+  profile,
+}) => {
   // IMP START - Get Current Route Pathname for Active Link Highlighting
   const pathname = usePathname()
   // IMP END - Get Current Route Pathname for Active Link Highlighting
@@ -25,7 +32,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
     // IMP START - Bottom Navigation Wrapper (Fixed Position)
     <section className={cn(className, "fixed bottom-0 w-full")}>
       {/* IMP START - Navigation Menu Container */}
-      <nav className="bg-white dark:bg-secondary-60  shadow-topbar border-t border-input ">
+      <nav className="bg-white dark:bg-secondary-50  shadow-topbar border-t border-input ">
         <ul className="flex justify-around ">
           {/* IMP START - Render Navigation Items */}
           {navigationListUrls.map(({ label, href, icon }, i) => {
@@ -37,7 +44,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
                   href={href}
                   className={cn(
                     // IMP START - Base Styling for Links
-                    "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white capitalize text-xs font-medium  ",
+                    "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white capitalize text-xs font-medium ",
                     // IMP END - Base Styling for Links
 
                     // IMP START - Apply Active Link Styling
@@ -45,7 +52,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
                     // IMP END - Apply Active Link Styling
                   )}
                 >
-                  <div className="py-2 flex flex-col space-y-1 items-center">
+                  <div className="py-4 flex flex-col space-y-1 items-center">
                     {/* IMP START - Render Icon if Available */}
                     {Icon && (
                       <Icon
@@ -66,6 +73,11 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({ className }) => {
               </li>
             )
           })}
+          {profile && (
+            <li>
+              <UserNavigation profile={profile} />
+            </li>
+          )}
         </ul>
         {/* IMP END - Render Navigation Items */}
       </nav>
