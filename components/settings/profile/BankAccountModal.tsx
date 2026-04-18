@@ -82,7 +82,7 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
         if (!val) setView("list")
       }}
     >
-      <DialogTrigger asChild>
+      <DialogTrigger asChild className="cursor-pointer">
         <button className="w-full bg-white dark:bg-secondary-60 border border-slate-100 dark:border-none shadow-sm rounded-[24px] p-5 flex items-center justify-between group hover:bg-slate-50 transition-colors">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-slate-100 dark:bg-[#1a1f2e] rounded-xl text-primary-70">
@@ -101,7 +101,7 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
         </button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px] bg-slate-50 dark:bg-[#0b101a] border-none p-0 overflow-hidden rounded-[32px] [&>button]:hidden">
+      <DialogContent className="sm:max-w-md bg-slate-50 dark:bg-[#0b101a] border-none p-0 overflow-hidden rounded-[32px] [&>button]:hidden">
         <div className="relative h-[85vh] sm:h-[700px] flex flex-col">
           <div className="flex items-center justify-between px-6 py-5">
             <button
