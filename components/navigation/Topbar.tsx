@@ -1,51 +1,33 @@
 "use client"
 
 import Link from "next/link"
-import { FC, HtmlHTMLAttributes, useState, useEffect } from "react"
+import { FC, HtmlHTMLAttributes } from "react"
 
 // IMP START - App Imports
 import { navigationListUrls } from "./navigationUrl"
-import { cn } from "@/lib/utils"
+import { cn, getGreeting } from "@/lib/utils"
 import { Icons } from "@/components/Icons"
 import { usePathname } from "next/navigation"
 import { isActive } from "@/lib/isActiveLink"
-import { Button } from "@/components/ui/button"
-import { WalletCircle } from "@/components/ui/wallet-circle"
-import MobileMenu from "./MobileMenu"
-import { useAccount } from "wagmi"
-import { MoreHorizontal } from "lucide-react"
 
-// IMP START - Privy Auth Import
-import { usePrivy } from "@privy-io/react-auth"
-import { useUser } from "@/hooks/useUser"
+import { useUser } from "@/hooks/use-user"
 
-import NotificationBell from "../notification/NotificationBell"
+import NotificationBell from "@/components/notification/NotificationBell"
 import UserNavigation from "./user-navigation/UserNavigation"
-import ModeToggle from "../ModeToggle"
-import SearchBar from "../SearchBar"
+import ModeToggle from "@/components/ModeToggle"
+import SearchBar from "@/components/SearchBar"
+import Image from "next/image"
+
+import { User } from "@/types/db"
 // IMP END - Privy Auth Import
 
-type TopbarProps = HtmlHTMLAttributes<HTMLDivElement>
+interface TopbarProps extends HtmlHTMLAttributes<HTMLDivElement> {
+  initialProfile: User
+}
 
-const Topbar: FC<TopbarProps> = ({ className }) => {
+const Topbar: FC<TopbarProps> = ({ className, initialProfile }) => {
   const pathname = usePathname()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { data: profile } = useUser()
-
-  // IMP START - Privy connection state
-  const { login, authenticated, ready, logout } = usePrivy()
-  // IMP END - Privy connection state
-
-  // IMP START - Blockchain Calls
-  const { address } = useAccount()
-  // IMP END - Blockchain Calls
-
-  useEffect(() => {
-    // Whenever connection status changes to authenticated, close the menu
-    if (authenticated) {
-      setIsMenuOpen(false)
-    }
-  }, [authenticated])
+  const { data: profile } = useUser(initialProfile)
 
   const HIDDEN_PATHS = ["/continue"]
 
@@ -53,11 +35,13 @@ const Topbar: FC<TopbarProps> = ({ className }) => {
     return null
   }
 
+  const greeting = getGreeting()
+
   return (
     <section
       className={cn(
         className,
-        "px-5 fixed w-full z-50 bg-white dark:bg-secondary-60 border-b border-input",
+        "px-5 py-2 md:py-0 relative md:fixed w-full z-50 bg-white dark:bg-secondary-50 md:border-b border-input",
       )}
     >
       <header className="flex justify-between items-center">
@@ -102,45 +86,38 @@ const Topbar: FC<TopbarProps> = ({ className }) => {
         </ul>
         {/* Mobile Topbar */}
         <div className="flex md:hidden w-full justify-between items-center">
-          <Icons.Logo className="h-10 w-10  p-2 rounded-md shadow-2xl border border-black dark:border-white" />
+          <div className="flex gap-2">
+            <div className="w-10 h-10 rounded-full bg-primary-95 dark:bg-primary-70 flex items-center justify-center overflow-hidden border border-gray-80 dark:border-white transition-all group-hover:border-primary-50">
+              {profile?.image ? (
+                <Image
+                  src={profile.image}
+                  alt={profile.name || "User"}
+                  className="w-full h-full object-cover"
+                  width={40}
+                  height={40}
+                />
+              ) : (
+                <span className="text-sm text-primary-50 dark:text-white font-bold">
+                  {profile?.name?.charAt(0).toUpperCase() || "?"}
+                </span>
+              )}
+            </div>
+            <Link
+              href="/settings/profile"
+              className="flex flex-col justify-center"
+            >
+              <span className="text-xs font-medium text-gray-20 dark:text-gray-40 capitalize ">
+                {greeting}
+              </span>
+              <span className="text-xs font-normal text-black dark:text-white leading-tight">
+                {(profile && `${profile?.name?.split(" ")[0]}!`) || "Guest"}
+              </span>
+            </Link>
+          </div>
 
-          {!authenticated ? (
-            // Show connect button if NOT connected
-            <Button
-              onClick={login}
-              disabled={!ready}
-              className="shadow-2xl  font-semibold inline-flex gap-2 justify-center items-center text-white"
-            >
-              <WalletCircle className="border-white" />
-              Connect
-            </Button>
-          ) : (
-            // Show hamburger if connected
-            <button
-              onClick={() => setIsMenuOpen(true)}
-              aria-label="Open menu"
-              className=""
-            >
-              <div className="flex">
-                <span className="border border-black dark:border-white border-r-0 rounded-l-md flex items-center justify-center p-1">
-                  <WalletCircle className="dark:text-white w-7 h-7 flex justify-center items-center" />
-                </span>
-                <span className="border border-black dark:border-white rounded-r-md flex items-center justify-center p-1">
-                  <MoreHorizontal className="dark:text-white w-7 h-7" />
-                </span>
-              </div>
-            </button>
-          )}
+          <NotificationBell />
         </div>
       </header>
-
-      {/* Mobile Menu */}
-      <MobileMenu
-        isOpen={isMenuOpen && authenticated}
-        onClose={() => setIsMenuOpen(false)}
-        onDisconnect={logout}
-        address={address}
-      />
     </section>
   )
 }
