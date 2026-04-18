@@ -1,24 +1,18 @@
-import GridBackground from "@/components/backgrounds/GridBackground"
-import CryptoInfiniteScroll from "@/components/CryptoInfiniteScroll"
-import SwapInterface from "@/components/swap/SwapInterface"
-
 import { FC } from "react"
+import { redirect } from "next/navigation"
+import { User } from "@/types/db"
+import DashboardClient from "@/components/wallet/Dashboard"
+import { currentProfile } from "@/lib/currentProfile"
 
-// interface pageProps {
+const Page: FC = async ({}) => {
+  const profile = (await currentProfile()) as User
+  if (!profile) return redirect("/")
 
-// }
-
-const page: FC = ({}) => {
   return (
-    <main className="h-[100dvh] flex flex-col justify-center items-center w-11/12 mx-auto ">
-      <section className="relative ">
-        <GridBackground className="z-10" />
-        <SwapInterface className="z-20 relative" />
-      </section>
-
-      <CryptoInfiniteScroll className="hidden md:block absolute bottom-0" />
-    </main>
+    <section className="min-h-screen flex items-center justify-center">
+      <DashboardClient initialProfile={profile} />
+    </section>
   )
 }
 
-export default page
+export default Page
