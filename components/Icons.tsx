@@ -3,6 +3,7 @@ import {
   LayoutTemplateIcon,
   CreditCard,
   TrendingUp,
+  User,
 } from "lucide-react"
 import React from "react"
 
@@ -362,6 +363,8 @@ export const Icons = {
   ),
   Card: (props: LucideProps) => <CreditCard {...props} />,
   Earn: (props: LucideProps) => <TrendingUp {...props} />,
+  Account: (props: LucideProps) => <User {...props} />,
+
 }
 
 export type Icon = keyof typeof Icons
