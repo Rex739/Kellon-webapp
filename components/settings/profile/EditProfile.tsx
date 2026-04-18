@@ -32,7 +32,7 @@ import { Badge } from "@/components/ui/badge"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { useUser } from "@/hooks/useUser"
+import { useUser } from "@/hooks/use-user"
 import BankAccountModal from "./BankAccountModal"
 import { getBanks } from "@/lib/api/bank"
 import { BankDetail, User } from "@/types/db"
@@ -105,7 +105,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
       } else {
         toast.error(res.message || "Failed to update profile")
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       toast.error("An unexpected error occurred")
     } finally {
