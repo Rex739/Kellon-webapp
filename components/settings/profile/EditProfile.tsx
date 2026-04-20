@@ -114,10 +114,10 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
   }
 
   return (
-    <section className="min-h-screen text-slate-900 dark:text-white pb-10 transition-colors duration-300 py-16 lg:py-20">
+    <section className="min-h-screen text-slate-900 dark:text-white pb-10 transition-colors duration-300  lg:py-20">
       <div className="flex items-center justify-between px-6 py-5 max-w-2xl mx-auto">
         <div
-          onClick={() => router.back()}
+          onClick={() => router.push("/")}
           className="p-2 bg-white dark:bg-secondary-60/50 rounded-full shadow-sm border border-slate-200 dark:border-none hover:bg-slate-100 cursor-pointer"
         >
           <X className="w-6 h-6 md:hidden" />
