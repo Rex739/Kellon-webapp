@@ -93,7 +93,11 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
                 Bank Accounts
               </h4>
               <p className="text-xs text-slate-500 dark:text-gray-400">
-                {isLoading ? "Loading..." : `${banks.length} linked`}
+                {isLoading
+                  ? "Loading..."
+                  : banks.length > 0
+                    ? `${banks.length} linked`
+                    : "No accounts linked"}
               </p>
             </div>
           </div>
