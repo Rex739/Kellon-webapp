@@ -37,14 +37,15 @@
   --color-primary-90: #e5b9d9;
   --color-primary-95: #f6e8f2;
   --color-primary-99: #fbf6fa;
-  /* --color-secondary: #0c122a; */
+
+  /* seconday is for dark mode  */
   --color-secondary-0: #04050d;
   --color-secondary-10: #070b19;
   --color-secondary-20: #080d1d;
   --color-secondary-30: #0a0e22;
   --color-secondary-40: #0b1026;
-  --color-secondary-50: #0c122a;
-  --color-secondary-60: #242a3f;
+  --color-secondary-50: #0f172a;
+  --color-secondary-60: #1e293b;
   --color-secondary-70: #3d4155;
   --color-secondary-80: #55596a;
   --color-secondary-90: #b6b8bf;
