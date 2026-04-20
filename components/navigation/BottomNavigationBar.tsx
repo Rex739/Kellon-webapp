@@ -22,17 +22,19 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
   // IMP START - Get Current Route Pathname for Active Link Highlighting
   const pathname = usePathname()
   // IMP END - Get Current Route Pathname for Active Link Highlighting
-  const HIDDEN_PATHS = ["/continue"]
+  const HIDDEN_PATHS = ["/continue",  "/settings/profile"]
 
   if (HIDDEN_PATHS.includes(pathname)) {
     return null
   }
 
+  
+
   return (
     // IMP START - Bottom Navigation Wrapper (Fixed Position)
     <section className={cn(className, "fixed bottom-0 w-full")}>
       {/* IMP START - Navigation Menu Container */}
-      <nav className="bg-white dark:bg-secondary-50  shadow-topbar border-t border-input ">
+      <nav className="bg-white dark:bg-secondary-50  border-t border-input ">
         <ul className="flex justify-around ">
           {/* IMP START - Render Navigation Items */}
           {navigationListUrls.map(({ label, href, icon }, i) => {
@@ -73,7 +75,9 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
               </li>
             )
           })}
-          {profile && (
+          {
+            // profile &&
+            (
             <li>
               <UserNavigation profile={profile} />
             </li>
