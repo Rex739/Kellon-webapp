@@ -18,6 +18,8 @@
   --breakpoint-xs: 375px;
   --breakpoint-xm: 390px;
   /* colors */
+
+  /* primary is shades of pink */
   --color-white: #ffffff;
   --color-black: #000000;
   --color-white1: #f2f1f1;
@@ -27,7 +29,7 @@
   --color-primary: #a7167f;
   --color-primary-0: #11020d;
   --color-primary-10: #d946ef;
-  --color-primary-20: #540b40;
+  --color-primary-20: #d147a3;
   --color-primary-30: #750f59;
   --color-primary-40: #961472;
   --color-primary-50: #a7167f;
@@ -38,7 +40,7 @@
   --color-primary-95: #f6e8f2;
   --color-primary-99: #fbf6fa;
 
-  /* seconday is for dark mode  */
+  /* seconday is shades of blue  */
   --color-secondary-0: #04050d;
   --color-secondary-10: #070b19;
   --color-secondary-20: #080d1d;
@@ -63,6 +65,7 @@
   --color-gray-90: #f0f0f0;
   --color-gray-95: #f6f6f6;
   --color-gray-99: #fcfcfc;
+  --color-orange-10: #EF5350;
   /* fonts */
   --font-manrope: "Manrope", sans-serif;
   /* letter-spacing*/
