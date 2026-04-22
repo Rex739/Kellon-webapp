@@ -38,7 +38,7 @@ export const GuardianListItem: FC<GuardianListItemProps> = ({
     setIsAccepting(true)
     try {
       await onAccept()
-    } catch (error) {
+    } catch {
       toast.error("Failed to accept invitation")
     } finally {
       setIsAccepting(false)
