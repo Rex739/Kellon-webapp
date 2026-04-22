@@ -43,12 +43,8 @@ interface ProfilePageProps {
 }
 const profileSchema = z.object({
   displayName: z.string().min(2, "Name is too short"),
-  kellonTag: z
-    .string()
-    .min(3, "Tag is too short")
-    .startsWith("@", "Must start with @"),
+  kellonTag: z.string().min(3, "Tag is too short"), // No longer requires user to type @
 })
-
 type ProfileFormValues = z.infer<typeof profileSchema>
 
 const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
@@ -84,7 +80,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       displayName: profile?.name || "",
-      kellonTag: `@${profile?.tag}` || "",
+      kellonTag: profile?.tag?.replace("@", "") || "",
     },
   })
 
@@ -156,7 +152,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
             </p>
           </div>
           <Badge className="bg-slate-100 dark:bg-[#1a1f2e] text-primary-70 py-1.5 px-4 rounded-full border-none">
-            {form.getValues("kellonTag")}
+            {`@${form.getValues("kellonTag")}`}
           </Badge>
         </div>
 
@@ -239,7 +235,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                         Kellon Tag
                       </FormLabel>
                       <div className="relative">
-                        <UserIcon className="absolute left-4 top-3 w-5 h-5 text-primary-70" />
+                        <AtSign className="absolute left-4 top-3 w-5 h-5 text-primary-70" />
                         <FormControl>
                           <Input
                             {...field}
