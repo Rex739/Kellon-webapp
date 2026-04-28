@@ -1,5 +1,5 @@
 import type { NextConfig } from "next"
-import { BASE_URL } from "./lib/api"
+import { BASE_URL } from "./services/api"
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -209,7 +209,6 @@ const nextConfig: NextConfig = {
   },
 
   async rewrites() {
-    
     return [
       {
         source: "/api/:path*",
