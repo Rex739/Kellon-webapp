@@ -1,6 +1,6 @@
 "use client"
 
-import { logout } from "@/lib/api/auth"
+import { logout } from "@/services/api/auth"
 import { LogOut } from "lucide-react"
 import { FC } from "react"
 import Cookies from "js-cookie"

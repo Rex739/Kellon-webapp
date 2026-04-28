@@ -1,4 +1,4 @@
-import { getSession } from "./api/auth"
+import { getSession } from "@/services/api/auth"
 import { cookies } from "next/headers"
 
 export const currentProfile = async () => {

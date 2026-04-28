@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/api/auth"
+import { getSession } from "@/services/api/auth"
 import { User } from "@/types/db"
 import { useQuery } from "@tanstack/react-query"
 

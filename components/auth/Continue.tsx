@@ -8,7 +8,7 @@ import {
 } from "@privy-io/react-auth"
 import { Button } from "@/components/ui/button"
 import { Chrome, Loader2 } from "lucide-react" // Added Loader2
-import { loginWithPrivy } from "@/lib/api/auth"
+import { loginWithPrivy } from "@/services/api/auth"
 
 interface ContinueProps {
   onSuccessRedirect?: string

@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
+import { User } from "@/types/db"
 
 interface Device {
   id: string
@@ -34,6 +35,7 @@ interface Device {
   type: "mobile" | "desktop" | "browser"
   lastActive: string
   isCurrent: boolean
+  
 }
 
 // Mock data for UI development
@@ -64,13 +66,19 @@ const MOCK_DEVICES: Device[] = [
 interface TrustedDevicesModalProps {
   isOpen: boolean
   onClose: () => void
+  profile: User
 }
 
 const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
   isOpen,
   onClose,
+  profile
 }) => {
   const isMobile = useMediaQuery("(max-width: 768px)")
+
+  const devices = profile.devices
+  // console.log("devices", devices)
+
 
   useEffect(() => {
     if (!isOpen) {
