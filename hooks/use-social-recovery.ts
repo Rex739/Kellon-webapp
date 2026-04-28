@@ -9,7 +9,7 @@ import {
   addGuardian,
   approveRecovery,
   acceptGuardianInvite,
-} from "@/lib/api/social-recovery"
+} from "@/services/api/social-recovery"
 import {
   ApprovalFormValues,
   approvalSchema,
