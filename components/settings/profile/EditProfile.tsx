@@ -34,9 +34,9 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useUser } from "@/hooks/use-user"
 import BankAccountModal from "./BankAccountModal"
-import { getBanks } from "@/lib/api/bank"
+import { getBanks } from "@/services/api/bank"
 import { BankDetail, User } from "@/types/db"
-import { updateProfile } from "@/lib/api/user"
+import { updateProfile } from "@/services/api/user"
 
 interface ProfilePageProps {
   initialProfile: User

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { BankDetail } from "@/types/db"
-import { addBank, deleteBank, updateBank } from "@/lib/api/bank"
+import { addBank, deleteBank, updateBank } from "@/services/api/bank"
 import BankList from "./BankList"
 import BankForm, { BankFormValues } from "./BankForm"
 
