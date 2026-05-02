@@ -21,22 +21,10 @@ export async function initLifiConfig() {
     process.env.ALCHEMY_RPC_KEY
   )
   const infuraKey = getRequiredEnv("INFURA_RPC_KEY", process.env.INFURA_RPC_KEY)
-
   const config = createConfig({
     integrator: "Kellon",
     apiKey: lifiKey,
-    providers: [
-      EVM({
-        getWalletClient: () => getWalletClient(wagmiConfig),
-        switchChain: async (chainId) => {
-          const chain = await switchChain(wagmiConfig, { chainId })
-          return getWalletClient(wagmiConfig, { chainId: chain.id })
-        },
-      }),
-    ],
-
     preloadChains: false,
-
     rpcUrls: {
       [ChainId.ARB]: [`https://rpc.ankr.com/arbitrum/${ankrKey}`],
       [ChainId.BSC]: [`https://rpc.ankr.com/bsc/${ankrKey}`],
@@ -104,6 +92,6 @@ export async function initLifiConfig() {
       fee: 0.002,
       maxPriceImpact: 0.1,
     },
-  }) 
- return config
+  })
+  return config
 }

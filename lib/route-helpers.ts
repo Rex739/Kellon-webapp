@@ -1,6 +1,6 @@
 import { Route, ExtendedChain, Token, Step } from "@lifi/sdk"
-import { formatTime } from "./formatTime"
-import { formatTokenAmount } from "@/hooks/useFormatTokenAmount"
+import { formatTime } from "./format-time"
+import { formatTokenAmount } from "@/hooks/use-format-token-amount"
 
 export interface RouteCalculationResult {
   priceImpact: number
@@ -23,7 +23,7 @@ export interface RouteStepDetails {
 // Calculate price impact between fromAmountUSD and toAmountUSD
 export const calculatePriceImpact = (
   fromAmountUSD: string,
-  toAmountUSD: string
+  toAmountUSD: string,
 ): number => {
   const fromUSD = parseFloat(fromAmountUSD)
   const toUSD = parseFloat(toAmountUSD)
@@ -48,7 +48,7 @@ export const calculateConversion = (
   toAmount: string,
   fromToken: Token,
   toToken: Token,
-  isReversed: boolean
+  isReversed: boolean,
 ): string => {
   const fromAmountBigInt = BigInt(fromAmount)
   const toAmountBigInt = BigInt(toAmount)
@@ -61,10 +61,10 @@ export const calculateConversion = (
   const rateFromTo = toAmountNum / fromAmountNum
 
   const rateToFromFormatted = BigInt(
-    Math.round(rateToFrom * Math.pow(10, fromToken.decimals))
+    Math.round(rateToFrom * Math.pow(10, fromToken.decimals)),
   )
   const rateFromToFormatted = BigInt(
-    Math.round(rateFromTo * Math.pow(10, toToken.decimals))
+    Math.round(rateFromTo * Math.pow(10, toToken.decimals)),
   )
 
   return isReversed
@@ -75,7 +75,7 @@ export const calculateConversion = (
 // Get chain name from chains array
 export const getChainName = (
   chainId: number,
-  chains: ExtendedChain[]
+  chains: ExtendedChain[],
 ): string => {
   return chains.find((chain) => chain.id === chainId)?.name || "Unknown"
 }
@@ -85,7 +85,7 @@ export const getStepDetails = (
   step: Step,
   chains: ExtendedChain[],
   fromAmount: string,
-  fromToken: Token
+  fromToken: Token,
 ): RouteStepDetails | null => {
   const fromChainId = step.action.fromChainId
   const toChainId = step.action.toChainId
@@ -113,7 +113,7 @@ export const getStepDetails = (
 
   const formattedToAmount = formatTokenAmount(
     step.estimate.toAmount,
-    stepToToken.decimals
+    stepToToken.decimals,
   )
 
   const stepExecutionDuration = step.estimate?.executionDuration || 0
