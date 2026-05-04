@@ -1,9 +1,7 @@
 import type { Metadata } from "next"
 import "./globals.css"
 import Provider from "@/components/providers/Provider"
-import { initLifiConfig } from "@/lib/lifiConfig"
-
-
+import { initLifiConfig } from "@/lib/lifi-config"
 
 export const metadata: Metadata = {
   title: "Create Next App",
