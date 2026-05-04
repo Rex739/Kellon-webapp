@@ -5,7 +5,7 @@ import { FC, HtmlHTMLAttributes } from "react"
 import { navigationListUrls } from "./navigationUrl"
 import { cn } from "@/lib/utils"
 import { Icons } from "@/components/Icons"
-import { isActive } from "@/lib/isActiveLink"
+import { isActive } from "@/lib/is-active-link"
 import { usePathname } from "next/navigation"
 import Slab from "@/components/ui/slab"
 import UserNavigation from "./user-navigation/UserNavigation"
@@ -22,13 +22,11 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
   // IMP START - Get Current Route Pathname for Active Link Highlighting
   const pathname = usePathname()
   // IMP END - Get Current Route Pathname for Active Link Highlighting
-  const HIDDEN_PATHS = ["/continue",  "/settings/profile"]
+  const HIDDEN_PATHS = ["/continue", "/settings/profile"]
 
   if (HIDDEN_PATHS.includes(pathname)) {
     return null
   }
-
-  
 
   return (
     // IMP START - Bottom Navigation Wrapper (Fixed Position)
@@ -77,11 +75,10 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
           })}
           {
             // profile &&
-            (
             <li>
               <UserNavigation profile={profile} />
             </li>
-          )}
+          }
         </ul>
         {/* IMP END - Render Navigation Items */}
       </nav>

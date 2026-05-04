@@ -8,7 +8,7 @@ import { navigationListUrls } from "./navigationUrl"
 import { cn } from "@/lib/utils"
 import { Icons } from "@/components/Icons"
 import { usePathname } from "next/navigation"
-import { isActive } from "@/lib/isActiveLink"
+import { isActive } from "@/lib/is-active-link"
 
 import { useUser } from "@/hooks/use-user"
 
