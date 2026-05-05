@@ -105,7 +105,7 @@ export const MAINNET_CHAINS: Record<SupportedChainKeys, ChainConfig> = {
   },
   bnb: {
     id: 56,
-    name: "BNB Chain",
+    name: "BNB",
     nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
     rpcUrls: {
       default: { http: ["https://bsc-dataseed.binance.org"] },
