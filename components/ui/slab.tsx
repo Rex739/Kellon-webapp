@@ -3,7 +3,7 @@
 import { FC, HtmlHTMLAttributes } from "react"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { isActive } from "@/lib/isActiveLink"
+import { isActive } from "@/lib/is-active-link"
 
 interface CustomUiSlabProps extends HtmlHTMLAttributes<HTMLSpanElement> {
   href: string
@@ -17,7 +17,7 @@ const Slab: FC<CustomUiSlabProps> = ({ className, href }) => {
       className={cn(
         "flex h-1 w-20 bg-primary-50 rounded-b-sm invisible",
         className,
-        isActive(href, pathname) && "visible"
+        isActive(href, pathname) && "visible",
       )}
     ></span>
   )
