@@ -44,19 +44,25 @@ export interface PaymentProvider {
   isEnabled: boolean
 }
 
-export interface RateResponse {
-  rate: number
-  token: string
-  currency: string
+export interface PaycrestRateResponse {
+  buy: {
+    rate: string // e.g. "1381.57"
+    providerIds: string[]
+    orderType: string
+    refundTimeoutMinutes: number
+  }
+  sell: {
+    rate: string
+    providerIds: string[]
+    orderType: string
+    refundTimeoutMinutes: number
+  }
 }
 
 export interface CentiivQuoteResponse {
-  fromAsset: string
-  toAsset: string
-  amount: number
-  quoteAmount: number
-  fee: number
-  expiry: number
+  rate: string 
+  estimatedReceivableAmount: string 
+  fees: string 
 }
 
 export interface BankAccountData {
@@ -98,7 +104,7 @@ export const providerService = {
    */
   getPaycrestRate: async (
     params: PaycrestRateParams,
-  ): Promise<ApiResponse<RateResponse>> => {
+  ): Promise<ApiResponse<PaycrestRateResponse>> => {
     const query = new URLSearchParams({
       token: params.token,
       amount: params.amount.toString(),
