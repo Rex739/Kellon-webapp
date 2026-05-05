@@ -34,7 +34,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useUser } from "@/hooks/use-user"
 import BankAccountModal from "./BankAccountModal"
-import { getBanks } from "@/services/api/bank"
+import { bankService } from "@/services/api/bank"
 import { BankDetail, User } from "@/types/db"
 import { updateProfile } from "@/services/api/user"
 
@@ -60,7 +60,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
   const fetchBanks = async () => {
     setIsBanksLoading(true)
     try {
-      const response = await getBanks()
+      const response = await bankService.getBanks()
       if (response?.data) {
         setBanks(response.data)
       }
