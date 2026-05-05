@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { BankDetail } from "@/types/db"
-import { addBank, deleteBank, updateBank } from "@/services/api/bank"
+import { bankService } from "@/services/api/bank"
 import BankList from "./BankList"
 import BankForm, { BankFormValues } from "./BankForm"
 
@@ -42,8 +42,8 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
 
       const res =
         view === "edit" && selectedBank?.id
-          ? await updateBank(selectedBank.id, payload)
-          : await addBank(payload as BankDetail)
+          ? await bankService.updateBank(selectedBank.id, payload)
+          : await bankService.addBank(payload as BankDetail)
 
       if (res.success) {
         toast.success(
@@ -65,7 +65,7 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await deleteBank(id)
+      const res = await bankService.deleteBank(id)
       if (res.success) {
         await onRefresh()
       }
