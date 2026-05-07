@@ -1,14 +1,22 @@
 "use client"
 
 import { FC, useEffect, useRef, useState } from "react"
+import Image from "next/image"
 import {
   usePrivy,
   useLoginWithOAuth,
   useIdentityToken,
 } from "@privy-io/react-auth"
-import { Button } from "@/components/ui/button"
-import { Chrome, Loader2 } from "lucide-react" // Added Loader2
+import { Loader2 } from "lucide-react"
+
 import { loginWithPrivy } from "@/services/api/auth"
+import { cn } from "@/lib/utils"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Icons } from "../Icons"
+import { useMediaQuery } from "@/hooks/use-media-query"
+import AuthHero from "./AuthHero"
 
 interface ContinueProps {
   onSuccessRedirect?: string
@@ -16,16 +24,19 @@ interface ContinueProps {
 
 const Continue: FC<ContinueProps> = ({ onSuccessRedirect = "/" }) => {
   const [isSyncing, setIsSyncing] = useState(false)
-  const hasSynced = useRef(false) // 👈 Prevents double-syncing
+
+  const hasSynced = useRef(false)
 
   const { authenticated, ready } = usePrivy()
+
   const { initOAuth, loading: oauthLoading } = useLoginWithOAuth()
+
   const { identityToken } = useIdentityToken()
+
+  const isDesktop = useMediaQuery("(min-width: 768px)")
 
   useEffect(() => {
     const syncUser = async () => {
-      // If session_token already exists, just redirect
-
       if (!identityToken || hasSynced.current) return
 
       hasSynced.current = true
@@ -33,11 +44,13 @@ const Continue: FC<ContinueProps> = ({ onSuccessRedirect = "/" }) => {
 
       try {
         await loginWithPrivy(identityToken)
-        // Give the cookie time to be set
+
         await new Promise((resolve) => setTimeout(resolve, 100))
+
         window.location.href = onSuccessRedirect
       } catch (err) {
         console.error("Auth sync failed:", err)
+
         setIsSyncing(false)
         hasSynced.current = false
       }
@@ -47,64 +60,97 @@ const Continue: FC<ContinueProps> = ({ onSuccessRedirect = "/" }) => {
       syncUser()
     }
   }, [ready, authenticated, identityToken, onSuccessRedirect])
-  const handleGoogleLogin = async () => {
+
+  const handleOAuthLogin = async (provider: "google" | "apple") => {
     try {
-      await initOAuth({ provider: "google" })
+      await initOAuth({ provider })
     } catch (err) {
-      console.error("Google login failed:", err)
+      console.error(`${provider} login failed:`, err)
     }
   }
 
-  // Busy if Privy isn't ready, OAuth is redirecting, OR we are currently syncing with our backend
   const isBusy = !ready || oauthLoading || isSyncing
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-6 p-8 h-screen bg-white">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-          Welcome
-        </h1>
-        <p className="text-gray-500 text-sm max-w-[240px] mx-auto">
-          {isSyncing
-            ? "Securing your session..."
-            : "Continue with Google to access your Kellon account."}
-        </p>
-      </div>
+    <div className="flex min-h-screen w-full overflow-hidden ">
+      {/* LEFT SIDE */}
+      <AuthHero />
 
-      <div className="w-full max-w-sm flex flex-col items-center">
-        <Button
-          onClick={handleGoogleLogin}
-          disabled={isBusy}
-          className="w-full flex items-center justify-center gap-3 h-14 text-base font-semibold transition-all hover:scale-[1.01] rounded-2xl border-2 border-gray-100"
-          variant="outline"
-        >
-          {isSyncing || oauthLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-[#a31d7e]" />
-          ) : (
-            <Chrome className="h-5 w-5 text-[#a31d7e]" />
-          )}
-
-          <span>
-            {isSyncing
-              ? "Syncing Account..."
-              : oauthLoading
-                ? "Redirecting..."
-                : "Continue with Google"}
-          </span>
-        </Button>
-
-        {!ready && !isSyncing && (
-          <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest mt-6 animate-pulse">
-            Initializing Secure Vault...
-          </p>
+      {/* RIGHT SIDE */}
+      <div
+        className={cn(
+          "relative flex flex-1 items-center justify-center overflow-hidden p-6 lg:p-12",
         )}
-      </div>
+      >
+        {/* Card */}
+        <div className="relative z-10 w-full max-w-[500px]">
+          <Card className="overflow-hidden rounded-[40px] border-0 shadow-none lg:border bg:border-white/60 dark:border-secondary-60 bg-transparent lg:bg-white/90 lg:dark:bg-secondary-60 lg:shadow-[0_20px_80px_rgba(0,0,0,0.06)] backdrop-blur-xl">
+            <CardContent className="p-6 sm:p-8 md:p-12">
+              {/* Mobile Logo */}
+              <div className="mb-10 flex justify-center">
+                <div className="flex items-center gap-3">
+                  <Icons.Logo className="h-11 w-11" />
 
-      <p className="text-[11px] text-center text-gray-400 max-w-[250px] leading-relaxed">
-        By continuing, you agree to our{" "}
-        <span className="underline cursor-pointer">Terms</span> and{" "}
-        <span className="underline cursor-pointer">Privacy Policy</span>.
-      </p>
+                  <span className="text-2xl font-bold  text-cryptoNight dark:text-white ">
+                    Kellon
+                  </span>
+                </div>
+              </div>
+
+              {/* Heading */}
+
+              <div className="mb-10 space-y-4 text-center">
+                <h2 className="font-bold  text-cryptoNight dark:text-white text-5xl max-w-[300px] mx-auto md:max-w-none">
+                  Get started in seconds
+                </h2>
+
+                <p className="mx-auto max-w-[340px] text-[15px] leading-relaxed text-gray-400 dark:text-gray-100">
+                  you&apos;re one step away
+                </p>
+              </div>
+
+              {/* CTA */}
+              <div className="space-y-5">
+                <Button
+                  onClick={() => handleOAuthLogin("google")}
+                  disabled={isBusy}
+                  size="full"
+                  variant={"secondary"}
+                  className="h-[60px] rounded-2xl border hover:bg-secondary-70 dark:bg-white2 text-white dark:hover:bg-gray-200 dark:text-2xl dark:text-gray-700 "
+                >
+                  {oauthLoading || isSyncing ? (
+                    <Loader2 className="h-5 w-5 animate-spin text-white dark:text-gray-700" />
+                  ) : (
+                    <Icons.Google className="h-5 w-5" />
+                  )}
+
+                  <span className="ml-3 text-[15px] font-semibold ">
+                    Continue with Google
+                  </span>
+                </Button>
+
+                <p className="text-center text-xs leading-relaxed text-gray-400 dark:text-gray-100">
+                  Fast onboarding. No complicated setup.
+                </p>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-10 border-t border-neutral-100 dark:border-gray-500 pt-6">
+                <p className="text-center text-xs leading-relaxed text-gray-400 dark:text-gray-100">
+                  By continuing, you agree to our{" "}
+                  <button className="font-semibold text-cryptoNight dark:text-gray-400 hover:underline">
+                    Terms
+                  </button>{" "}
+                  and{" "}
+                  <button className="font-semibold text-cryptoNight dark:text-gray-400 hover:underline">
+                    Privacy Policy
+                  </button>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }
