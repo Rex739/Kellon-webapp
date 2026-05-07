@@ -1,25 +1,26 @@
 "use client"
 
-import { useState } from "react"
-import { Globe, Mail, FileCheck, ArrowRight } from "lucide-react"
+import { useState, FC } from "react"
+import Image from "next/image"
+import { ArrowRight } from "lucide-react"
 import { Icons } from "./Icons"
 import { Button } from "./ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
+import AuthHero from "./auth/AuthHero"
 
 const SLIDES = [
   {
     title: "Finance Without Borders",
-    desc: "Experience a financial system as global as you are. Manage and move USDC & USDT with instant settlements.",
-    icon: <Globe className="w-12 h-12 text-white" />, // Changed to white for the magenta background
+    desc: "Experience a financial system as global as you are. Manage and move USDC with instant settlements and zero friction.",
   },
   {
-    title: "Send to Any Email",
-    desc: "The end of wallet-address anxiety. Send funds to any email instantly—we'll secure it in a magic wallet.",
-    icon: <Mail className="w-12 h-12 text-white" />,
+    title: "Send via Email",
+    desc: "The end of wallet-address anxiety. Send funds to any email instantly—we'll secure it in a unique Magic Wallet.",
   },
   {
-    title: "Global Payouts, Simplified",
-    desc: "Get paid like a local, anywhere on Earth. Issue smart invoices and receive instant settlements.",
-    icon: <FileCheck className="w-12 h-12 text-white" />,
+    title: "Fast Payouts",
+    desc: "Get paid like a local, anywhere. Issue smart invoices and receive instant settlements via global rails.",
   },
 ]
 
@@ -27,7 +28,7 @@ interface WebOnboardingProps {
   onComplete: () => void
 }
 
-export default function WebOnboarding({ onComplete }: WebOnboardingProps) {
+const WebOnboarding: FC<WebOnboardingProps> = ({ onComplete }) => {
   const [current, setCurrent] = useState(0)
 
   const handleNext = () => {
@@ -39,91 +40,98 @@ export default function WebOnboarding({ onComplete }: WebOnboardingProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans">
-      {/* Container Card */}
-      <div className="w-full max-w-3xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[500px]">
-        {/* Left Side: Brand Identity Area */}
-        <div className="md:w-2/5 bg-[#a31d7e] p-12 flex flex-col items-center justify-center text-center space-y-6 transition-colors duration-500">
-          <div className="relative">
-            {/* Ambient pulse effect behind the icon */}
-            <div className="absolute inset-0 bg-white/10 blur-2xl rounded-full animate-pulse" />
+    <div className="flex min-h-screen w-full overflow-hidden bg-white dark:bg-secondary-60">
+      {/* --- LEFT SIDE: Brand Identity (Identical to Continue.tsx) --- */}
+      <AuthHero />
 
-            <div className="relative bg-white/10 p-8 rounded-[32px] backdrop-blur-md border border-white/20 shadow-inner">
-              {/* Dynamic Icon Rendering */}
+      {/* --- RIGHT SIDE / MOBILE DRAWER --- */}
+      <div className="relative flex flex-1 items-end lg:items-center justify-center overflow-hidden bg-[#fcfcfc] dark:bg-secondary-50">
+        {/* Mobile Header Logo */}
+        <div className="absolute top-12 left-0 right-0 flex justify-center lg:hidden z-10">
+          <div className="flex items-center gap-3">
+            <Icons.Logo className="h-10 w-10" />
+            <span className="text-2xl font-bold text-cryptoNight dark:text-white">
+              Kellon
+            </span>
+          </div>
+        </div>
+
+        {/* Content Card / Drawer */}
+        <div className="relative z-20 w-full lg:max-w-[500px]">
+          <Card
+            className={cn(
+              "overflow-hidden border-0 shadow-none lg:border transition-all duration-500",
+              // Desktop: Cloned from Continue.tsx card
+              "lg:rounded-[40px] lg:bg-white/90 lg:dark:bg-secondary-60 lg:shadow-[0_20px_80px_rgba(0,0,0,0.06)] lg:backdrop-blur-xl lg:border bg:border-white/60 dark:border-secondary-60",
+              // Mobile Drawer Styling:
+              "rounded-t-[40px] bg-white dark:bg-secondary-60/50 shadow-[0_-15px_50px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-700 ease-out",
+            )}
+          >
+            <CardContent className="p-8 sm:p-10 lg:p-12 max-w-lg mx-auto">
+              {/* Progress Dots */}
+              <div className="flex justify-center gap-2 mb-10">
+                {SLIDES.map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "h-1.5 rounded-full transition-all duration-300",
+                      i === current
+                        ? "w-8 bg-primary-50"
+                        : "w-2 bg-gray-100 dark:bg-gray-200",
+                    )}
+                  />
+                ))}
+              </div>
+
+              {/* Dynamic Text Content */}
               <div
                 key={current}
-                className="animate-in fade-in zoom-in duration-500"
+                className="mb-12 text-center space-y-4 animate-in fade-in slide-in-from-right-6 duration-500 "
               >
-                {SLIDES[current].icon}
+                <h2 className="font-bold  text-cryptoNight dark:text-white text-5xl max-w-[300px] mx-auto md:max-w-none">
+                  {SLIDES[current].title}
+                </h2>
+                <p className="mx-auto max-w-[340px] text-[15px] leading-relaxed text-gray-400 dark:text-gray-100">
+                  {SLIDES[current].desc}
+                </p>
               </div>
-            </div>
-          </div>
 
-          <div className="space-y-1">
-            <Icons.Logo className="w-10 h-10 mx-auto bg-white/20 p-2 rounded-md" />
-            <h2 className="text-2xl font-bold text-white tracking-tight">
-              Kellon
-            </h2>
-          </div>
-        </div>
+              {/* CTA Button: Cloned from Continue.tsx */}
+              <div className="space-y-6">
+                <Button
+                  onClick={handleNext}
+                  size="full"
+                  variant="secondary"
+                  className="h-[60px] rounded-2xl border hover:bg-secondary-70 dark:bg-white2 text-white dark:hover:bg-gray-200 dark:text-2xl dark:text-gray-700 shadow-md active:scale-[0.98] transition-all"
+                >
+                  <span className="flex items-center justify-center gap-3 text-[15px] font-semibold">
+                    {current === SLIDES.length - 1 ? "Get Started" : "Continue"}
+                    <ArrowRight className="h-5 w-5" />
+                  </span>
+                </Button>
 
-        {/* Right Side: Content & Navigation */}
-        <div className="md:w-3/5 p-10 md:p-14 flex flex-col justify-between bg-white">
-          <div className="space-y-8">
-            {/* Progress Indicators */}
-            <div className="flex gap-2">
-              {SLIDES.map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i === current ? "w-10 bg-[#a31d7e]" : "w-4 bg-gray-100"
-                  }`}
-                />
-              ))}
-            </div>
+                <div className="flex flex-col items-center gap-4">
+                  <p className="text-center text-xs text-gray-400 dark:text-gray-400">
+                    Step {current + 1} of {SLIDES.length}
+                  </p>
 
-            {/* Text Content with simple transition key */}
-            <div
-              key={current}
-              className="animate-in slide-in-from-right-4 fade-in duration-500"
-            >
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
-                {SLIDES[current].title}
-              </h1>
-              <p className="text-gray-500 text-lg leading-relaxed">
-                {SLIDES[current].desc}
-              </p>
-            </div>
-          </div>
+                  <button
+                    onClick={onComplete}
+                    className="text-xs font-semibold text-gray-400 hover:text-cryptoNight dark:hover:text-white transition-colors"
+                  >
+                    Skip exploration
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="flex flex-col gap-4 mt-12">
-            <Button
-              size="full"
-              onClick={handleNext}
-              className="bg-[#a31d7e] hover:bg-[#861668] text-white text-lg h-14 rounded-2xl shadow-lg shadow-magenta-900/10 transition-all active:scale-[0.98]"
-            >
-              <span className="flex items-center justify-center gap-2">
-                {current === SLIDES.length - 1 ? "Get Started" : "Continue"}
-                <ArrowRight
-                  className={`w-5 h-5 transition-transform ${current !== SLIDES.length - 1 ? "group-hover:translate-x-1" : ""}`}
-                />
-              </span>
-            </Button>
-
-            <button
-              onClick={onComplete}
-              className="text-gray-400 font-semibold text-sm py-2 hover:text-[#a31d7e] transition-colors flex items-center justify-center gap-1"
-            >
-              Skip exploration
-            </button>
-          </div>
+          {/* Spacer for mobile to ensure the drawer sits flush at bottom but has padding for safe areas */}
+          <div className="h-6 lg:hidden bg-white dark:bg-secondary-70" />
         </div>
       </div>
-
-      {/* Visual Footer */}
-      <p className="mt-8 text-gray-400 text-xs font-medium uppercase tracking-widest">
-        Secure • Non-Custodial • Global
-      </p>
     </div>
   )
 }
+
+export default WebOnboarding
