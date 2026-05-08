@@ -37,7 +37,7 @@ const Topbar: FC<TopbarProps> = ({ className, initialProfile }) => {
     <section
       className={cn(
         className,
-        "px-5 py-2 md:py-0 relative md:fixed w-full z-50 bg-white dark:bg-secondary-50 md:border-b border-input",
+        "px-5 py-2 md:py-0 relative md:fixed w-full z-50 bg-white dark:bg-secondary-50",
       )}
     >
       <header className="flex justify-between items-center">
