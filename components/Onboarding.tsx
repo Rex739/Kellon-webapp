@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, FC } from "react"
-import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { Icons } from "./Icons"
 import { Button } from "./ui/button"
@@ -62,12 +61,12 @@ const WebOnboarding: FC<WebOnboardingProps> = ({ onComplete }) => {
             className={cn(
               "overflow-hidden border-0 shadow-none lg:border transition-all duration-500",
               // Desktop: Cloned from Continue.tsx card
-              "lg:rounded-[40px] lg:bg-white/90 lg:dark:bg-secondary-60 lg:shadow-[0_20px_80px_rgba(0,0,0,0.06)] lg:backdrop-blur-xl lg:border bg:border-white/60 dark:border-secondary-60",
+              "lg:rounded-[40px] lg:bg-white/90 lg:dark:bg-secondary-60 lg:shadow-[0_20px_80px_rgba(0,0,0,0.06)] lg:backdrop-blur-xl lg:border bg:border-white/60 dark:border-secondary-60 lg:max-w-md  lg:mx-auto",
               // Mobile Drawer Styling:
               "rounded-t-[40px] bg-white dark:bg-secondary-60/50 shadow-[0_-15px_50px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-700 ease-out",
             )}
           >
-            <CardContent className="p-8 sm:p-10 lg:p-12 max-w-lg mx-auto">
+            <CardContent className="p-6 sm:p-8 md:p-12">
               {/* Progress Dots */}
               <div className="flex justify-center gap-2 mb-10">
                 {SLIDES.map((_, i) => (
@@ -125,9 +124,6 @@ const WebOnboarding: FC<WebOnboardingProps> = ({ onComplete }) => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Spacer for mobile to ensure the drawer sits flush at bottom but has padding for safe areas */}
-          <div className="h-6 lg:hidden bg-white dark:bg-secondary-70" />
         </div>
       </div>
     </div>
