@@ -1,44 +1,58 @@
 "use client"
 
-import { logout } from "@/services/api/auth"
-import { LogOut } from "lucide-react"
-import { FC } from "react"
+import { FC, useState } from "react"
 import Cookies from "js-cookie"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
 
-type SignoutProps = object
+import { LogOut, Loader2 } from "lucide-react"
+import { usePrivy } from "@privy-io/react-auth"
+import { cn } from "@/lib/utils"
 
-const Signout: FC<SignoutProps> = ({}) => {
-  const router = useRouter()
+// 1. Import your custom API logout function
+import { logout as apiLogout } from "@/services/api/auth"
+
+const Signout: FC = () => {
+  const [isLoading, setIsLoading] = useState(false)
+
+  // 2. Alias the Privy logout function to avoid naming conflicts
+  const { logout: privyLogout } = usePrivy()
 
   const handleSignout = async () => {
-    // Retrieve the deviceToken from cookies
+    setIsLoading(true)
     const deviceToken = Cookies.get("deviceToken")
 
     try {
-      // Pass the token to the logout utility to handle backend cleanup
-      await logout(deviceToken || "")
+      // Backend logout
+      await apiLogout(deviceToken || "")
 
-      // Clean up the local cookie
+      // Remove cookie
       Cookies.remove("deviceToken")
 
-      toast.success("Logged out successfully")
+      // Privy logout
+      await privyLogout()
 
-      router.push("/continue")
+      // Redirect
+      window.location.href = "/continue"
     } catch (error) {
-      console.error("Logout failed", error)
-      toast.error("Failed to sign out. Please try again.")
+      console.error("Logout failed:", error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <div
-      className="text-red-400 focus:bg-red-400/10 focus:text-red-400 cursor-pointer py-3 rounded-xl transition-colors flex items-center"
+      className={cn(
+        "text-red-400 focus:bg-red-400/10 focus:text-red-400 cursor-pointer py-3 rounded-xl transition-colors flex items-center",
+        isLoading && "opacity-50 pointer-events-none",
+      )}
       onClick={handleSignout}
     >
-      <LogOut className="mr-3 h-4 w-4" />
-      <span>Sign out</span>
+      {isLoading ? (
+        <Loader2 className="mr-3 h-4 w-4 animate-spin" />
+      ) : (
+        <LogOut className="mr-3 h-4 w-4" />
+      )}
+      <span>{isLoading ? "Signing out..." : "Sign out"}</span>
     </div>
   )
 }
