@@ -39,7 +39,7 @@ export async function loginWithPrivy(
  * Notifies the backend to invalidate the session and clear cookies.
  */
 export async function logout(device: string) {
-  console.log("token", device)
+  
   const res = await fetch(`/api/auth/logout`, {
     method: "POST",
     headers: {
@@ -79,8 +79,9 @@ export async function getSession(
     })
 
     return await handleResponse(res)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Session fetch failed:", error)
+    // console.error("Session fetch failed:", error)
     return null
   }
 }
