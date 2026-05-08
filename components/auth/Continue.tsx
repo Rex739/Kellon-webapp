@@ -1,7 +1,6 @@
 "use client"
 
 import { FC, useEffect, useRef, useState } from "react"
-import Image from "next/image"
 import {
   usePrivy,
   useLoginWithOAuth,
@@ -14,8 +13,7 @@ import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Icons } from "../Icons"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { Icons } from "@/components/Icons"
 import AuthHero from "./AuthHero"
 
 interface ContinueProps {
@@ -33,7 +31,6 @@ const Continue: FC<ContinueProps> = ({ onSuccessRedirect = "/" }) => {
 
   const { identityToken } = useIdentityToken()
 
-  const isDesktop = useMediaQuery("(min-width: 768px)")
 
   useEffect(() => {
     const syncUser = async () => {
@@ -84,7 +81,7 @@ const Continue: FC<ContinueProps> = ({ onSuccessRedirect = "/" }) => {
       >
         {/* Card */}
         <div className="relative z-10 w-full max-w-[500px]">
-          <Card className="overflow-hidden rounded-[40px] border-0 shadow-none lg:border bg:border-white/60 dark:border-secondary-60 bg-transparent lg:bg-white/90 lg:dark:bg-secondary-60 lg:shadow-[0_20px_80px_rgba(0,0,0,0.06)] backdrop-blur-xl">
+          <Card className="overflow-hidden rounded-[40px] border-0 shadow-none lg:border bg:border-white/60 dark:border-secondary-60 bg-transparent lg:bg-white/90 lg:dark:bg-secondary-60 lg:shadow-[0_20px_80px_rgba(0,0,0,0.06)] backdrop-blur-xl lg:max-w-md lg:mx-auto">
             <CardContent className="p-6 sm:p-8 md:p-12">
               {/* Mobile Logo */}
               <div className="mb-10 flex justify-center">
