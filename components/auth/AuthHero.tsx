@@ -2,6 +2,7 @@
 
 import { FC } from "react"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 const AuthHero: FC = () => {
   return (
@@ -47,13 +48,26 @@ const AuthHero: FC = () => {
       </div>
 
       {/* DEVICE MOCKUP */}
-      <div className="absolute right-[-16%] bottom-[-10%] z-10 h-[88%] w-[110%] animate-in fade-in slide-in-from-right-12 duration-1000 delay-30 ">
+      <div
+        className={cn(
+          " absolute z-10 animate-in fade-in slide-in-from-right-12 duration-1000delay-300",
+
+          "right-[-22%] bottom-[-16%] w-[680px] h-[680px]",
+          "vh-xs:right-[-28%]  vh-xs:bottom-[-22%] vh-xs:w-[560px] vh-xs:h-[560px]",
+
+          "vh-sm:right-[-22%] vh-sm:bottom-[-14%]  vh-sm:w-[620px]  vh-sm:h-[620px]",
+
+          " vh-md:right-[-18%] vh-md:bottom-[-10%]  vh-md:w-[720px]  vh-md:h-[720px]",
+
+          "  vh-lg:right-[-14%] vh-lg:bottom-[-6%]  vh-lg:w-[820px] vh-lg:h-[820px]  ",
+        )}
+      >
         <Image
           src="https://res.cloudinary.com/djd1gxvwm/image/upload/v1778092378/Mockuuups_Free_mockup_of_female_hand_holding_iPhone_14_Pro_qjbyhg.png"
           alt="Kellon App"
           fill
           priority
-          className="object-contain object-right-bottom drop-shadow-[0_40px_55px_rgba(0,0,0,0.38)] "
+          className="object-contain object-right-bottom drop-shadow-[0_40px_55px_rgba(0,0,0,0.38)]"
         />
       </div>
 
