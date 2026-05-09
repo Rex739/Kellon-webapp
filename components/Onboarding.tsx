@@ -66,7 +66,7 @@ const WebOnboarding: FC<WebOnboardingProps> = ({ onComplete }) => {
               "rounded-t-[40px] bg-white dark:bg-secondary-60/50 shadow-[0_-15px_50px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-700 ease-out",
             )}
           >
-            <CardContent className="p-6 sm:p-8 md:p-12">
+            <CardContent className="p-6 sm:p-8 md:p-12 xs:max-w-md xs:mx-auto">
               {/* Progress Dots */}
               <div className="flex justify-center gap-2 mb-10">
                 {SLIDES.map((_, i) => (
