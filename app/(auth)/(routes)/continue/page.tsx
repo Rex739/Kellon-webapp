@@ -1,13 +1,8 @@
 import Continue from "@/components/auth/Continue"
 import { FC } from "react"
 
-
 const page: FC = ({}) => {
-  return (
-    <div>
-      <Continue />
-    </div>
-  )
+  return <Continue />
 }
 
 export default page
