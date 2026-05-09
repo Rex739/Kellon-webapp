@@ -12,12 +12,22 @@
 }
 
 @theme {
-  /* media query */
-  --breakpoint-1xl: 1440px;
-  --breakpoint-2xl: 1500px;
-  --breakpoint-3xl: 2000px;
+ /* Mobile */
   --breakpoint-xs: 375px;
   --breakpoint-xm: 390px;
+
+  /* Laptop/Desktop */
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* Macbook / Large laptops */
+  --breakpoint-1xl: 1440px;
+  --breakpoint-2xl: 1536px;
+
+  /* Large desktop */
+  --breakpoint-3xl: 1728px;
+  --breakpoint-4xl: 2000px;
+
   /* colors */
 
   /* primary is shades of pink */
@@ -185,6 +195,12 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+@custom-variant vh-xs (@media (min-height: 640px));
+@custom-variant vh-sm (@media (min-height: 720px));
+@custom-variant vh-md (@media (min-height: 820px));
+@custom-variant vh-lg (@media (min-height: 920px));
+@custom-variant vh-xl (@media (min-height: 1024px));
 
 /* For Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
