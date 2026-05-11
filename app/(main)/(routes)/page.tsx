@@ -10,7 +10,7 @@ const Page: FC = async ({}) => {
 
   return (
     <section className="min-h-screen flex lg:items-center">
-      <DashboardClient initialProfile={profile} />
+      <DashboardClient profile={profile} />
     </section>
   )
 }
