@@ -65,7 +65,7 @@ export function useProviderRates({
               if (res.success && res.data?.buy?.rate) {
                 const rate = parseFloat(res.data.buy.rate)
                 if (!isNaN(rate)) {
-                  estimatedCrypto = fiatAmount * rate
+                  estimatedCrypto = fiatAmount / rate
                 }
               }
             } else if (provider.name.toLowerCase() === "centiiv") {
