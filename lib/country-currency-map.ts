@@ -121,6 +121,6 @@ export const isFiatCurrency = (symbol: string | undefined): boolean => {
 export const getCurrencyDecimals = (currency: string | undefined): number => {
   if (!currency) return 2
   const uppercased = currency.toUpperCase()
-  if (["NGN", "ZAR", "JPY", "KRW", "CLP"].includes(uppercased)) return 0
+  if (["ZAR", "JPY", "KRW", "CLP"].includes(uppercased)) return 0
   return 2
 }
