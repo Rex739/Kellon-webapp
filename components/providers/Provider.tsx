@@ -28,14 +28,16 @@ const Provider: FC<ProviderProps> = async ({ children }) => {
           <ReactQueryProvider>
             <CustomWagmiProvider>
               <SDKProviders />
-              <main className="font-manrope bg-gray-80 dark:bg-secondary-50 text-cryptoNight dark:text-white relative">
-                {children}
-                <Toaster
-                  richColors
-                  position="top-center"
-                  // This ensures the toast matches your dark/light mode setup
-                  theme="system"
-                />
+              <main className="font-manrope text-cryptoNight dark:text-white relative min-h-screen">
+                {/* Enhanced Glass Texture */}
+                <div className="fixed inset-0 z-0">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white via-violet1/10 to-white dark:from-violet1/10 dark:via-secondary-50 dark:to-secondary-40" />
+                  <div className="absolute inset-0 backdrop-blur-xl" />
+                  <div className="absolute inset-0 bg-white/5 dark:bg-black/10" />
+                </div>
+
+                <div className="relative z-10">{children}</div>
+                <Toaster richColors position="top-center" theme="system" />
               </main>
             </CustomWagmiProvider>
           </ReactQueryProvider>
