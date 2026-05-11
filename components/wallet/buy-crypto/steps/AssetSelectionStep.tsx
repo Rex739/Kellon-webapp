@@ -1,30 +1,30 @@
-import { cn } from "@/lib/utils"
-import Image from "next/image"
-import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react"
-import ChainIcon from "@/components/wallet/ChainIcon"
-import { getSupportedChainsForToken } from "@/lib/chains"
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react";
+import ChainIcon from "@/components/wallet/ChainIcon";
+import { getSupportedChainsForToken } from "@/lib/chains";
 
 interface AssetSelectionStepProps {
-  asset: string | null
-  networkName: string | null
-  networkId: string | null
-  country: string | null
-  isDetectingCountry: boolean
-  onSelectAsset: (asset: string) => void
-  onSelectNetwork: (name: string, id: string) => void
-  onOpenCountryModal: () => void
-  onContinue: () => void
+  asset: string | null;
+  networkName: string | null;
+  networkId: string | null;
+  country: string | null;
+  isDetectingCountry: boolean;
+  onSelectAsset: (asset: string) => void;
+  onSelectNetwork: (name: string, id: string) => void;
+  onOpenCountryModal: () => void;
+  onContinue: () => void;
 }
 
 const assets = [
   { id: "usdc", name: "USD Coin", symbol: "USDC" },
   { id: "usdt", name: "Tether", symbol: "USDT" },
-]
+];
 
-const getFlag = (code: string) =>
+export const getFlag = (code: string) =>
   code
     .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397))
+    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
 
 export function AssetSelectionStep({
   asset,
@@ -38,7 +38,7 @@ export function AssetSelectionStep({
 }: AssetSelectionStepProps) {
   const availableNetworks = asset
     ? getSupportedChainsForToken(asset as "USDC" | "USDT")
-    : []
+    : [];
 
   return (
     <div className="flex flex-col flex-1 space-y-8 px-4 animate-in fade-in slide-in-from-right-4">
@@ -113,8 +113,8 @@ export function AssetSelectionStep({
           </h3>
           <div className="grid grid-cols-2 gap-3">
             {availableNetworks.map((chain) => {
-              const chainNameLower = chain.name.toLowerCase()
-              const isSelected = networkName === chainNameLower
+              const chainNameLower = chain.name.toLowerCase();
+              const isSelected = networkName === chainNameLower;
               return (
                 <button
                   key={chain.id}
@@ -131,7 +131,7 @@ export function AssetSelectionStep({
                   <ChainIcon name={chain.name} size={20} />
                   {chain.name}
                 </button>
-              )
+              );
             })}
           </div>
         </section>
@@ -148,5 +148,5 @@ export function AssetSelectionStep({
         </div>
       )}
     </div>
-  )
+  );
 }
