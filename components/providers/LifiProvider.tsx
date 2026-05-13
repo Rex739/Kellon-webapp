@@ -1,11 +1,12 @@
-// SDKProviders.tsx (client)
 "use client"
+
 import { useEffect } from "react"
 import { EVM, config as lifiConfig } from "@lifi/sdk"
-import { getWalletClient, switchChain } from "@wagmi/core"
-import { wagmiConfig } from "@/components/providers/wagmi-provider" // your wagmi config
 
-export function SDKProviders() {
+import { wagmiConfig } from "./wagmi-provider"
+import { getWalletClient } from "@wagmi/core"
+
+export default function SDKProviders() {
   useEffect(() => {
     const evmProvider = EVM({
       getWalletClient: () => getWalletClient(wagmiConfig),
@@ -14,9 +15,11 @@ export function SDKProviders() {
         return getWalletClient(wagmiConfig, { chainId: chain.id })
       },
     })
-    // set providers at runtime (merges/overwrites)
+
+    // Register runtime EVM provider (client-side)
     lifiConfig.setProviders([evmProvider])
-    // optionally set rpcUrls at runtime if needed
+
+    console.log("✅ LiFi runtime provider set.")
   }, [])
 
   return null
