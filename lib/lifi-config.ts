@@ -14,11 +14,11 @@ function getRequiredEnv(name: string, varValue: string | undefined): string {
 
 export async function initLifiConfig() {
   // Load API / RPC keys from environment (server-only)
-  const lifiKey = getRequiredEnv("LIFI_API_KEY", process.env.LIFI_API_KEY)
+  const lifiKey = getRequiredEnv("LIFI_API_KEY", process.env.LIFI_API_ID)
   const ankrKey = getRequiredEnv("ANKR_RPC_KEY", process.env.ANKR_RPC_KEY)
   const alchemyKey = getRequiredEnv(
     "ALCHEMY_RPC_KEY",
-    process.env.ALCHEMY_RPC_KEY
+    process.env.ALCHEMY_RPC_KEY,
   )
   const infuraKey = getRequiredEnv("INFURA_RPC_KEY", process.env.INFURA_RPC_KEY)
   const config = createConfig({
