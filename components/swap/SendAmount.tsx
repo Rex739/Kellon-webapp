@@ -8,7 +8,7 @@ import { Icons } from "@/components/Icons"
 import TokenWithChainLogo from "./TokenWithChainLogo"
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import FallbackTokenAndChainLogo from "./FallbackTokenAndChainLogo"
-import { formatUSD } from "@/lib/formatNumber"
+import { formatUSD } from "@/lib/format-number"
 
 interface SendAmountProps {
   fromToken: Token | null

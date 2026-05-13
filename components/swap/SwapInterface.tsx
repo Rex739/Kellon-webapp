@@ -13,6 +13,8 @@ import {
   TokensResponse,
   RoutesResponse,
   getTokenBalance,
+  getToken,
+  config,
 } from "@lifi/sdk"
 import { useQuery } from "@tanstack/react-query"
 import { useAccount, useChainId, useSwitchChain, useWalletClient } from "wagmi"
@@ -24,7 +26,7 @@ import {
   sendAmountFormSchema,
   SendAmountFormSchemaType,
 } from "@/lib/validations/form"
-import { useSupportedChains } from "@/hooks/useSupportedChains"
+import { useSupportedChains } from "@/hooks/use-supported-chains"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@/lib/utils"
@@ -40,13 +42,13 @@ import {
 import { useRouter, useSearchParams } from "next/navigation"
 import SendAmount from "./SendAmount"
 import { Icons } from "@/components/Icons"
-import { useDebounce } from "@/hooks/useDebounce"
+import { useDebounce } from "@/hooks/use-debounce"
 import SelectedRoute from "./SelectedRoute"
 import NoRoutesAvailable from "./NoRoutesAvailable"
 import { RouteOptionSkeleton } from "@/components/Skeletons"
 import RoutesCard from "./RoutesCard"
 import RouteOptionsMobile from "./RouteOptionMobile"
-import { useIsMobile } from "@/hooks/useIsMobile"
+import { useIsMobile } from "@/hooks/use-is-mobile"
 
 // import { getAPIKey } from "@/lib/APIConfig"
 
@@ -115,7 +117,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
       const chainTokens = fromTokensData.tokens[fromChain]
       const token = chainTokens.find((t) => t.address === fromTokenAddress)
       const native = chainTokens.find(
-        (t) => t.address === "0x0000000000000000000000000000000000000000"
+        (t) => t.address === "0x0000000000000000000000000000000000000000",
       )
       setFromToken(token || native || chainTokens[0])
     }
@@ -126,7 +128,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
       const chainTokens = toTokensData.tokens[toChain]
       const token = chainTokens.find((t) => t.address === toTokenAddress)
       const native = chainTokens.find(
-        (t) => t.address === "0x0000000000000000000000000000000000000000"
+        (t) => t.address === "0x0000000000000000000000000000000000000000",
       )
       setToToken(token || native || chainTokens[0])
     }
@@ -164,7 +166,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
         fromTokenAddress: fromToken.address,
         fromAmount: parseUnits(
           debouncedFromAmount,
-          fromToken.decimals
+          fromToken.decimals,
         ).toString(),
         toChainId: toChain,
         toTokenAddress: toToken.address,
@@ -179,7 +181,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
         toToken &&
         debouncedFromAmount &&
         parseFloat(debouncedFromAmount) > 0 &&
-        address
+        address,
     ),
     staleTime: 30_000, // 30 seconds
     retry: 2,
@@ -214,7 +216,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
       const allowance = await getTokenAllowance(
         fromToken,
         address,
-        selectedRoute.steps[0].estimate.approvalAddress as `0x${string}`
+        selectedRoute.steps[0].estimate.approvalAddress as `0x${string}`,
       )
 
       if (allowance === undefined || allowance < requiredAmount) {
@@ -271,7 +273,9 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
   const isBridge =
     (selectedRoute &&
       selectedRoute.steps.some((step) =>
-        step.includedSteps.some((includedStep) => includedStep.type === "cross")
+        step.includedSteps.some(
+          (includedStep) => includedStep.type === "cross",
+        ),
       )) ||
     fromChain !== toChain
 
@@ -305,15 +309,95 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
         console.log("Missing address or token")
         return
       }
-
+      const chainId = 1
+      const tokenAddress = "0x0000000000000000000000000000000000000000"
+      const token = await getToken(chainId, tokenAddress)
+      console.log("fromToken", fromToken.address)
       console.log("chain__id", fromToken.chainId)
       console.log("address", address)
-      const tokenBalance = await getTokenBalance(address, fromToken)
+      const tokenBalance = await getTokenBalance(address, token)
       console.log("token_balance:", tokenBalance)
     } catch (error) {
       console.error(error)
     }
   }
+
+  const chain__Id = 1
+  const tokenAddress = "0x0000000000000000000000000000000000000000"
+
+  const getTokenBalanceByAddressAndTokenAddress = async (
+    address,
+    tokenAddress,
+  ) => {
+    console.log("Getting balance for:", {
+      address,
+      tokenAddress,
+      chainId: fromChain,
+    })
+
+    // Try viem RPC first (most reliable)
+    try {
+      const { createPublicClient, http, formatEther } = await import("viem")
+      const { mainnet } = await import("viem/chains")
+
+      const publicClient = createPublicClient({
+        chain: mainnet,
+        transport: http(),
+      })
+
+      const balance = await publicClient.getBalance({
+        address: address as `0x${string}`,
+      })
+
+      const formatted = formatEther(balance)
+      console.log(`✅ Balance: ${formatted} ETH`)
+
+      return {
+        amount: balance.toString(),
+        formatted: formatted,
+        symbol: "ETH",
+      }
+    } catch (error) {
+      console.error("RPC method failed:", error)
+    }
+
+    return null
+  }
+
+  const simpleTest = async () => {
+    // Test with DAI on Ethereum (popular token)
+    const testToken = await getToken(
+      1,
+      "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    )
+    console.log("Test token:", testToken)
+
+    if (testToken) {
+      // Use Vitalik's address for testing
+      const testAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+      const testBalance = await getTokenBalance(testAddress, testToken)
+      console.log("Vitalik's DAI balance:", testBalance)
+
+      if (testBalance) {
+        console.log("✅ SDK is working!")
+      } else {
+        console.log("❌ SDK might have issues")
+      }
+    }
+  }
+  const getConfig = async () => {
+    try {
+      // getChains() returns a Promise, so use await
+      const chains = await config.get()
+      console.log("chains", chains)
+    } catch (error) {
+      console.error("Error fetching chains:", error)
+    }
+    console.log("here")
+  }
+
+  // Call it properly
+  getConfig()
 
   return (
     <section className={cn(className)}>
@@ -347,7 +431,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
           <Card
             className={cn(
               "w-[90dvw] xm:max-w-[350px] md:max-w-[414px] lg:w-md xl:max-w-lg mx-auto bg-white dark:bg-secondary-10 rounded-2xl text-gray-20 dark:text-gray-40 border-input px-0!",
-              isModifyBorderRadius && !selectedRoute && "lg:rounded-r-none"
+              isModifyBorderRadius && !selectedRoute && "lg:rounded-r-none",
             )}
           >
             {/* Header */}
@@ -365,7 +449,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
                     onClick={handleRefetchRoute}
                     className={cn(
                       "w-5 h-5 cursor-pointer",
-                      isRefetched && "rotate-360 duration-300"
+                      isRefetched && "rotate-360 duration-300",
                     )}
                   />
                 </div>
@@ -458,7 +542,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
                   "w-full text-white",
                   !selectedRoute ||
                     !isConnected ||
-                    (isBridging && "cursor-not-allowed")
+                    (isBridging && "cursor-not-allowed"),
                 )}
                 variant="blue"
                 size="lg"
@@ -470,7 +554,18 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
               >
                 {routesLoading ? "Finding routes..." : "Swap"}
               </Button>
-              <Button onClick={() => fetchTokenBalance()}>check balance</Button>
+              <Button
+                onClick={() =>
+                  getTokenBalanceByAddressAndTokenAddress(
+                    "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+                    tokenAddress,
+                  )
+                }
+              >
+                check balance
+              </Button>
+              <Button onClick={() => simpleTest()}>test</Button>
+              <Button onClick={() => getConfig()}> config </Button>
             </CardFooter>
           </Card>
 
