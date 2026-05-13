@@ -12,7 +12,12 @@ import {
   Info,
 } from "lucide-react"
 
-export const MENU_SECTIONS = (handlers: any) => [
+type Handlers = {
+  openModal: (modal: string) => void
+  handleShare: () => void
+}
+
+export const MENU_SECTIONS = (handlers: Handlers) => [
   {
     title: "Security & Backup",
     items: [
