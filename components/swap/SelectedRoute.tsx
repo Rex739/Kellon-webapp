@@ -5,12 +5,12 @@ import { CardContent } from "@/components/ui/card"
 import { ChevronDown, Clock } from "lucide-react"
 import { Route, ExtendedChain } from "@lifi/sdk"
 import TokenWithChainLogo from "./TokenWithChainLogo"
-import { useFormatTokenAmount } from "@/hooks/useFormatTokenAmount"
+import { useFormatTokenAmount } from "@/hooks/use-format-token-amount"
 import { Icons } from "@/components/Icons"
 import AggregatorLogo from "./AggregatorLogo"
 import Dot from "@/components/ui/dot"
 import { cn } from "@/lib/utils"
-import { formatUSD } from "@/lib/formatNumber"
+import { formatUSD } from "@/lib/format-number"
 import {
   calculatePriceImpact,
   getPriceImpactText,
@@ -19,8 +19,8 @@ import {
   getAggregatorInfo,
   extractRouteData,
   getChainName,
-} from "@/lib/routeHelpers"
-import { formatTime } from "@/lib/formatTime"
+} from "@/lib/route-helpers"
+import { formatTime } from "@/lib/format-time"
 
 interface SelectedRouteProps {
   selectedRoute: Route | null
@@ -80,7 +80,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
     toAmount,
     fromToken,
     toToken,
-    isReversed
+    isReversed,
   )
 
   const slippage = steps.map((step) => step.action.slippage)
@@ -136,7 +136,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
               onClick={(e) => toggleDropdown(id, e)}
               className={cn(
                 "w-4 h-4 transition-transform duration-200",
-                openDropdownId === id && "rotate-180"
+                openDropdownId === id && "rotate-180",
               )}
             />
           </div>
@@ -150,7 +150,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
                   step,
                   chains,
                   fromAmount,
-                  fromToken
+                  fromToken,
                 )
                 if (!stepDetails) return null
 
@@ -234,7 +234,7 @@ const SelectedRoute: FC<SelectedRouteProps> = ({
                 onClick={(e) => toggleDropdown("2", e)}
                 className={cn(
                   "w-4 h-4 transition-transform duration-200",
-                  openDropdownId === "2" && "rotate-180"
+                  openDropdownId === "2" && "rotate-180",
                 )}
               />
             </div>
