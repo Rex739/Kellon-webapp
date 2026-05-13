@@ -28,7 +28,7 @@ const AssetCard: FC<AssetCardProps> = ({
       className={cn(
         "flex items-center justify-between p-4 md:p-6 transition-all cursor-pointer group rounded-xl md:rounded-lg",
         "bg-white border border-black/5 hover:bg-gray-50",
-        "dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60 dark:hover:border-primary-70/30",
+        "dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60/50 ",
         className,
       )}
     >
@@ -45,7 +45,7 @@ const AssetCard: FC<AssetCardProps> = ({
         </div>
 
         <div>
-          <p className=" text-base md:text-lg text-black dark:text-white transition-colors group-hover:text-primary-70">
+          <p className=" text-base md:text-lg text-black dark:text-white transition-colors ">
             {name}
           </p>
           <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400  tracking-mid">
