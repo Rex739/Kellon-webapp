@@ -178,6 +178,16 @@ export const TESTNET_CHAINS: Record<SupportedChainKeys, ChainConfig> = {
   },
 }
 
+const CHAIN_LABELS: Record<string, string> = {
+  stellar: "Stellar Network",
+  base: "Base Network",
+  bnb: "BNB Smart Chain",
+  celo: "Celo Network",
+  polygon: "Polygon Network",
+}
+
+
+
 /**
  * 4. UI HELPERS
  */
@@ -225,6 +235,13 @@ export const getSupportedChainsForToken = (tokenSymbol: "USDC" | "USDT") => {
   
   return Object.values(chains).filter((chain) => !!chain[key]);
 };
+
+
+export function getChainLabel(chain?: string | null): string {
+  if (!chain) return "Network"
+
+  return CHAIN_LABELS[chain.toLowerCase()] || chain
+}
 
 
 export const getEVMChains = () =>
