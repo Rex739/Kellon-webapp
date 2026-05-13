@@ -202,57 +202,57 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
   const routes = routesData?.routes || []
 
   // Execute swap
-  const executeSwap = async () => {
-    if (!selectedRoute || !address || !fromToken || !walletClient) return
-    setIsBridging(true)
+  // const executeSwap = async () => {
+  //   if (!selectedRoute || !address || !fromToken || !walletClient) return
+  //   setIsBridging(true)
 
-    try {
-      if (chainId !== fromChain) {
-        await switchChain({ chainId: fromChain })
-      }
+  //   try {
+  //     if (chainId !== fromChain) {
+  //       await switchChain({ chainId: fromChain })
+  //     }
 
-      const requiredAmount = parseUnits(debouncedFromAmount, fromToken.decimals)
+  //     const requiredAmount = parseUnits(debouncedFromAmount, fromToken.decimals)
 
-      const allowance = await getTokenAllowance(
-        fromToken,
-        address,
-        selectedRoute.steps[0].estimate.approvalAddress as `0x${string}`,
-      )
+  //     const allowance = await getTokenAllowance(
+  //       fromToken,
+  //       address,
+  //       selectedRoute.steps[0].estimate.approvalAddress as `0x${string}`,
+  //     )
 
-      if (allowance === undefined || allowance < requiredAmount) {
-        toast.loading("Approving token...")
+  //     if (allowance === undefined || allowance < requiredAmount) {
+  //       toast.loading("Approving token...")
 
-        try {
-          await setTokenAllowance({
-            walletClient,
-            token: fromToken,
-            spenderAddress: selectedRoute.steps[0].estimate
-              .approvalAddress as `0x${string}`,
-            amount: requiredAmount,
-            infiniteApproval: false,
-          })
-          toast.success("Approval successful ✅")
-        } catch (err) {
-          toast.error("Approval failed ❌")
-          setIsBridging(false)
-          return
-        } finally {
-          toast.dismiss()
-        }
-      }
+  //       try {
+  //         await setTokenAllowance({
+  //           walletClient,
+  //           token: fromToken,
+  //           spenderAddress: selectedRoute.steps[0].estimate
+  //             .approvalAddress as `0x${string}`,
+  //           amount: requiredAmount,
+  //           infiniteApproval: false,
+  //         })
+  //         toast.success("Approval successful ✅")
+  //       } catch (err) {
+  //         toast.error("Approval failed ❌")
+  //         setIsBridging(false)
+  //         return
+  //       } finally {
+  //         toast.dismiss()
+  //       }
+  //     }
 
-      await executeRoute(selectedRoute, {
-        updateRouteHook: (updatedRoute) => {
-          console.log("updatedRoute", updatedRoute)
-        },
-      })
-    } catch (error) {
-      console.error("Swap error:", error)
-      toast.error("Transaction failed")
-    } finally {
-      setIsBridging(false)
-    }
-  }
+  //     await executeRoute(selectedRoute, {
+  //       updateRouteHook: (updatedRoute) => {
+  //         console.log("updatedRoute", updatedRoute)
+  //       },
+  //     })
+  //   } catch (error) {
+  //     console.error("Swap error:", error)
+  //     toast.error("Transaction failed")
+  //   } finally {
+  //     setIsBridging(false)
+  //   }
+  // }
 
   const handleChainSelectOpen = (side: "from" | "to") => {
     setSelectingSide(side)
@@ -326,8 +326,8 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
   const tokenAddress = "0x0000000000000000000000000000000000000000"
 
   const getTokenBalanceByAddressAndTokenAddress = async (
-    address,
-    tokenAddress,
+    address: string,
+    tokenAddress: string,
   ) => {
     console.log("Getting balance for:", {
       address,
@@ -544,13 +544,13 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
                     !isConnected ||
                     (isBridging && "cursor-not-allowed"),
                 )}
-                variant="blue"
+                variant="link"
                 size="lg"
-                onClick={executeSwap}
+                // onClick={executeSwap}
                 disabled={
                   !selectedRoute || !isConnected || isBridging || routesLoading
                 }
-                isLoading={isBridging || routesLoading}
+                // isLoading={isBridging || routesLoading}
               >
                 {routesLoading ? "Finding routes..." : "Swap"}
               </Button>
