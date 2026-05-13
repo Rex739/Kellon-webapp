@@ -7,13 +7,13 @@ import {
   getAggregatorInfo,
   getPriceImpactText,
   getStepDetails,
-} from "@/lib/routeHelpers"
+} from "@/lib/route-helpers"
 import TokenWithChainLogo from "./TokenWithChainLogo"
-import { useFormatTokenAmount } from "@/hooks/useFormatTokenAmount"
-import { formatUSD } from "@/lib/formatNumber"
+import { useFormatTokenAmount } from "@/hooks/use-format-token-amount"
+import { formatUSD } from "@/lib/format-number"
 import { ChevronDown, Clock, RotateCw } from "lucide-react"
 import { Icons } from "@/components/Icons"
-import { formatTime } from "@/lib/formatTime"
+import { formatTime } from "@/lib/format-time"
 import { ExtendedChain, Route } from "@lifi/sdk"
 import Dot from "@/components/ui/dot"
 import AggregatorLogo from "./AggregatorLogo"
@@ -82,11 +82,11 @@ const RouteOptionsMobile: FC<RouteOptionsProps> = ({
           toAmount,
           fromToken,
           toToken,
-          isReversed
+          isReversed,
         )
 
         const detailedSteps = route.steps.flatMap(
-          (step) => step.includedSteps || [step]
+          (step) => step.includedSteps || [step],
         )
 
         return (
@@ -104,7 +104,7 @@ const RouteOptionsMobile: FC<RouteOptionsProps> = ({
                   onClick={handleRefetchRoute}
                   className={cn(
                     "w-5 h-5 cursor-pointer",
-                    isRefetched && "rotate-360 duration-300"
+                    isRefetched && "rotate-360 duration-300",
                   )}
                 />
               </div>
@@ -150,7 +150,7 @@ const RouteOptionsMobile: FC<RouteOptionsProps> = ({
                       onClick={(e) => toggleDropdown(id, e)}
                       className={cn(
                         "w-4 h-4 transition-transform duration-200 flex-shrink-0",
-                        openDropdownId === id && "rotate-180"
+                        openDropdownId === id && "rotate-180",
                       )}
                     />
                   </div>
@@ -165,7 +165,7 @@ const RouteOptionsMobile: FC<RouteOptionsProps> = ({
                         step,
                         chains,
                         fromAmount,
-                        fromToken
+                        fromToken,
                       )
                       if (!stepDetails) return null
 
