@@ -3,7 +3,7 @@
 import { FC, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
-import { useSupportedChains } from "@/hooks/useSupportedChains"
+import { useSupportedChains } from "@/hooks/use-supported-chains"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import {
@@ -17,10 +17,7 @@ import TokenSelect from "./TokenSelect"
 import { type Token } from "@lifi/sdk"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import {
-  ChainSkeletonItem,
-  TopChainSkeletonItem,
-} from "@/components/Skeletons"
+import { ChainSkeletonItem, TopChainSkeletonItem } from "@/components/Skeletons"
 
 // Component Props
 interface ChainSelectProps {
@@ -48,7 +45,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
 
   // Helpers
   const filteredChains = chains.filter((chain) =>
-    chain.name.toLowerCase().includes(search.toLowerCase())
+    chain.name.toLowerCase().includes(search.toLowerCase()),
   )
 
   const buildUrl = (key: string, value: string) => {
@@ -58,7 +55,8 @@ const ChainSelect: FC<ChainSelectProps> = ({
   }
 
   const topChains = chains.slice(0, 8)
-
+  const base = chains
+  console.log("base", base)
   return (
     <>
       {/* =================== MOBILE VIEW =================== */}
@@ -84,13 +82,13 @@ const ChainSelect: FC<ChainSelectProps> = ({
                     <Link
                       href={buildUrl(
                         side === "from" ? "fromChain" : "toChain",
-                        chain.id.toString()
+                        chain.id.toString(),
                       )}
                       key={chain.id}
                       className={cn(
                         "flex flex-col items-center justify-center p-2 border border-input rounded-xl transition text-black dark:text-white cursor-pointer",
                         selectedChain === chain.id &&
-                          "border-primary bg-accent shadow"
+                          "border-primary bg-accent shadow",
                       )}
                     >
                       <Image
@@ -159,13 +157,13 @@ const ChainSelect: FC<ChainSelectProps> = ({
                   <Link
                     href={buildUrl(
                       side === "from" ? "fromChain" : "toChain",
-                      chain.id.toString()
+                      chain.id.toString(),
                     )}
                     key={chain.id}
                     className={cn(
                       "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white2 dark:hover:bg-secondary-60 hover:rounded-lg transition text-black dark:text-white cursor-pointer",
                       selectedChain === chain.id &&
-                        "bg-purple-100 dark:bg-secondary-70 rounded-lg"
+                        "bg-purple-100 dark:bg-secondary-70 rounded-lg",
                     )}
                   >
                     <Image
@@ -219,13 +217,13 @@ const ChainSelect: FC<ChainSelectProps> = ({
                       <Link
                         href={buildUrl(
                           side === "from" ? "fromChain" : "toChain",
-                          chain.id.toString()
+                          chain.id.toString(),
                         )}
                         key={chain.id}
                         className={cn(
                           "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary-99 dark:hover:bg-secondary-60 rounded-lg hover:rounded-lg transition text-black dark:text-white cursor-pointer",
                           selectedChain === chain.id &&
-                            "bg-purple-100 dark:bg-secondary-70 rounded-lg"
+                            "bg-purple-100 dark:bg-secondary-70 rounded-lg",
                         )}
                       >
                         <Image
