@@ -44,7 +44,7 @@ const AddFundsModal: FC<AddFundsModalProps> = ({
       <div className="flex justify-start mb-6">
         <button
           onClick={() => onClose(false)}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity outline-none"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -82,7 +82,7 @@ const AddFundsModal: FC<AddFundsModalProps> = ({
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-secondary-20 border-none rounded-[32px] outline-none [&>button]:hidden">
+        <DialogContent className="sm:max-w-[425px] bg-gray-70 dark:bg-black2 border-none rounded-[32px] outline-none [&>button]:hidden">
           <DialogHeader className="sr-only">
             <DialogTitle>Add Funds</DialogTitle>
           </DialogHeader>
@@ -94,7 +94,7 @@ const AddFundsModal: FC<AddFundsModalProps> = ({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="bg-white dark:bg-secondary-20 border-none rounded-t-[32px] outline-none [&>button]:hidden">
+      <DrawerContent className="bg-gray-70 dark:bg-black2 border-none rounded-t-[32px] outline-none [&>button]:hidden">
         <DrawerHeader className="sr-only">
           <DrawerTitle>Add Funds</DrawerTitle>
         </DrawerHeader>
@@ -118,7 +118,7 @@ function AddOption({
   return (
     <button
       onClick={onClick}
-      className="flex items-center justify-between w-full p-5 bg-gray-50 dark:bg-secondary-60 hover:bg-gray-100 dark:hover:bg-secondary-40 border border-slate-200 dark:border-white/5 rounded-[24px] transition-all group outline-none"
+      className="flex items-center justify-between w-full p-5 bg-white dark:bg-secondary-60 hover:bg-gray-50 dark:hover:bg-secondary-60/50 border border-black/5 dark:border-white/10 rounded-[24px] transition-all group outline-none cursor-pointer"
     >
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-white dark:bg-white/5 flex items-center justify-center border border-black/5 dark:border-white/5">
