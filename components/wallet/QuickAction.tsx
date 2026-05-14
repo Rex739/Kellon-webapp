@@ -15,7 +15,7 @@ export default function QuickAction({
   return (
     <button
       onClick={onClick}
-      className="group flex w-full flex-col items-center outline-none md:rounded-lg md:border md:border-input text-black dark:text-white md:bg-white md:p-4 md:text-left md:transition  md:active:scale-98 md:duration-300 md:hover:border-gray-60 md:dark:bg-secondary-50 md:dark:hover:border-white/20 cursor-pointer hover:bg-gray-50 dark:md:hover:bg-secondary-60/50"
+      className="group flex w-full flex-col items-center outline-none md:rounded-lg md:border md:border-black/5 md:dark:border-white/10 text-black dark:text-white md:bg-white md:p-4 md:text-left md:transition  md:active:scale-98 md:duration-300 md:hover:border-gray-60 md:dark:bg-secondary-50 md:dark:hover:border-white/20 cursor-pointer hover:bg-gray-50 dark:md:hover:bg-secondary-60/50"
     >
       <div
         className={cn(
