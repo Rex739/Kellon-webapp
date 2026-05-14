@@ -13,7 +13,7 @@ const layout: FC<layoutProps> = async ({ children }) => {
 
   return (
     <main>
-      <Topbar className="" initialProfile={profile} />
+      <Topbar profile={profile} />
       {children}
       <BottomNavigationBar className="md:hidden z-20" profile={profile} />
     </main>

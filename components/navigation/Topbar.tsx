@@ -10,8 +10,6 @@ import { Icons } from "@/components/Icons"
 import { usePathname } from "next/navigation"
 import { isActive } from "@/lib/is-active-link"
 
-import { useUser } from "@/hooks/use-user"
-
 import NotificationBell from "@/components/notification/NotificationBell"
 import UserNavigation from "./user-navigation/UserNavigation"
 import ModeToggle from "@/components/ModeToggle"
@@ -20,12 +18,11 @@ import SearchBar from "@/components/SearchBar"
 import { User } from "@/types/db"
 
 interface TopbarProps extends HtmlHTMLAttributes<HTMLDivElement> {
-  initialProfile: User
+  profile: User
 }
 
-const Topbar: FC<TopbarProps> = ({ className, initialProfile }) => {
+const Topbar: FC<TopbarProps> = ({ className, profile }) => {
   const pathname = usePathname()
-  const { data: profile } = useUser(initialProfile)
 
   const HIDDEN_PATHS = ["/continue"]
 
@@ -37,7 +34,7 @@ const Topbar: FC<TopbarProps> = ({ className, initialProfile }) => {
     <section
       className={cn(
         className,
-        "hidden md:block px-5 py-2 md:py-0 relative md:fixed w-full z-50 ",
+        "hidden md:block px-5 py-2 md:py-0 relative md:fixed w-full md:z-50  ",
       )}
     >
       <header className="flex justify-between items-center">
