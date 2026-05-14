@@ -8,7 +8,7 @@ const page: FC = async ({}) => {
   if (!profile) return redirect("/")
 
   return (
-    <section>
+    <section className="md:pt-12">
       <ProfilePage initialProfile={profile} />
     </section>
   )
