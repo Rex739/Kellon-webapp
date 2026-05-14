@@ -1,30 +1,30 @@
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react";
-import ChainIcon from "@/components/wallet/ChainIcon";
-import { getSupportedChainsForToken } from "@/lib/chains";
+import { cn } from "@/lib/utils"
+import Image from "next/image"
+import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react"
+import ChainIcon from "@/components/wallet/ChainIcon"
+import { getSupportedChainsForToken } from "@/lib/chains"
 
 interface AssetSelectionStepProps {
-  asset: string | null;
-  networkName: string | null;
-  networkId: string | null;
-  country: string | null;
-  isDetectingCountry: boolean;
-  onSelectAsset: (asset: string) => void;
-  onSelectNetwork: (name: string, id: string) => void;
-  onOpenCountryModal: () => void;
-  onContinue: () => void;
+  asset: string | null
+  networkName: string | null
+  networkId: string | null
+  country: string | null
+  isDetectingCountry: boolean
+  onSelectAsset: (asset: string) => void
+  onSelectNetwork: (name: string, id: string) => void
+  onOpenCountryModal: () => void
+  onContinue: () => void
 }
 
 const assets = [
   { id: "usdc", name: "USD Coin", symbol: "USDC" },
   { id: "usdt", name: "Tether", symbol: "USDT" },
-];
+]
 
 export const getFlag = (code: string) =>
   code
     .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
+    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397))
 
 export function AssetSelectionStep({
   asset,
@@ -38,7 +38,7 @@ export function AssetSelectionStep({
 }: AssetSelectionStepProps) {
   const availableNetworks = asset
     ? getSupportedChainsForToken(asset as "USDC" | "USDT")
-    : [];
+    : []
 
   return (
     <div className="flex flex-col flex-1 space-y-8 px-4 animate-in fade-in slide-in-from-right-4">
@@ -47,7 +47,7 @@ export function AssetSelectionStep({
           onClick={onOpenCountryModal}
           disabled={isDetectingCountry}
           className={cn(
-            "flex items-center gap-2 bg-white dark:bg-secondary-60/40 border border-slate-200 dark:border-white/10 px-4 py-1.5 rounded-full transition-all",
+            "flex items-center gap-2 bg-white border border-black/5 hover:bg-gray-50 dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60/50  px-4 py-1.5 rounded-full transition-all",
             isDetectingCountry && "animate-pulse opacity-70",
           )}
         >
@@ -74,7 +74,7 @@ export function AssetSelectionStep({
                 "w-full flex items-center justify-between p-4 rounded-[24px] border transition-all",
                 asset === a.symbol
                   ? "border-primary-70 bg-primary-70/5 dark:bg-primary-70/10"
-                  : "bg-gray-50 dark:bg-secondary-60 border-slate-200 dark:border-white/5",
+                  : "bg-white border border-black/5 hover:bg-gray-50 dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60/50 ",
               )}
             >
               <div className="flex items-center gap-4">
@@ -113,8 +113,8 @@ export function AssetSelectionStep({
           </h3>
           <div className="grid grid-cols-2 gap-3">
             {availableNetworks.map((chain) => {
-              const chainNameLower = chain.name.toLowerCase();
-              const isSelected = networkName === chainNameLower;
+              const chainNameLower = chain.name.toLowerCase()
+              const isSelected = networkName === chainNameLower
               return (
                 <button
                   key={chain.id}
@@ -125,13 +125,13 @@ export function AssetSelectionStep({
                     "flex items-center gap-3 p-4 rounded-xl border transition-all text-sm font-bold",
                     isSelected
                       ? "bg-primary-70 border-primary-70 text-white shadow-lg"
-                      : "bg-gray-50 dark:bg-secondary-60 border-slate-200 dark:border-white/5",
+                      : "bg-white border border-black/5 hover:bg-gray-50 dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60/50 ",
                   )}
                 >
                   <ChainIcon name={chain.name} size={20} />
                   {chain.name}
                 </button>
-              );
+              )
             })}
           </div>
         </section>
@@ -148,5 +148,5 @@ export function AssetSelectionStep({
         </div>
       )}
     </div>
-  );
+  )
 }
