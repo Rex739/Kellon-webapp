@@ -313,16 +313,16 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
         className={cn(
           "px-0 py-0 text-gray-20 dark:text-gray-40",
           "rounded-none",
-          "md:rounded-lg md:border md:border-input md:bg-gray-99 md:p-4 md:shadow-sm",
+          "md:rounded-lg  md:bg-white/30 md:p-4",
           "md:dark:bg-secondary-50/10",
         )}
       >
         <div className="grid md:gap-4 lg:grid-cols-12">
           {/* ─── Balance Card ─── */}
           <section className="flex flex-col items-start space-y-4 md:mb-0 md:block lg:col-span-8">
-            <div className="relative flex w-full flex-col items-start space-y-4 overflow-hidden rounded-none bg-transparent p-0 text-left text-gray-20 shadow-none dark:text-gray-40 md:min-h-[360px] md:items-stretch md:justify-between md:rounded-lg md:border md:border-gray-80/80 md:p-8 md:text-left md:text-cryptoNight md:shadow-sm md:dark:border-white/10 md:dark:bg-secondary-50/10 md:dark:text-white">
+            <div className="relative flex w-full flex-col items-start space-y-4 overflow-hidden rounded-none bg-transparent p-0 text-left text-gray-20 shadow-none dark:text-gray-40 md:min-h-[360px] md:items-stretch md:justify-between md:rounded-lg md:border md:border-gray-80/80 md:p-8 md:text-left md:text-cryptoNight md:shadow-sm md:dark:border-white/10 md:dark:bg-secondary-50/20 md:dark:text-white">
               {/* Background Gradient (Desktop Only) */}
-              <div className="absolute inset-x-0 top-0 hidden h-32 md:block md:bg-[radial-gradient(circle_at_20%_0%,rgba(167,22,127,0.12),transparent_34%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.65),transparent_30%)] md:dark:bg-[radial-gradient(circle_at_20%_0%,rgba(193,92,165,0.45),transparent_34%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.14),transparent_30%)]" />
+              <div className="absolute inset-x-0 top-0 hidden h-52 md:block md:bg-[radial-gradient(circle_at_20%_0%,rgba(167,22,127,0.12),transparent_34%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.65),transparent_50%)] md:dark:bg-[radial-gradient(circle_at_20%_0%,rgba(193,92,165,0.45),transparent_48%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.14),transparent_38%)]" />
 
               {/* ─── Top Row: Flag, Label, Currency Toggle ─── */}
               <div className="relative flex items-center justify-start gap-3 self-stretch md:justify-between">
@@ -445,11 +445,11 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
         {/* ─── Assets & Activity Grid ─── */}
         <div className="mt-6 grid grid-cols-1 gap-6 md:mt-4 md:gap-4 lg:grid-cols-12">
           {/* Assets Column */}
-          <div className="space-y-4 md:rounded-lg md:border md:border-input md:bg-white md:p-5 md:dark:bg-secondary-50/10 lg:col-span-8">
+          <div className="space-y-4 md:rounded-lg md:border md:border-input md:p-5  lg:col-span-8">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold tracking-normal text-black dark:text-white md:text-xl">
-                 My Assets
+                  My Assets
                 </h3>
               </div>
             </div>
@@ -487,7 +487,7 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
           </div>
 
           {/* Activity Column */}
-          <div className="flex flex-col space-y-4 md:rounded-lg md:border md:border-input md:bg-white md:p-5 md:dark:bg-secondary-50/10 lg:col-span-4">
+          <div className="flex flex-col space-y-4 md:rounded-lg md:border md:border-input  md:p-5  lg:col-span-4">
             <div className="flex items-end justify-between">
               <div>
                 <h3 className="text-lg font-semibold tracking-normal text-black dark:text-white md:text-xl">
