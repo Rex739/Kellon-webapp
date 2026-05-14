@@ -1,38 +1,38 @@
-"use client";
+"use client"
 
-import React, { useState, useMemo, useCallback } from "react";
-import { ArrowLeft, X } from "lucide-react";
-import { useBuyCryptoState, STEPS } from "@/hooks/use-buy-cypto-state";
-import { useCountryDetection } from "@/hooks/use-country-detection";
+import React, { useState, useMemo, useCallback, useEffect } from "react"
+import { ArrowLeft, X } from "lucide-react"
+import { useBuyCryptoState, STEPS } from "@/hooks/use-buy-cypto-state"
+import { useCountryDetection } from "@/hooks/use-country-detection"
 import {
   getCurrencyForCountry,
   getCurrencySymbol,
   getCurrencyDecimals,
-} from "@/lib/country-currency-map";
-import { getChainById } from "@/lib/chains";
-import PaymentMethodModal from "@/components/modals/PaymentMethodModal";
-import { CountrySelectorModal } from "@/components/modals/CountrySelectorModal";
-import { SUPPORTED_RAMP_COUNTRIES } from "@/lib/supported-countries";
-import { useExchangeRate } from "@/hooks/use-exchange-rate";
-import { useProviders } from "@/hooks/use-provider";
-import { useProviderRates } from "@/hooks/use-provider-rates"; // <-- new import
-import StepIndicator from "./BuyCryptoStepIndicator";
-import { AssetSelectionStep } from "./steps/AssetSelectionStep";
-import { AmountEntryStep } from "./steps/AmountEntryStep";
-import { ProviderSelectionStep } from "./steps/ProviderSelectionStep";
-import { ReviewStep } from "./steps/ReviewStep";
+} from "@/lib/country-currency-map"
+import { getChainById } from "@/lib/chains"
+import PaymentMethodModal from "@/components/modals/PaymentMethodModal"
+import { CountrySelectorModal } from "@/components/modals/CountrySelectorModal"
+import { SUPPORTED_RAMP_COUNTRIES } from "@/lib/supported-countries"
+import { useExchangeRate } from "@/hooks/use-exchange-rate"
+import { useProviders } from "@/hooks/use-provider"
+import { useProviderRates } from "@/hooks/use-provider-rates"
+import StepIndicator from "./BuyCryptoStepIndicator"
+import { AssetSelectionStep } from "./steps/AssetSelectionStep"
+import { AmountEntryStep } from "./steps/AmountEntryStep"
+import { ProviderSelectionStep } from "./steps/ProviderSelectionStep"
+import { ReviewStep } from "./steps/ReviewStep"
 
-const MIN_CRYPTO_THRESHOLD = 0.01;
+const MIN_CRYPTO_THRESHOLD = 0.01
 const methodLabels: Record<string, string> = {
   card: "Debit/Credit Card",
   bank: "Bank Transfer",
   mobile_money: "Mobile Money",
-};
+}
 
 export default function BuyCryptoFlow({
   onAttemptClose,
 }: {
-  onAttemptClose: (hasStarted: boolean) => void;
+  onAttemptClose: (hasStarted: boolean) => void
 }) {
   const {
     step,
@@ -48,49 +48,52 @@ export default function BuyCryptoFlow({
     setAmount,
     setCountryAndCurrency,
     setStep,
-  } = useBuyCryptoState();
+  } = useBuyCryptoState()
 
   // Local UI state
-  const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isCountryModalOpen, setIsCountryModalOpen] = useState(false)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<
     "card" | "bank" | "mobile_money"
-  >("card");
+  >("card")
+
+  // Track if amount was set via input (desktop) or keypad (mobile)
+  const [isDesktopAmountValid, setIsDesktopAmountValid] = useState(false)
 
   // Country detection (stable callback)
   const handleCountryDetected = useCallback(
     (detectedCountry: string, detectedCurrency: string) => {
-      setCountryAndCurrency(detectedCountry, detectedCurrency, "auto");
+      setCountryAndCurrency(detectedCountry, detectedCurrency, "auto")
     },
     [setCountryAndCurrency],
-  );
+  )
 
   const { isDetecting: isDetectingCountry } = useCountryDetection(
     country,
     countrySource,
     handleCountryDetected,
-  );
+  )
 
   // Derived values
   const fiatCurrency = useMemo(
     () => getCurrencyForCountry(country || "US"),
     [country],
-  );
+  )
   const fiatSymbol = useMemo(
     () => getCurrencySymbol(fiatCurrency),
     [fiatCurrency],
-  );
+  )
   const decimals = useMemo(
     () => getCurrencyDecimals(fiatCurrency),
     [fiatCurrency],
-  );
+  )
   const selectedChain = useMemo(
     () => (networkId ? getChainById(networkId) : null),
     [networkId],
-  );
+  )
 
   // Exchange rate
-  const { exchangeRate, isRateLoading } = useExchangeRate(fiatCurrency, asset);
+  const { exchangeRate, isRateLoading } = useExchangeRate(fiatCurrency, asset)
 
   // Providers
   const {
@@ -98,19 +101,24 @@ export default function BuyCryptoFlow({
     selectedProviderId,
     setSelectedProviderId,
     isLoadingProviders,
-  } = useProviders(country, asset, networkName, currency);
+  } = useProviders(country, asset, networkName, currency)
 
   // Derived amount values
   const cryptoAmountValue = useMemo(() => {
-    if (!amount || exchangeRate === 0) return 0;
-    return Number(amount) / exchangeRate;
-  }, [amount, exchangeRate]);
-  const isAmountValid = cryptoAmountValue >= MIN_CRYPTO_THRESHOLD;
-  const fiatAmountNum = useMemo(() => parseFloat(amount) || 0, [amount]);
+    if (!amount || exchangeRate === 0) return 0
+    return Number(amount) / exchangeRate
+  }, [amount, exchangeRate])
 
-  // Provider‑specific rates (only when step is "provider" and inputs are valid)
-  // In BuyCryptoFlow.tsx, inside the component:
-  const showRates = step === "provider" && isAmountValid && fiatAmountNum > 0;
+  const isAmountValid = useMemo(() => {
+    const numAmount = parseFloat(amount)
+    if (isNaN(numAmount) || numAmount <= 0) return false
+    return cryptoAmountValue >= MIN_CRYPTO_THRESHOLD
+  }, [cryptoAmountValue, amount])
+
+  const fiatAmountNum = useMemo(() => parseFloat(amount) || 0, [amount])
+
+  // Provider-specific rates (only when step is "provider" and inputs are valid)
+  const showRates = step === "provider" && isAmountValid && fiatAmountNum > 0
   const { rates: providerRates, isLoadingRates } = useProviderRates({
     providers: showRates ? providers : [],
     asset,
@@ -119,36 +127,59 @@ export default function BuyCryptoFlow({
     networkName,
     isAmountValid: showRates,
     isLoadingProviders,
-  });
+  })
+
   // Handlers
   const handleKeypadPress = (val: string) => {
-    let nextAmount = amount;
+    let nextAmount = amount
     if (val === "delete") {
-      nextAmount = amount.slice(0, -1);
+      nextAmount = amount.slice(0, -1)
     } else if (val === "." && (amount.includes(".") || decimals === 0)) {
-      return;
+      return
     } else if (amount === "0" && val !== ".") {
-      nextAmount = val;
+      nextAmount = val
     } else {
-      nextAmount = amount + val;
+      nextAmount = amount + val
     }
-    setAmount(nextAmount);
-  };
+    setAmount(nextAmount)
+  }
+
+  const handleAmountChange = (value: string) => {
+    // Validate amount format (allow numbers with up to 2 decimals)
+    const regex = /^\d*\.?\d{0,2}$/
+    if (regex.test(value) || value === "") {
+      setAmount(value)
+      // Validate if amount is valid
+      const numValue = parseFloat(value)
+      const isValid = !isNaN(numValue) && numValue > 0
+      setIsDesktopAmountValid(isValid)
+    }
+  }
 
   const confirmPurchase = () => {
-    alert("Initiating Gateway...");
-  };
+    alert("Initiating Gateway...")
+  }
 
   // Step navigation
   const goBack = () => {
-    if (step === "amount") setStep("asset");
-    else if (step === "provider") setStep("amount");
-    else if (step === "review") setStep("provider");
-    else onAttemptClose(false);
-  };
+    if (step === "amount") setStep("asset")
+    else if (step === "provider") setStep("amount")
+    else if (step === "review") setStep("provider")
+    else onAttemptClose(false)
+  }
+
+  // Sync amount validity for desktop
+  useEffect(() => {
+    if (step === "amount") {
+      // Ensure amount validity is in sync
+      const isValid =
+        parseFloat(amount) > 0 && cryptoAmountValue >= MIN_CRYPTO_THRESHOLD
+      setIsDesktopAmountValid(isValid)
+    }
+  }, [amount, cryptoAmountValue, step])
 
   return (
-    <div className="flex flex-col container max-w-md mx-auto min-h-[90vh] pb-32">
+    <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-12">
       {/* Header */}
       <div className="flex items-center justify-between mb-8 px-4 pt-4">
         <button
@@ -187,6 +218,7 @@ export default function BuyCryptoFlow({
             onContinue={() => setStep("amount")}
           />
         )}
+
         {step === "amount" && (
           <AmountEntryStep
             asset={asset}
@@ -204,9 +236,15 @@ export default function BuyCryptoFlow({
             paymentMethodLabel={methodLabels[paymentMethod]}
             onOpenPaymentModal={() => setIsPaymentModalOpen(true)}
             onKeypadPress={handleKeypadPress}
-            onContinue={() => setStep("provider")}
+            onContinue={() => {
+              if (isAmountValid) {
+                setStep("provider")
+              }
+            }}
+            onAmountChange={handleAmountChange}
           />
         )}
+
         {step === "provider" && (
           <ProviderSelectionStep
             asset={asset}
@@ -255,9 +293,9 @@ export default function BuyCryptoFlow({
         selectedCountry={country || "NG"}
         countries={SUPPORTED_RAMP_COUNTRIES}
         onSelect={(code) => {
-          setCountryAndCurrency(code, getCurrencyForCountry(code), "manual");
+          setCountryAndCurrency(code, getCurrencyForCountry(code), "manual")
         }}
       />
     </div>
-  );
+  )
 }
