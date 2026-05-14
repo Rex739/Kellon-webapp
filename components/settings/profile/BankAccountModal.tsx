@@ -83,7 +83,7 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
       }}
     >
       <DialogTrigger asChild className="cursor-pointer">
-        <button className="w-full bg-white dark:bg-secondary-60 border border-slate-100 dark:border-none shadow-sm rounded-[24px] p-5 flex items-center justify-between group hover:bg-slate-50 transition-colors">
+        <button className="w-full bg-white dark:bg-secondary-50 border border-slate-100 dark:border-white/10 rounded-[24px] p-5 flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-secondary-60/50 transition-colors ">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-slate-100 dark:bg-[#1a1f2e] rounded-xl text-primary-70">
               <Landmark className="w-6 h-6" />

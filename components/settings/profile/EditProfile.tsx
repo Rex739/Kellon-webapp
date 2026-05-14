@@ -32,7 +32,6 @@ import { Badge } from "@/components/ui/badge"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { useUser } from "@/hooks/use-user"
 import BankAccountModal from "./BankAccountModal"
 import { bankService } from "@/services/api/bank"
 import { BankDetail, User } from "@/types/db"
@@ -51,7 +50,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { data: profile } = useUser(initialProfile)
+ const profile = initialProfile
 
   // --- Bank State Lifted Here ---
   const [banks, setBanks] = useState<BankDetail[]>([])
@@ -110,7 +109,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
   }
 
   return (
-    <section className="min-h-screen text-slate-900 dark:text-white pb-10 transition-colors duration-300  lg:py-20">
+    <section className="min-h-screen text-slate-900 dark:text-white pb-10 transition-colors duration-300 lg:py-20">
       <div className="flex items-center justify-between px-6 py-5 max-w-2xl mx-auto">
         <div
           onClick={() => router.push("/")}
@@ -127,7 +126,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
 
       <div className="max-w-2xl mx-auto px-6 space-y-6">
         {/* Profile Card */}
-        <div className="bg-white dark:bg-secondary-60 rounded-[32px] p-8 flex flex-col items-center text-center space-y-4 shadow-sm border border-slate-100 dark:border-none">
+        <div className="bg-white dark:bg-secondary-50 rounded-[32px] p-8 flex flex-col items-center text-center space-y-4  border border-slate-100  dark:border-white/10">
           <div className="relative">
             <Avatar className="w-28 h-28 border-4 border-white dark:border-none bg-primary-70 shadow-md">
               <AvatarFallback className="text-3xl font-bold bg-primary-70 text-white">
@@ -139,7 +138,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                   .slice(0, 2) || "?"}
               </AvatarFallback>
             </Avatar>
-            <button className="absolute bottom-0 right-0 p-2 bg-white dark:bg-[#1a1f2e] border-2 border-slate-50 dark:border-[#0b101a] rounded-full text-primary-70 shadow-lg">
+            <button className="absolute bottom-0 right-0 p-2 bg-white dark:bg-black1 border-2 border-gray-50 dark:border-[#0b101a] rounded-full text-primary-70 shadow-lg">
               <Camera className="w-5 h-5" />
             </button>
           </div>
@@ -151,13 +150,13 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
               {profile?.email}
             </p>
           </div>
-          <Badge className="bg-slate-100 dark:bg-[#1a1f2e] text-primary-70 py-1.5 px-4 rounded-full border-none">
+          <Badge className="bg-slate-100 dark:bg-black1 text-primary-70 py-1.5 px-4 rounded-full border-none">
             {`@${form.getValues("kellonTag")}`}
           </Badge>
         </div>
 
         {/* Info Section */}
-        <div className="bg-white dark:bg-secondary-60 rounded-[32px] p-6 shadow-sm border border-slate-100 dark:border-none">
+        <div className="bg-white dark:bg-secondary-50 rounded-[32px] p-6 border border-slate-100 dark:border-white/10">
           <div className="flex items-center justify-between mb-6 px-1">
             <h3 className="font-semibold text-lg">Profile Information</h3>
             {!isEditing && (
@@ -182,18 +181,24 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                 label="Kellon Tag"
                 value={form.getValues("kellonTag")}
               />
-              <div className="flex items-center gap-4 px-1">
-                <div className="p-3 bg-slate-100 dark:bg-[#1a1f2e] rounded-xl text-primary-70">
+              <div className="flex items-start flex-1 gap-2 sm:gap-4 px-1 min-w-0">
+                <div className="p-3 bg-slate-100 dark:bg-black1 rounded-xl text-primary-70">
                   <Mail className="w-5 h-5" />
                 </div>
-                <div className="flex-1 border-b border-slate-100 dark:border-gray-800 pb-4">
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">
+
+                <div className="flex-1 border-b border-slate-100 dark:border-gray-800 pb-3 sm:pb-4 min-w-0">
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 uppercase tracking-wider mb-1">
                     Email
                   </p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">{profile?.email}</p>
-                    <Badge className="bg-green-500/10 text-green-600 border-none flex gap-1 items-center px-2 py-0.5">
-                      <CheckCircle2 className="w-3 h-3" /> Verified
+
+                  <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium truncate break-all">
+                      {profile?.email}
+                    </p>
+
+                    <Badge className="bg-green-500/10 text-green-600 border-none flex gap-1 items-center px-2 py-0.5 shrink-0 self-start xs:self-center">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Verified
                     </Badge>
                   </div>
                 </div>
@@ -218,7 +223,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                         <FormControl>
                           <Input
                             {...field}
-                            className="bg-slate-50 dark:bg-[#1a1f2e] border-slate-200 h-12 pl-12 rounded-xl"
+                            className="bg-slate-50 dark:bg-black1 border-slate-200 dark:border-white/10 h-12 pl-12 rounded-xl"
                           />
                         </FormControl>
                       </div>
@@ -239,7 +244,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                         <FormControl>
                           <Input
                             {...field}
-                            className="bg-slate-50 dark:bg-[#1a1f2e] border-slate-200 h-12 pl-12 rounded-xl"
+                            className="bg-slate-50 dark:bg-black1 border-slate-200 dark:border-white/10 h-12 pl-12 rounded-xl"
                           />
                         </FormControl>
                       </div>
@@ -299,7 +304,7 @@ const InfoItem = ({
   value: string
 }) => (
   <div className="flex items-center gap-4 px-1">
-    <div className="p-3 bg-slate-100 dark:bg-[#1a1f2e] rounded-xl text-primary-70">
+    <div className="p-3 bg-slate-100 dark:bg-black1 rounded-xl text-primary-70">
       <Icon className="w-5 h-5" />
     </div>
     <div className="flex-1 border-b border-slate-100 dark:border-gray-800 pb-4">
