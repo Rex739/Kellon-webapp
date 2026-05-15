@@ -204,7 +204,7 @@ export default function BuyCryptoFlow({
         totalSteps={STEPS.length}
       />
 
-      <div className="flex-1 flex flex-col pt-4">
+      <div className="flex-1 flex flex-col pt-4 w-11/12 mx-auto md:w-lg md:mx-auto ">
         {step === "asset" && (
           <AssetSelectionStep
             asset={asset}
@@ -258,6 +258,10 @@ export default function BuyCryptoFlow({
             onContinue={() => setStep("review")}
             providerRates={providerRates}
             isRatesLoading={isLoadingRates}
+            fiatCurrency={fiatCurrency}
+            fiatSymbol={fiatSymbol}
+            decimals={decimals}
+            cryptoAmountValue={cryptoAmountValue}
           />
         )}
 
