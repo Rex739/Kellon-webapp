@@ -210,6 +210,21 @@ const nextConfig: NextConfig = {
         hostname: "assets.apyx.fi",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.centiiv.io",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "paycrest.io",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "media.licdn.com",
+        pathname: "/**",
+      },
     ],
   },
 
