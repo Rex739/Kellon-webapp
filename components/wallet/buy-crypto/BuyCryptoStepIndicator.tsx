@@ -32,7 +32,7 @@ export default function StepIndicator({
                 className={cn(
                   "relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500 border-2",
                   isCompleted || isActive
-                    ? "border-primary-70 bg-primary-70"
+                    ? "border-primary-60 bg-primary-60"
                     : "border-slate-300 dark:border-secondary-60 bg-transparent",
                 )}
               >
@@ -57,7 +57,7 @@ export default function StepIndicator({
                 className={cn(
                   "h-[1px] flex-1 transition-all duration-700 ease-in-out",
                   i < currentStep
-                    ? "bg-primary-70"
+                    ? "bg-primary-60"
                     : "bg-slate-200 dark:bg-secondary-60/40",
                 )}
               />
