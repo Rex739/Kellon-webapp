@@ -1,19 +1,27 @@
+"use client"
+
 import {
   Delete,
-  ChevronRight,
   CreditCard,
   Landmark,
   Smartphone,
   ChevronDown,
   ArrowRight,
 } from "lucide-react"
-import Image from "next/image"
-import ChainIcon from "@/components/wallet/ChainIcon"
-// import {
-//   getCurrencyDecimals,
-//   getCurrencySymbol,
-// } from "@/lib/country-currency-map"
-// import { cn } from "@/lib/utils"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
+import { formatNumberWithCommas } from "@/lib/format-number-with-comma"
+import SummaryPill from "../SummaryPill"
 
 interface AmountEntryStepProps {
   asset: string | null
@@ -32,18 +40,29 @@ interface AmountEntryStepProps {
   onOpenPaymentModal: () => void
   onKeypadPress: (val: string) => void
   onContinue: () => void
+  onAmountChange?: (value: string) => void
 }
+
+// Validation schema
+const amountSchema = z.object({
+  amount: z
+    .string()
+    .min(1, "Amount is required")
+    .regex(/^\d+(\.\d{0,2})?$/, "Invalid amount format (max 2 decimal places)")
+    .refine((val) => parseFloat(val) > 0, "Amount must be greater than 0"),
+})
+
+type AmountFormValues = z.infer<typeof amountSchema>
+
+// Quick amount suggestions - exactly 6 amounts
+const QUICK_AMOUNTS = [500, 2000, 5000, 10000, 25000, 50000]
 
 export function AmountEntryStep({
   asset,
-  // networkName,
   selectedChain,
   amount,
   fiatCurrency,
-  // fiatSymbol,
-  // decimals,
-  cryptoAmountValue,
-  exchangeRate,
+  fiatSymbol,
   isRateLoading,
   isAmountValid,
   paymentMethod,
@@ -51,6 +70,7 @@ export function AmountEntryStep({
   onOpenPaymentModal,
   onKeypadPress,
   onContinue,
+  onAmountChange,
 }: AmountEntryStepProps) {
   const keypadKeys = [
     "1",
@@ -67,118 +87,270 @@ export function AmountEntryStep({
     "delete",
   ]
 
-  return (
-    <div className="flex-1 flex flex-col items-center animate-in fade-in slide-in-from-right-4">
-      {/* Selected asset/network chip */}
-      <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 dark:border-white/10 bg-gray-50 dark:bg-secondary-60/30 mb-10">
-        <div className="flex items-center gap-1.5">
-          <Image
-            src={`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${asset?.toLowerCase()}.png`}
-            alt=""
-            width={16}
-            height={16}
-          />
-          <span className="text-[11px] font-bold uppercase">{asset}</span>
-        </div>
-        <ChevronRight className="w-3 h-3 text-gray-400" />
-        <div className="flex items-center gap-1.5">
-          {selectedChain && <ChainIcon name={selectedChain.name} size={14} />}
-          <span className="text-[11px] font-medium text-gray-500">
-            {selectedChain?.name}
-          </span>
-        </div>
-        {amount && (
-          <>
-            <ChevronRight className="w-3 h-3 text-gray-400" />
-            <span className="text-[11px] font-bold text-primary-70">
-              {amount}
-            </span>
-          </>
-        )}
-      </div>
+  // Form for desktop
+  const form = useForm<AmountFormValues>({
+    resolver: zodResolver(amountSchema),
+    defaultValues: {
+      amount: amount || "",
+    },
+  })
 
-      {/* Amount display */}
-      <div className="text-center mb-4">
-        <div className="flex items-baseline justify-center gap-2">
-          <span className="text-2xl font-bold text-gray-400">
-            {fiatCurrency}
-          </span>
-          <span className="text-6xl font-bold tracking-tight text-black dark:text-white">
-            {amount || "0"}
-          </span>
-        </div>
-        <p className="text-sm text-gray-500 mt-2">
-          You will receive approximately {cryptoAmountValue.toFixed(4)} {asset}
-        </p>
-        <div className="mt-4 inline-flex items-center px-4 py-1.5 bg-gray-100 dark:bg-secondary-60/40 rounded-full border border-slate-200 dark:border-white/5">
-          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">
-            1 {asset} ≈{" "}
-            {new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-            }).format(exchangeRate)}{" "}
-            {fiatCurrency}
-          </p>
-        </div>
-      </div>
+  const handleAmountChange = (value: string) => {
+    onAmountChange?.(value)
+    form.setValue("amount", value)
+  }
 
-      {/* Payment method selector */}
-      <div className="w-full px-4 mt-auto mb-6">
-        <button
-          onClick={onOpenPaymentModal}
-          className="w-full flex items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-gray-50 dark:bg-secondary-60/20 active:scale-[0.98] transition-transform"
-        >
-          <span className="text-[11px] text-gray-500 font-medium">
-            Select payment method
-          </span>
-          <div className="flex items-center gap-2 text-xs font-bold">
-            {paymentMethod === "card" && (
-              <CreditCard className="w-4 h-4 text-primary-70" />
-            )}
-            {paymentMethod === "bank" && (
-              <Landmark className="w-4 h-4 text-primary-70" />
-            )}
-            {paymentMethod === "mobile_money" && (
-              <Smartphone className="w-4 h-4 text-primary-70" />
-            )}
-            {paymentMethodLabel}
-            <ChevronDown className="w-4 h-4 text-gray-400" />
-          </div>
-        </button>
-      </div>
+  const handleQuickAmount = (value: number) => {
+    const amountStr = value.toString()
+    handleAmountChange(amountStr)
+  }
 
-      {/* Keypad */}
-      <div className="w-full grid grid-cols-3 gap-2 px-4 pb-6">
-        {keypadKeys.map((key) => (
+  const handleFormSubmit = (data: AmountFormValues) => {
+    if (parseFloat(data.amount) > 0) {
+      onContinue()
+    }
+  }
+
+  const displayAmount = amount ? formatNumberWithCommas(amount) : "0"
+
+  // Quick amount buttons component
+  // Minimalist design
+  const QuickAmountButtons = () => (
+    <div className="space-y-3">
+      <p className="text-center text-[11px] font-medium text-gray-400 uppercase tracking-wider">
+        or choose amount
+      </p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {QUICK_AMOUNTS.map((quickAmount) => (
           <button
-            key={key}
-            onClick={() => onKeypadPress(key)}
-            className="h-14 flex items-center justify-center rounded-2xl bg-gray-50 dark:bg-secondary-60/40 hover:bg-gray-100 transition-colors text-xl font-bold active:scale-95"
-          >
-            {key === "delete" ? (
-              <Delete className="w-6 h-6 text-gray-500" />
-            ) : (
-              key
+            key={quickAmount}
+            type="button"
+            onClick={() => handleQuickAmount(quickAmount)}
+            className={cn(
+              "rounded-full px-4 py-2 text-sm font-medium transition-all",
+              "border",
+              amount === quickAmount.toString()
+                ? "border-primary-60 bg-primary-70/10 text-primary-60"
+                : "border-black/10 bg-white text-gray-700 hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:bg-secondary-50 dark:text-gray-300",
+              "active:scale-95",
             )}
+          >
+            {fiatSymbol}
+            {formatNumberWithCommas(quickAmount.toString())}
           </button>
         ))}
       </div>
+    </div>
+  )
 
-      {/* Continue button */}
-      <div className="w-full px-4 pb-6">
-        <button
-          disabled={!isAmountValid || isRateLoading}
-          onClick={onContinue}
-          className="w-full py-4 bg-primary-70 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg"
-        >
-          {isRateLoading
-            ? "Fetching Rate..."
-            : isAmountValid
-              ? "Select Provider"
-              : "Enter Amount"}
-          {isAmountValid && !isRateLoading && (
-            <ArrowRight className="w-5 h-5" />
-          )}
-        </button>
+  return (
+    <div className="flex flex-col h-full min-h-[calc(100dvh-200px)] md:min-h-[500px]">
+      <div className="flex-1 overflow-y-auto md:px-0">
+        <SummaryPill
+          asset={asset}
+          selectedChain={selectedChain}
+          amount={amount}
+          fiatCurrency={fiatCurrency}
+        />
+
+        {/* Mobile View */}
+        <div className="block w-full lg:hidden">
+          {/* Amount Display */}
+          <div className="mb-4 mt-8 text-center">
+            <div className="flex items-baseline justify-center gap-2">
+              <span className="text-xl font-bold text-gray-400">
+                {fiatCurrency}
+              </span>
+              <span className="text-2xl font-bold text-black dark:text-white">
+                {displayAmount}
+              </span>
+            </div>
+          </div>
+
+          {/* Quick Amount Buttons */}
+          <div className="mb-6">
+            <QuickAmountButtons />
+          </div>
+
+          {/* Payment Method Selector */}
+          <div className="mb-4 w-full">
+            <button
+              onClick={onOpenPaymentModal}
+              className="flex w-full items-center justify-between rounded-2xl border border-black/5 bg-white p-4 transition-transform active:scale-[0.98] hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50"
+            >
+              <span className="text-[11px] font-medium text-gray-500">
+                Select payment method
+              </span>
+              <div className="flex items-center gap-2 text-xs font-bold">
+                {paymentMethod === "card" && (
+                  <CreditCard className="h-4 w-4 text-primary-70" />
+                )}
+                {paymentMethod === "bank" && (
+                  <Landmark className="h-4 w-4 text-primary-70" />
+                )}
+                {paymentMethod === "mobile_money" && (
+                  <Smartphone className="h-4 w-4 text-primary-70" />
+                )}
+                {paymentMethodLabel}
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              </div>
+            </button>
+          </div>
+
+          {/* Keypad */}
+          <div className="w-full pb-4">
+            <div className="grid grid-cols-3 gap-2">
+              {keypadKeys.map((key) => (
+                <button
+                  key={key}
+                  onClick={() => onKeypadPress(key)}
+                  className="flex h-14 items-center justify-center rounded-2xl border border-black/5 bg-white text-xl font-bold transition-colors active:scale-95 hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50"
+                >
+                  {key === "delete" ? (
+                    <Delete className="h-6 w-6 text-gray-500" />
+                  ) : (
+                    key
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop View */}
+        <div className="hidden w-full lg:block">
+          <div className="mt-6 rounded-2xl border border-black/5 bg-white p-6 dark:border-white/10 dark:bg-secondary-50">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="relative">
+                          <div className="absolute left-0 top-0 flex h-full items-center justify-center rounded-l-xl border-r border-slate-200 bg-gray-100 px-4 dark:border-white/10 dark:bg-secondary-50/50">
+                            <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
+                              {fiatCurrency}
+                            </span>
+                          </div>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder="0.00"
+                              className="h-12 rounded-xl border-slate-200 bg-slate-50 pl-12 text-center dark:border-white/10 dark:bg-black1"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e)
+                                handleAmountChange(e.target.value)
+                              }}
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage className="text-center text-sm" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <QuickAmountButtons />
+                </div>
+              </form>
+            </Form>
+          </div>
+
+          {/* Desktop Payment Method Selector */}
+          <div className="mt-4 w-full">
+            <button
+              onClick={onOpenPaymentModal}
+              className="flex w-full items-center justify-between rounded-xl border border-black/5 bg-white p-4 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50"
+            >
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-gray-100 p-2 dark:bg-secondary-60/60">
+                  {paymentMethod === "card" && (
+                    <CreditCard className="h-4 w-4 text-primary-70" />
+                  )}
+                  {paymentMethod === "bank" && (
+                    <Landmark className="h-4 w-4 text-primary-70" />
+                  )}
+                  {paymentMethod === "mobile_money" && (
+                    <Smartphone className="h-4 w-4 text-primary-70" />
+                  )}
+                </div>
+                <div className="text-left">
+                  <p className="text-xs text-gray-500">Payment Method</p>
+                  <p className="text-sm font-semibold">{paymentMethodLabel}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              </div>
+            </button>
+          </div>
+
+          {/* Desktop Continue Button - Below payment method */}
+          <div className="mt-6 w-full">
+            <button
+              onClick={onContinue}
+              disabled={!isAmountValid || isRateLoading}
+              className={cn(
+                "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-4 font-bold text-white shadow-lg transition-all",
+                "hover:shadow-xl active:scale-[0.98]",
+                "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
+                !isAmountValid && "from-gray-400 to-gray-500",
+              )}
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2 text-base">
+                {isRateLoading
+                  ? "Fetching Rate..."
+                  : isAmountValid
+                    ? "Select Provider"
+                    : "Enter Amount"}
+                {isAmountValid && !isRateLoading && (
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                )}
+              </span>
+              {isAmountValid && !isRateLoading && (
+                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Sticky Footer */}
+      <div className="sticky bottom-0 left-0 right-0 border-t border-black/5 pt-6 pb-4 px-4 dark:border-white/5  lg:hidden">
+        <div className="mx-auto max-w-md">
+          <button
+            onClick={onContinue}
+            disabled={!isAmountValid || isRateLoading}
+            className={cn(
+              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all",
+              "hover:shadow-xl active:scale-[0.98]",
+              "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
+              !isAmountValid && "from-gray-400 to-gray-500",
+            )}
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
+              {isRateLoading
+                ? "Fetching Rate..."
+                : isAmountValid
+                  ? "Select Provider"
+                  : "Enter Amount"}
+              {isAmountValid && !isRateLoading && (
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              )}
+            </span>
+            {isAmountValid && !isRateLoading && (
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+            )}
+          </button>
+
+          <p className="mt-3 text-center text-[10px] text-gray-400">
+            Enter the amount you want to spend • Providers will show you their
+            best rates
+          </p>
+        </div>
       </div>
     </div>
   )
