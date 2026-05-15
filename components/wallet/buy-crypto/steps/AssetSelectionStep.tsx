@@ -40,113 +40,148 @@ export function AssetSelectionStep({
     ? getSupportedChainsForToken(asset as "USDC" | "USDT")
     : []
 
+  const hasValidSelection = asset && networkName
+
   return (
-    <div className="flex flex-col flex-1 space-y-8 px-4 animate-in fade-in slide-in-from-right-4">
-      <div className="flex justify-center -mt-2">
-        <button
-          onClick={onOpenCountryModal}
-          disabled={isDetectingCountry}
-          className={cn(
-            "flex items-center gap-2 bg-white border border-black/5 hover:bg-gray-50 dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60/50  px-4 py-1.5 rounded-full transition-all",
-            isDetectingCountry && "animate-pulse opacity-70",
-          )}
-        >
-          <span className="text-lg leading-none">
-            {country ? getFlag(country) : <Globe className="w-4 h-4" />}
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-tight">
-            {isDetectingCountry ? "Locating..." : country || "NG"}
-          </span>
-          <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-        </button>
-      </div>
-
-      <section>
-        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">
-          Select Asset
-        </h3>
-        <div className="space-y-3">
-          {assets.map((a) => (
-            <button
-              key={a.id}
-              onClick={() => onSelectAsset(a.symbol)}
-              className={cn(
-                "w-full flex items-center justify-between p-4 rounded-[24px] border transition-all",
-                asset === a.symbol
-                  ? "border-primary-70 bg-primary-70/5 dark:bg-primary-70/10"
-                  : "bg-white border border-black/5 hover:bg-gray-50 dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60/50 ",
-              )}
-            >
-              <div className="flex items-center gap-4">
-                <Image
-                  src={`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${a.symbol.toLowerCase()}.png`}
-                  alt={a.symbol}
-                  width={32}
-                  height={32}
-                />
-                <div className="text-left">
-                  <p
-                    className={cn(
-                      "font-bold text-sm",
-                      asset === a.symbol
-                        ? "text-primary-70"
-                        : "text-black dark:text-white",
-                    )}
-                  >
-                    {a.symbol}
-                  </p>
-                  <p className="text-xs text-gray-500">{a.name}</p>
-                </div>
-              </div>
-              {asset === a.symbol && (
-                <CheckCircle2 className="w-5 h-5 text-primary-70" />
-              )}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {asset && (
-        <section className="animate-in fade-in slide-in-from-bottom-2">
-          <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">
-            Select Network
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            {availableNetworks.map((chain) => {
-              const chainNameLower = chain.name.toLowerCase()
-              const isSelected = networkName === chainNameLower
-              return (
-                <button
-                  key={chain.id}
-                  onClick={() =>
-                    onSelectNetwork(chainNameLower, chain.id.toString())
-                  }
-                  className={cn(
-                    "flex items-center gap-3 p-4 rounded-xl border transition-all text-sm font-bold",
-                    isSelected
-                      ? "bg-primary-70 border-primary-70 text-white shadow-lg"
-                      : "bg-white border border-black/5 hover:bg-gray-50 dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60/50 ",
-                  )}
-                >
-                  <ChainIcon name={chain.name} size={20} />
-                  {chain.name}
-                </button>
-              )
-            })}
-          </div>
-        </section>
-      )}
-
-      {networkName && (
-        <div className="mt-auto pb-6">
+    <div className="flex flex-col h-full min-h-[calc(100dvh-200px)] md:min-h-[500px]">
+      <div className="flex-1 overflow-y-auto  md:px-0">
+        {/* Country Selector */}
+        <div className="flex justify-center  mb-8">
           <button
-            onClick={onContinue}
-            className="w-full py-4 bg-primary-70 text-white font-bold rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+            onClick={onOpenCountryModal}
+            disabled={isDetectingCountry}
+            className={cn(
+              "flex items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-1.5 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
+              isDetectingCountry && "animate-pulse opacity-70",
+            )}
           >
-            Continue <ArrowRight className="w-5 h-5" />
+            <span className="text-lg leading-none">
+              {country ? getFlag(country) : <Globe className="h-4 w-4" />}
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-tight">
+              {isDetectingCountry ? "Locating..." : country || "NG"}
+            </span>
+            <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
           </button>
         </div>
-      )}
+
+        {/* Select Asset Section */}
+        <section className="mb-8">
+          <h3 className="mb-4 text-[10px] font-bold uppercase tracking-wider text-gray-500">
+            Select Asset
+          </h3>
+          <div className="space-y-3">
+            {assets.map((a) => (
+              <button
+                key={a.id}
+                onClick={() => onSelectAsset(a.symbol)}
+                className={cn(
+                  "w-full rounded-2xl border p-4 text-left transition-all",
+                  asset === a.symbol
+                    ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
+                    : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-8 w-8">
+                      <Image
+                        src={`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${a.symbol.toLowerCase()}.png`}
+                        alt={a.symbol}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="text-left">
+                      <p
+                        className={cn(
+                          "text-sm font-bold",
+                          asset === a.symbol
+                            ? "text-primary-60"
+                            : "text-black dark:text-white",
+                        )}
+                      >
+                        {a.symbol}
+                      </p>
+                      <p className="text-xs text-gray-500">{a.name}</p>
+                    </div>
+                  </div>
+                  {asset === a.symbol && (
+                    <CheckCircle2 className="h-5 w-5 text-primary-70" />
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Select Network Section */}
+        {asset && (
+          <section className="animate-in fade-in slide-in-from-bottom-2">
+            <h3 className="mb-4 text-[10px] font-bold uppercase tracking-wider text-gray-500">
+              Select Network
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {availableNetworks.map((chain) => {
+                const chainNameLower = chain.name.toLowerCase()
+                const isSelected = networkName === chainNameLower
+                return (
+                  <button
+                    key={chain.id}
+                    onClick={() =>
+                      onSelectNetwork(chainNameLower, chain.id.toString())
+                    }
+                    className={cn(
+                      "flex items-center gap-3 rounded-xl border p-4 text-sm font-bold transition-all",
+                      isSelected
+                        ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
+                        : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
+                    )}
+                  >
+                    <ChainIcon name={chain.name} size={20} />
+                    {chain.name}
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Sticky Footer with Continue Button - Matching other steps */}
+      <div className="sticky bottom-0 left-0 right-0 border-t border-black/5 bg-gradient-to-t mt-6 pt-6 pb-4 px-4 dark:border-white/5  md:px-0">
+        <div className="mx-auto max-w-md md:max-w-full">
+          <button
+            onClick={onContinue}
+            disabled={!hasValidSelection}
+            className={cn(
+              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
+              "hover:shadow-xl active:scale-[0.98]",
+              "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
+              !hasValidSelection && "from-gray-400 to-gray-500",
+            )}
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+              {!hasValidSelection ? (
+                "Select Asset & Network to Continue"
+              ) : (
+                <>
+                  Continue
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </>
+              )}
+            </span>
+            {hasValidSelection && (
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+            )}
+          </button>
+
+          {/* Help text */}
+          <p className="mt-3 text-center text-[10px] text-gray-400 md:text-xs">
+            Select the asset and network you want to purchase
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
