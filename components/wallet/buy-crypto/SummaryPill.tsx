@@ -3,54 +3,52 @@
 import Image from "next/image"
 import { ChevronRight } from "lucide-react"
 import ChainIcon from "@/components/wallet/ChainIcon"
-import type { ChainConfig as Chain } from "@/lib/chains"
 
 interface SummaryPillProps {
   asset: string | null
-  chain: Chain | null
+  selectedChain?: { name: string } | null
   amount?: string
-  className?: string
+  fiatCurrency?: string
 }
 
 export default function SummaryPill({
   asset,
-  chain,
+  selectedChain,
   amount,
-  className = "",
+  fiatCurrency,
 }: SummaryPillProps) {
   if (!asset) return null
 
   return (
-    <div
-      className={`flex items-center justify-center gap-2 px-6 py-3 rounded-full
-        border border-slate-200 dark:border-white/10
-        bg-gray-50 dark:bg-secondary-60/30
-        flex-wrap ${className}`}
-    >
-      <div className="flex items-center gap-2">
-        <Image
-          src={`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${asset.toLowerCase()}.png`}
-          alt=""
-          width={18}
-          height={18}
-        />
-        <span className="text-xs font-bold">{asset}</span>
+    <div className="mb-6 flex items-center justify-center gap-2 rounded-full bg-white border border-black/5  px-4 py-2 backdrop-blur-sm dark:bg-secondary-50 dark:border-white/10  md:mb-10 md:gap-3 md:px-5 md:py-2.5 max-w-sm mx-auto">
+      <div className="flex items-center gap-1.5">
+        <div className="relative">
+          <div className="absolute inset-0 rounded-full bg-primary-70/20 blur-sm" />
+          <Image
+            src={`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${asset?.toLowerCase()}.png`}
+            alt=""
+            width={16}
+            height={16}
+            className="relative rounded-full md:h-5 md:w-5"
+          />
+        </div>
+        <span className="text-[11px] font-bold uppercase md:text-xs">
+          {asset}
+        </span>
       </div>
-
-      {chain && (
-        <>
-          <ChevronRight className="w-3 h-3 text-gray-400" />
-          <div className="flex items-center gap-2">
-            <ChainIcon name={chain.name} size={16} />
-            <span className="text-xs font-bold">{chain.name}</span>
-          </div>
-        </>
-      )}
-
+      <ChevronRight className="h-3 w-3 text-gray-400 md:h-4 md:w-4" />
+      <div className="flex items-center gap-1.5">
+        {selectedChain && <ChainIcon name={selectedChain.name} size={14} />}
+        <span className="text-[11px] font-medium text-gray-500 md:text-xs">
+          {selectedChain?.name}
+        </span>
+      </div>
       {amount && (
         <>
-          <ChevronRight className="w-3 h-3 text-gray-400" />
-          <span className="text-xs font-bold text-primary-70">{amount}</span>
+          <ChevronRight className="h-3 w-3 text-gray-400 md:h-4 md:w-4" />
+          <span className="text-[11px] font-bold text-primary-60 md:text-xs">
+            {amount} {fiatCurrency}
+          </span>
         </>
       )}
     </div>
