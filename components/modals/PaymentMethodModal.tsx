@@ -89,7 +89,7 @@ export default function PaymentMethodModal({
                 "w-full flex items-center justify-between p-5 rounded-[24px] border transition-all outline-none",
                 isSelected
                   ? "border-primary-70 bg-primary-70/5 dark:bg-primary-70/10"
-                  : "bg-gray-50 dark:bg-secondary-60 border-slate-200 dark:border-white/5",
+                  : "bg-white dark:bg-secondary-60 hover:bg-gray-50 dark:hover:bg-secondary-60/50 border border-black/5 dark:border-white/10 cursor-pointer",
               )}
             >
               <div className="flex items-center gap-4">
@@ -120,7 +120,7 @@ export default function PaymentMethodModal({
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[400px] bg-white dark:bg-secondary-20 border-none rounded-[32px] outline-none [&>button]:hidden">
+        <DialogContent className="sm:max-w-[400px] bg-gray-70 dark:bg-black2  order-none rounded-[32px] outline-none [&>button]:hidden">
           <DialogHeader className="sr-only">
             <DialogTitle>Select Payment Method</DialogTitle>
           </DialogHeader>
@@ -132,7 +132,7 @@ export default function PaymentMethodModal({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="bg-white dark:bg-secondary-20 border-none rounded-t-[32px] outline-none [&>button]:hidden">
+      <DrawerContent className="bg-gray-70 dark:bg-black2  border-none rounded-t-[32px] outline-none [&>button]:hidden">
         <DrawerHeader className="sr-only">
           <DrawerTitle>Select Payment Method</DrawerTitle>
         </DrawerHeader>
