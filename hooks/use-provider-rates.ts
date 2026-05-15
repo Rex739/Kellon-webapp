@@ -2,7 +2,12 @@
 import { useEffect, useState, useRef } from "react"
 import { providerService } from "@/services/api/payment-providers"
 
-type ProviderRatesMap = Record<string, number | null>
+interface ProviderRateDetails {
+  cryptoAmount: number | null // Calculated crypto amount (fiatAmount / rate)
+  rawRate: number | null // Raw rate from backend
+}
+
+type ProviderRatesMap = Record<string, ProviderRateDetails | null>
 
 interface UseProviderRatesParams {
   providers: { id: string; name: string }[]
@@ -52,7 +57,8 @@ export function useProviderRates({
       try {
         const ratePromises = providers.map(async (provider) => {
           try {
-            let estimatedCrypto: number | null = null
+            let cryptoAmount: number | null = null
+            let rawRate: number | null = null
 
             if (provider.name.toLowerCase() === "paycrest") {
               const res = await providerService.getPaycrestRate({
@@ -63,9 +69,9 @@ export function useProviderRates({
               })
 
               if (res.success && res.data?.buy?.rate) {
-                const rate = parseFloat(res.data.buy.rate)
-                if (!isNaN(rate)) {
-                  estimatedCrypto = fiatAmount / rate
+                rawRate = parseFloat(res.data.buy.rate)
+                if (!isNaN(rawRate) && rawRate > 0) {
+                  cryptoAmount = fiatAmount / rawRate
                 }
               }
             } else if (provider.name.toLowerCase() === "centiiv") {
@@ -74,12 +80,20 @@ export function useProviderRates({
                 toAsset: asset,
                 amount: fiatAmount,
               })
-              if (res.success && res.data?.estimatedReceivableAmount) {
-                estimatedCrypto = parseFloat(res.data.estimatedReceivableAmount)
+
+              if (res.success) {
+                // For centiiv, get the raw rate
+                rawRate = res.data?.rate ? parseFloat(res.data.rate) : null
+                cryptoAmount = res.data?.estimatedReceivableAmount
+                  ? parseFloat(res.data.estimatedReceivableAmount)
+                  : null
               }
             }
 
-            newRates[provider.id] = estimatedCrypto
+            newRates[provider.id] =
+              cryptoAmount !== null || rawRate !== null
+                ? { cryptoAmount, rawRate }
+                : null
           } catch (error) {
             console.error(`Failed to fetch rate for ${provider.name}:`, error)
             newRates[provider.id] = null
@@ -87,6 +101,7 @@ export function useProviderRates({
         })
 
         await Promise.all(ratePromises)
+        console.log("Provider rates with raw rates:", newRates)
         setRates(newRates)
       } catch (error) {
         console.error("Error fetching provider rates:", error)
@@ -97,7 +112,7 @@ export function useProviderRates({
     }
 
     fetchRates()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     providers,
     asset,
