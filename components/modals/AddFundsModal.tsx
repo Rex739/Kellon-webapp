@@ -39,6 +39,11 @@ const AddFundsModal: FC<AddFundsModalProps> = ({
     router.push("/buy") // Navigate to the dedicated page
   }
 
+  const handleCryptoDeposit = () => {
+    onClose(false)
+    router.push("/receive") // Navigate to the dedicated page
+  }
+
   const content = (
     <div className="px-4 pb-8 md:px-0 md:pb-0">
       <div className="flex justify-start mb-6">
@@ -70,10 +75,7 @@ const AddFundsModal: FC<AddFundsModalProps> = ({
           icon={<ArrowDownCircle className="text-green-500 w-6 h-6" />}
           title="Deposit Crypto"
           description="Transfer from external wallet or exchange."
-          onClick={() => {
-            // Optional: Logic for direct crypto deposit modal/page
-            console.log("Deposit Crypto clicked")
-          }}
+          onClick={handleCryptoDeposit}
         />
       </div>
     </div>
@@ -137,6 +139,5 @@ function AddOption({
     </button>
   )
 }
-
 
 export default AddFundsModal
