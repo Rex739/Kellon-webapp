@@ -58,6 +58,7 @@ export default function BuyCryptoFlow({
   >("card")
 
   // Track if amount was set via input (desktop) or keypad (mobile)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDesktopAmountValid, setIsDesktopAmountValid] = useState(false)
 
   // Country detection (stable callback)
@@ -189,7 +190,7 @@ export default function BuyCryptoFlow({
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
         <h2 className="text-lg font-bold text-black dark:text-white">
-          {step === "provider" ? "Choose Provider" : "Buy Crypto"}
+          {step === "provider" ? "Choose Provider" : step === "amount" ? "Enter Amount" : step === "review" ? "Review Order" : "Buy Crypto"}
         </h2>
         <button
           onClick={() => onAttemptClose(true)}
@@ -276,7 +277,12 @@ export default function BuyCryptoFlow({
               providers.find((p) => p.id === selectedProviderId) || null
             }
             estimatedCrypto={
-              providerRates[selectedProviderId] || cryptoAmountValue
+              providerRates[selectedProviderId] &&
+              typeof providerRates[selectedProviderId] === "object"
+                ? providerRates[selectedProviderId]?.cryptoAmount || 0
+                : typeof providerRates[selectedProviderId] === "number"
+                  ? providerRates[selectedProviderId]
+                  : cryptoAmountValue
             }
             paymentMethodLabel={methodLabels[paymentMethod]}
             onConfirm={confirmPurchase}
