@@ -186,7 +186,7 @@ export function ProviderSelectionStep({
                             Fee: {provider.fee}
                           </p>
                         </div>
-                      ) :  estimatedAmount && estimatedAmount > 0 ? (
+                      ) : estimatedAmount && estimatedAmount > 0 ? (
                         <>
                           <p className="font-bold text-sm md:text-base text-primary-60">
                             {estimatedAmount?.toFixed(6)} {asset}
@@ -277,7 +277,6 @@ export function ProviderSelectionStep({
                   {asset}
                 </span>
               </div>
-             
             </div>
           )}
 

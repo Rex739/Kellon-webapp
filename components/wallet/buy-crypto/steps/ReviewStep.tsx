@@ -63,7 +63,7 @@ export function ReviewStep({
               <span className="text-sm text-gray-500 font-medium">
                 Estimated Receive
               </span>
-              <span className="text-sm font-bold text-primary-70">
+              <span className="text-sm font-bold text-primary-60">
                 {getFormattedCrypto()} {asset}
               </span>
             </div>
