@@ -191,7 +191,7 @@ export interface KYC {
 
 export interface Transaction {
   id: string
-  userId: string
+  userId: strinAssetg
   type: TransactionType
   amount: number | string // Decimal
   symbol: string
