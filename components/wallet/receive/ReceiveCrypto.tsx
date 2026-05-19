@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation"
 import QRCode from "qrcode"
 import ChainIcon from "@/components/wallet/ChainIcon"
 import { ChainAccount } from "@/types/db"
-import { copyToClipboard } from "@/lib/copyToClipboard"
+import { copyToClipboard } from "@/lib/copy-to-clipboard"
 import { cn } from "@/lib/utils"
 import SelectNetworkModal from "@/components/modals/SelectNetworkModal"
 
