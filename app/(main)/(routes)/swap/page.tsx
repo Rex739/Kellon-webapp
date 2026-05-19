@@ -1,8 +1,18 @@
-import GridBackground from "@/components/backgrounds/GridBackground"
-import CryptoInfiniteScroll from "@/components/CryptoInfiniteScroll"
-import SwapInterface from "@/components/swap/SwapInterface"
+import GridBackground from "@/components/backgrounds/GridBackground";
+import CryptoInfiniteScroll from "@/components/CryptoInfiniteScroll";
+import SwapInterface from "@/components/swap/SwapInterface";
 
-import { FC } from "react"
+import { FC } from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Swap Crypto",
+  description:
+    "Swap between supported digital assets on Kellon with a guided cross-chain flow.",
+  alternates: {
+    canonical: "/swap",
+  },
+};
 
 // interface pageProps {
 
@@ -18,7 +28,7 @@ const page: FC = ({}) => {
 
       <CryptoInfiniteScroll className="hidden md:block absolute bottom-0" />
     </section>
-  )
-}
+  );
+};
 
-export default page
+export default page;
