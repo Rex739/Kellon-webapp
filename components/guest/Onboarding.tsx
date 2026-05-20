@@ -2,11 +2,11 @@
 
 import { useState, FC } from "react"
 import { ArrowRight } from "lucide-react"
-import { Icons } from "./Icons"
-import { Button } from "./ui/button"
+import { Icons } from "@/components/Icons"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import AuthHero from "./auth/AuthHero"
+import AuthHero from "@/components/auth/AuthHero"
 
 const SLIDES = [
   {
