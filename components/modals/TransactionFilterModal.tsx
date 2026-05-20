@@ -1,28 +1,28 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { format } from "date-fns";
-import { CalendarRange, X } from "lucide-react";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useState } from "react"
+import { format } from "date-fns"
+import { CalendarRange, X } from "lucide-react"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
-import { Calendar } from "@/components/ui/calendar";
+} from "@/components/ui/drawer"
+import { Calendar } from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 export type ActivityFilter =
   | "all"
@@ -33,7 +33,7 @@ export type ActivityFilter =
   | "invoices"
   | "gifts"
   | "cards"
-  | "earn";
+  | "earn"
 
 export const ACTIVITY_FILTERS: ActivityFilter[] = [
   "all",
@@ -45,19 +45,19 @@ export const ACTIVITY_FILTERS: ActivityFilter[] = [
   "gifts",
   "cards",
   "earn",
-];
+]
 
 interface TransactionFilterModalProps {
-  isOpen: boolean;
-  onClose: (open: boolean) => void;
-  activityFilter: ActivityFilter;
-  startDate: string;
-  endDate: string;
-  onActivityFilterChange: (filter: ActivityFilter) => void;
-  onStartDateChange: (date: string) => void;
-  onEndDateChange: (date: string) => void;
-  onCancel: () => void;
-  onApply: () => void;
+  isOpen: boolean
+  onClose: (open: boolean) => void
+  activityFilter: ActivityFilter
+  startDate: string
+  endDate: string
+  onActivityFilterChange: (filter: ActivityFilter) => void
+  onStartDateChange: (date: string) => void
+  onEndDateChange: (date: string) => void
+  onReset: () => void
+  onApply: () => void
 }
 
 export default function TransactionFilterModal({
@@ -69,10 +69,10 @@ export default function TransactionFilterModal({
   onActivityFilterChange,
   onStartDateChange,
   onEndDateChange,
-  onCancel,
+  onReset,
   onApply,
 }: TransactionFilterModalProps) {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const content = (
     <div className="px-4 pb-8 md:px-0 md:pb-0">
@@ -137,21 +137,28 @@ export default function TransactionFilterModal({
       <div className="mt-6 flex gap-3">
         <button
           type="button"
-          onClick={onCancel}
-          className="flex-1 rounded-2xl border border-black/5 bg-white py-3 text-xs font-semibold text-gray-600 transition hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:text-gray-300 dark:hover:bg-secondary-60/60"
+          onClick={onReset}
+          className={cn(
+            "group relative flex-1 overflow-hidden rounded-xl border border-black/5 bg-white py-3 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50 active:scale-95 cursor-pointer font-bold",
+          )}
         >
-          Cancel
+          <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
+            Reset
+          </span>
         </button>
         <button
           type="button"
           onClick={onApply}
-          className="flex-1 rounded-2xl bg-primary-60 py-3 text-xs font-semibold text-white transition hover:bg-primary-70"
+          className="group relative flex-1 overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3 font-bold text-white shadow-lg transition-all hover:shadow-xl active:scale-95 cursor-pointer"
         >
-          Apply Filters
+          <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
+            Apply
+          </span>
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
         </button>
       </div>
     </div>
-  );
+  )
 
   if (isDesktop) {
     return (
@@ -163,7 +170,7 @@ export default function TransactionFilterModal({
           {content}
         </DialogContent>
       </Dialog>
-    );
+    )
   }
 
   return (
@@ -175,7 +182,7 @@ export default function TransactionFilterModal({
         {content}
       </DrawerContent>
     </Drawer>
-  );
+  )
 }
 
 function DateField({
@@ -183,12 +190,12 @@ function DateField({
   value,
   onChange,
 }: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
+  label: string
+  value: string
+  onChange: (value: string) => void
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const selectedDate = parseDateValue(value);
+  const [isOpen, setIsOpen] = useState(false)
+  const selectedDate = parseDateValue(value)
 
   return (
     <div>
@@ -212,25 +219,34 @@ function DateField({
             </span>
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="w-auto p-3">
+        <PopoverContent
+          align="start"
+          sideOffset={8}
+          collisionPadding={16}
+          className="w-full"
+        >
           <Calendar
             mode="single"
+            captionLayout="dropdown"
+            hideNavigation
+            startMonth={new Date(2020, 0)}
+            endMonth={new Date(new Date().getFullYear() + 5, 11)}
             selected={selectedDate}
             defaultMonth={selectedDate}
             onSelect={(date) => {
-              onChange(date ? format(date, "yyyy-MM-dd") : "");
-              setIsOpen(false);
+              onChange(date ? format(date, "yyyy-MM-dd") : "")
+              setIsOpen(false)
             }}
           />
         </PopoverContent>
       </Popover>
     </div>
-  );
+  )
 }
 
 function parseDateValue(value: string): Date | undefined {
-  if (!value) return undefined;
+  if (!value) return undefined
 
-  const date = new Date(`${value}T00:00:00.000`);
-  return Number.isNaN(date.getTime()) ? undefined : date;
+  const date = new Date(`${value}T00:00:00.000`)
+  return Number.isNaN(date.getTime()) ? undefined : date
 }
