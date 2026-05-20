@@ -266,10 +266,13 @@ export default function TransactionsPage() {
     setIsFilterOpen(true);
   };
 
-  const cancelFilters = () => {
-    setDraftActivityFilter(appliedActivityFilter);
-    setDraftStartDate(appliedStartDate);
-    setDraftEndDate(appliedEndDate);
+  const resetFilters = () => {
+    setAppliedActivityFilter("all");
+    setAppliedStartDate("");
+    setAppliedEndDate("");
+    setDraftActivityFilter("all");
+    setDraftStartDate("");
+    setDraftEndDate("");
     setIsFilterOpen(false);
   };
 
@@ -315,7 +318,7 @@ export default function TransactionsPage() {
         onActivityFilterChange={setDraftActivityFilter}
         onStartDateChange={setDraftStartDate}
         onEndDateChange={setDraftEndDate}
-        onCancel={cancelFilters}
+        onReset={resetFilters}
         onApply={applyFilters}
       />
 
