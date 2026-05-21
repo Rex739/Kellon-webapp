@@ -123,7 +123,7 @@ export default function BuyCryptoFlow({
   const { rates: providerRates, isLoadingRates } = useProviderRates({
     providers: showRates ? providers : [],
     asset,
-    fiatAmount: fiatAmountNum,
+    amount: fiatAmountNum,
     currency: fiatCurrency,
     networkName,
     isAmountValid: showRates,
@@ -190,7 +190,13 @@ export default function BuyCryptoFlow({
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
         <h2 className="text-lg font-bold text-black dark:text-white">
-          {step === "provider" ? "Choose Provider" : step === "amount" ? "Enter Amount" : step === "review" ? "Review Order" : "Buy Crypto"}
+          {step === "provider"
+            ? "Choose Provider"
+            : step === "amount"
+              ? "Enter Amount"
+              : step === "review"
+                ? "Review Order"
+                : "Buy Crypto"}
         </h2>
         <button
           onClick={() => onAttemptClose(true)}
