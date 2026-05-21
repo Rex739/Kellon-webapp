@@ -1,6 +1,14 @@
-import Cookies from "js-cookie"
-import { ApiResponse, BASE_URL, handleResponse, LoginResponseData } from "."
-import { User } from "@/types/db"
+import Cookies from "js-cookie";
+import {
+  ApiResponse,
+  BASE_URL,
+  clearApiCredentials,
+  getOrCreateDeviceId,
+  handleResponse,
+  LoginResponseData,
+  persistApiCredentials,
+} from ".";
+import { User } from "@/types/db";
 
 /**
  * 🔐 Login with Privy
@@ -11,27 +19,45 @@ import { User } from "@/types/db"
 export async function loginWithPrivy(
   token: string,
 ): Promise<ApiResponse<LoginResponseData>> {
+  clearApiCredentials();
+  const device = getOrCreateDeviceId();
   const res = await fetch("/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ token }),
+    body: JSON.stringify({
+      token,
+      device,
+      deviceInfo: {
+        platform: "web",
+      },
+    }),
     credentials: "include",
-  })
+  });
 
-  const user = await handleResponse<LoginResponseData>(res) // ✅ generic added
+  const user = await handleResponse<LoginResponseData>(res); // ✅ generic added
 
-  if (user?.data?.deviceToken) {
-    Cookies.set("deviceToken", user.data.deviceToken, {
+  const authToken = user?.data?.token;
+  const apiSecret = user?.data?.apiSecret;
+  const deviceToken = user?.data?.deviceToken || user?.data?.deviceId || device;
+
+  if (authToken && apiSecret) {
+    persistApiCredentials({
+      token: authToken,
+      apiSecret,
+      deviceToken,
+    });
+
+    Cookies.set("deviceToken", deviceToken, {
       expires: 365,
       path: "/",
       sameSite: "strict",
       secure: true,
-    })
+    });
   }
 
-  return user
+  return user;
 }
 
 /**
@@ -39,7 +65,6 @@ export async function loginWithPrivy(
  * Notifies the backend to invalidate the session and clear cookies.
  */
 export async function logout(device: string) {
-  
   const res = await fetch(`/api/auth/logout`, {
     method: "POST",
     headers: {
@@ -47,9 +72,14 @@ export async function logout(device: string) {
     },
     credentials: "include",
     body: JSON.stringify({ device }),
-  })
+  });
 
-  return handleResponse(res)
+  try {
+    return await handleResponse(res);
+  } finally {
+    clearApiCredentials();
+    Cookies.remove("deviceToken", { path: "/" });
+  }
 }
 /**
  * 🔎 Get Current Session
@@ -64,7 +94,7 @@ export async function getSession(
   // 1. Retrieve the session token from the browser's request cookies
 
   // Early exit if no token is present to avoid unnecessary API calls
-  if (!sessionToken) return null
+  if (!sessionToken) return null;
 
   try {
     const res = await fetch(`${BASE_URL}/users/me`, {
@@ -76,12 +106,12 @@ export async function getSession(
       },
       // 3. Prevent Next.js from caching auth data across different users
       cache: "no-store",
-    })
+    });
 
-    return await handleResponse(res)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return await handleResponse(res);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // console.error("Session fetch failed:", error)
-    return null
+    return null;
   }
 }
