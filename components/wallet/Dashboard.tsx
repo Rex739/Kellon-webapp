@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowDownLeft,
   ArrowUp,
@@ -255,6 +256,7 @@ function SkeletonLine({ className }: { className: string }) {
 }
 
 export default function DashboardClient({ profile }: DashboardClientProps) {
+  const router = useRouter();
   const { countryCode, currencyCode, flag, isDetecting } = useDetectCountry();
   const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
@@ -485,10 +487,6 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
     secondaryBalance,
     secondaryCurrency,
   );
-  const marketRateLabel =
-    localCurrency === "USD"
-      ? "1 USD = $1.00"
-      : `$1 = ${formatCurrencyAmount(exchangeRate, localCurrency)}`;
   const assetCountLabel = `${groupedAssets.length} asset${groupedAssets.length === 1 ? "" : "s"}`;
   // const topAsset = groupedAssets[0]
   const hiddenActiveBalanceLabel = `${getCurrencySymbol(activeCurrency)}••••••`;
@@ -611,17 +609,8 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
                   </button>
                 </div>
 
-                {/* ─── Center: Market Rate & Balance ─── */}
+                {/* ─── Center: Balance ─── */}
                 <div className="relative flex flex-1 flex-col justify-start self-stretch pt-1 md:justify-center md:pt-0">
-                  {/* Market Rate Pill */}
-                  <div className="mb-2 flex w-fit items-center gap-1.5 py-1 text-[10px] font-bold uppercase text-primary-40 dark:text-white/75 md:hidden md:mb-3 md:gap-2 md:rounded-md md:border md:border-white/5 md:px-3 md:py-1 md:text-xs dark:md:border-white/10">
-                    {isDetecting || isRateLoading ? (
-                      <SkeletonLine className="h-3 w-28" />
-                    ) : (
-                      marketRateLabel
-                    )}
-                  </div>
-
                   {/* Clickable Balance Group */}
                   <div
                     className="group cursor-pointer select-none"
@@ -652,20 +641,7 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
                 </div>
 
                 {/* ─── Desktop Stats Grid ─── */}
-                <div className="hidden md:grid md:grid-cols-3 md:gap-3 md:pt-5 lg:gap-4 lg:pt-6">
-                  <div className="rounded-xl border border-gray-80/80 bg-white/70 p-3 backdrop-blur dark:border-white/10 dark:bg-secondary-50 lg:p-4">
-                    <p className="text-[10px] font-bold tracking-tight text-gray-30 dark:text-white/35">
-                      Exchange Rate
-                    </p>
-                    {isDetecting || isRateLoading ? (
-                      <SkeletonLine className="mt-2 h-4 w-28" />
-                    ) : (
-                      <p className="mt-2 text-sm font-semibold text-cryptoNight dark:text-white">
-                        {marketRateLabel}
-                      </p>
-                    )}
-                  </div>
-
+                <div className="hidden md:grid md:grid-cols-2 md:gap-3 md:pt-5 lg:gap-4 lg:pt-6">
                   <div className="rounded-xl border border-gray-80/80 bg-white/70 p-3 backdrop-blur dark:border-white/10 dark:bg-secondary-50 lg:p-4">
                     <p className="text-[10px] font-bold tracking-tight text-gray-30 dark:text-white/35">
                       Total Holdings
@@ -742,7 +718,11 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
                 onClick={() => setIsAddFundsOpen(true)}
               />
               <QuickAction icon={<ArrowUpRight size={22} />} label="Send" />
-              <QuickAction icon={<ArrowUp size={22} />} label="Withdraw" />
+              <QuickAction
+                icon={<ArrowUp size={22} />}
+                label="Withdraw"
+                onClick={() => router.push("/withdraw")}
+              />
               <QuickAction icon={<MoreHorizontal size={22} />} label="More" />
             </section>
 
