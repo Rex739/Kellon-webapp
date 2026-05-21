@@ -133,7 +133,7 @@ export function ProviderSelectionStep({
 
                   <div className="flex justify-between items-start gap-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="relative flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-primary-70/10 to-primary-60/10 flex items-center justify-center overflow-hidden">
+                      <div className="relative flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-primary-60 to to-secondary-50 dark:from-primary-70/10 dark:to-primary-60/10 flex items-center justify-center overflow-hidden">
                         {!showFallbackIcon ? (
                           <div className="relative w-full h-full">
                             <Image
