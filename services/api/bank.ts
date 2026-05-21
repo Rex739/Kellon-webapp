@@ -1,5 +1,5 @@
-import { BankDetail } from "@/types/db"
-import { ApiResponse, handleResponse } from "."
+import { BankDetail } from "@/types/db";
+import { ApiResponse, apiFetch, handleResponse } from ".";
 
 /**
  * Bank Account Management Service
@@ -12,12 +12,12 @@ export const bankService = {
    * Retrieves all bank accounts linked to the current user.
    */
   getBanks: async (): Promise<ApiResponse<BankDetail[]>> => {
-    const res = await fetch("/api/banks", {
+    const res = await apiFetch("/api/banks", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    })
-    return handleResponse(res)
+    });
+
+    return handleResponse(res);
   },
 
   /**
@@ -28,13 +28,12 @@ export const bankService = {
   addBank: async (
     data: Partial<BankDetail>,
   ): Promise<ApiResponse<BankDetail>> => {
-    const res = await fetch("/api/banks", {
+    const res = await apiFetch("/api/banks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify(data),
-    })
-    return handleResponse(res)
+    });
+    return handleResponse(res);
   },
 
   /**
@@ -45,13 +44,12 @@ export const bankService = {
     id: string,
     data: Partial<BankDetail>,
   ): Promise<ApiResponse<BankDetail>> => {
-    const res = await fetch(`/api/banks/${id}`, {
+    const res = await apiFetch(`/api/banks/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify(data),
-    })
-    return handleResponse(res)
+    });
+    return handleResponse(res);
   },
 
   /**
@@ -59,11 +57,10 @@ export const bankService = {
    * Removes a bank account from the user's profile.
    */
   deleteBank: async (id: string): Promise<ApiResponse<void>> => {
-    const res = await fetch(`/api/banks/${id}`, {
+    const res = await apiFetch(`/api/banks/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    })
-    return handleResponse(res)
+    });
+    return handleResponse(res);
   },
-}
+};
