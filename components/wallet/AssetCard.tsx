@@ -9,6 +9,7 @@ interface AssetCardProps {
   value: string;
   subtitle?: string;
   hideBalances?: boolean;
+  isValueLoading?: boolean;
   className?: string;
 }
 
@@ -19,6 +20,7 @@ const AssetCard: FC<AssetCardProps> = ({
   value,
   subtitle,
   hideBalances,
+  isValueLoading,
   className,
 }) => {
   const iconUrl = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${symbol.toLowerCase()}.png`;
@@ -58,9 +60,13 @@ const AssetCard: FC<AssetCardProps> = ({
         <p className="text-lg tracking-tight text-black dark:text-white lg:text-xl">
           {hideBalances ? "••••" : amount}
         </p>
-        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 lg:text-sm">
-          {hideBalances ? "••••••" : value}
-        </p>
+        {isValueLoading && !hideBalances ? (
+          <span className="mt-1 block h-3 w-16 animate-pulse rounded-full bg-gray-100 dark:bg-secondary-60 lg:h-3.5 lg:w-20" />
+        ) : (
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 lg:text-sm">
+            {hideBalances ? "••••••" : value}
+          </p>
+        )}
       </div>
     </div>
   );
