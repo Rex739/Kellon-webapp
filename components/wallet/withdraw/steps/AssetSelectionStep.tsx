@@ -1,0 +1,139 @@
+"use client";
+
+import Image from "next/image";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import CountrySelectorButton from "@/components/wallet/shared/CountrySelectorButton";
+
+interface WithdrawableAsset {
+  symbol: string;
+  name: string;
+  balance: number;
+  network: { id: string; name: string } | null;
+  usdValue: number;
+}
+
+interface AssetSelectionStepProps {
+  asset: string | null;
+  country: string | null;
+  isDetectingCountry: boolean;
+  assets: WithdrawableAsset[];
+  onSelectAsset: (asset: string) => void;
+  onOpenCountryModal: () => void;
+  onContinue: () => void;
+}
+
+export function WithdrawAssetSelectionStep({
+  asset,
+  country,
+  isDetectingCountry,
+  assets,
+  onSelectAsset,
+  onOpenCountryModal,
+  onContinue,
+}: AssetSelectionStepProps) {
+  const hasValidSelection = Boolean(asset);
+
+  return (
+    <div className="flex h-full min-h-[calc(100dvh-200px)] flex-col md:min-h-[500px]">
+      <div className="flex-1 overflow-y-auto md:px-0">
+        <div className="mb-8 flex justify-center">
+          <CountrySelectorButton
+            country={country}
+            isDetecting={isDetectingCountry}
+            onClick={onOpenCountryModal}
+          />
+        </div>
+
+        <section className="mb-8">
+          <h3 className="mb-4 text-[10px] font-bold uppercase tracking-wider text-gray-500">
+            Available Assets
+          </h3>
+          <div className="space-y-3">
+            {assets.map((item) => (
+              <button
+                key={item.symbol}
+                type="button"
+                onClick={() => onSelectAsset(item.symbol)}
+                className={cn(
+                  "w-full rounded-2xl border p-4 text-left transition-all",
+                  asset === item.symbol
+                    ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
+                    : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-8 w-8">
+                      <Image
+                        src={`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${item.symbol.toLowerCase()}.png`}
+                        alt={item.symbol}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="text-left">
+                      <p
+                        className={cn(
+                          "text-sm font-bold",
+                          asset === item.symbol
+                            ? "text-primary-60"
+                            : "text-black dark:text-white",
+                        )}
+                      >
+                        {item.symbol}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {item.network?.name
+                          ? item.network.name.charAt(0).toUpperCase() +
+                            item.network.name.slice(1)
+                          : "Available"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-black dark:text-white">
+                      {item.balance.toFixed(4)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      ${item.usdValue.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
+        <div className="mx-auto max-w-md md:max-w-full">
+          <button
+            type="button"
+            onClick={onContinue}
+            disabled={!hasValidSelection}
+            className={cn(
+              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
+              "hover:shadow-xl active:scale-[0.98]",
+              "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
+              !hasValidSelection && "from-gray-400 to-gray-500",
+            )}
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+              {!hasValidSelection ? (
+                "Select Asset to Continue"
+              ) : (
+                <>
+                  Continue
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </>
+              )}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
