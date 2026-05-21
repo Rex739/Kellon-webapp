@@ -3,7 +3,8 @@ import { useEffect, useState, useRef } from "react"
 import { providerService } from "@/services/api/payment-providers"
 
 interface ProviderRateDetails {
-  cryptoAmount: number | null // Calculated crypto amount (fiatAmount / rate)
+  cryptoAmount: number | null // Calculated crypto amount
+  fiatAmount: number | null // Calculated fiat amount
   rawRate: number | null // Raw rate from backend
 }
 
@@ -12,21 +13,23 @@ type ProviderRatesMap = Record<string, ProviderRateDetails | null>
 interface UseProviderRatesParams {
   providers: { id: string; name: string }[]
   asset: string | null
-  fiatAmount: number
+  amount: number
   currency: string | null
   networkName: string | null
   isAmountValid: boolean
   isLoadingProviders: boolean
+  side?: "buy" | "sell"
 }
 
 export function useProviderRates({
   providers,
   asset,
-  fiatAmount,
+  amount,
   currency,
   networkName,
   isAmountValid,
   isLoadingProviders,
+  side = "buy",
 }: UseProviderRatesParams) {
   const [rates, setRates] = useState<ProviderRatesMap>({})
   const [isLoadingRates, setIsLoadingRates] = useState(false)
@@ -58,41 +61,59 @@ export function useProviderRates({
         const ratePromises = providers.map(async (provider) => {
           try {
             let cryptoAmount: number | null = null
+            let fiatAmount: number | null = null
             let rawRate: number | null = null
 
             if (provider.name.toLowerCase() === "paycrest") {
               const res = await providerService.getPaycrestRate({
                 token: asset,
-                amount: fiatAmount,
+                amount,
                 currency: currency,
                 network: networkName,
+                side,
               })
 
-              if (res.success && res.data?.buy?.rate) {
-                rawRate = parseFloat(res.data.buy.rate)
+              const paycrestRate =
+                side === "sell" ? res.data?.sell?.rate : res.data?.buy?.rate
+
+              if (res.success && paycrestRate) {
+                rawRate = parseFloat(paycrestRate)
                 if (!isNaN(rawRate) && rawRate > 0) {
-                  cryptoAmount = fiatAmount / rawRate
+                  if (side === "sell") {
+                    cryptoAmount = amount
+                    fiatAmount = amount * rawRate
+                  } else {
+                    cryptoAmount = amount / rawRate
+                    fiatAmount = amount
+                  }
                 }
               }
             } else if (provider.name.toLowerCase() === "centiiv") {
               const res = await providerService.getCentiivQuote({
-                fromAsset: currency,
-                toAsset: asset,
-                amount: fiatAmount,
+                fromAsset: side === "sell" ? asset : currency,
+                toAsset: side === "sell" ? currency || "USD" : asset,
+                amount,
               })
 
               if (res.success) {
-                // For centiiv, get the raw rate
                 rawRate = res.data?.rate ? parseFloat(res.data.rate) : null
-                cryptoAmount = res.data?.estimatedReceivableAmount
+                const estimatedAmount = res.data?.estimatedReceivableAmount
                   ? parseFloat(res.data.estimatedReceivableAmount)
                   : null
+
+                if (side === "sell") {
+                  cryptoAmount = amount
+                  fiatAmount = estimatedAmount
+                } else {
+                  cryptoAmount = estimatedAmount
+                  fiatAmount = amount
+                }
               }
             }
 
             newRates[provider.id] =
-              cryptoAmount !== null || rawRate !== null
-                ? { cryptoAmount, rawRate }
+              cryptoAmount !== null || fiatAmount !== null || rawRate !== null
+                ? { cryptoAmount, fiatAmount, rawRate }
                 : null
           } catch (error) {
             console.error(`Failed to fetch rate for ${provider.name}:`, error)
@@ -116,11 +137,12 @@ export function useProviderRates({
   }, [
     providers,
     asset,
-    fiatAmount,
+    amount,
     currency,
     networkName,
     isAmountValid,
     isLoadingProviders,
+    side,
   ])
 
   return { rates, isLoadingRates }
