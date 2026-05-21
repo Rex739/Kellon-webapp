@@ -202,6 +202,32 @@ function normalizeDate(value: string | null, endOfDay = false): number | null {
   return date.getTime();
 }
 
+function TransactionListSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div
+          key={index}
+          className="flex animate-pulse items-center justify-between gap-4 border-b border-black/5 px-4 py-4 last:border-b-0 dark:border-white/10 md:px-5"
+        >
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <div className="h-9 w-9 shrink-0 rounded-full bg-gray-100 dark:bg-secondary-60" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="h-3.5 w-28 rounded-full bg-gray-100 dark:bg-secondary-60" />
+              <div className="flex items-center gap-2">
+                <div className="h-2.5 w-12 rounded-full bg-gray-100 dark:bg-secondary-60" />
+                <div className="h-1 w-1 rounded-full bg-gray-200 dark:bg-secondary-60" />
+                <div className="h-2.5 w-14 rounded-full bg-gray-100 dark:bg-secondary-60" />
+              </div>
+            </div>
+          </div>
+          <div className="h-3.5 w-20 shrink-0 rounded-full bg-gray-100 dark:bg-secondary-60" />
+        </div>
+      ))}
+    </>
+  );
+}
+
 export default function TransactionsPage() {
   const router = useRouter();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -347,14 +373,7 @@ export default function TransactionsPage() {
       <div className="mt-6 min-h-0 flex-1 overflow-y-auto pr-1">
         <div className="overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/10 dark:bg-secondary-50">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="mb-2 h-6 w-6 animate-spin rounded-full border-2 border-primary-60 border-t-transparent"></div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Loading transactions...
-                </p>
-              </div>
-            </div>
+            <TransactionListSkeleton />
           ) : error ? (
             <div className="rounded-2xl border border-black/5 bg-white p-6 text-center dark:border-white/10 dark:bg-secondary-50">
               <p className="text-xs text-red-500 dark:text-red-400">
