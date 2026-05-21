@@ -1,4 +1,4 @@
-import { ApiResponse, handleResponse } from "./index"
+import { ApiResponse, apiFetch, handleResponse } from "./index";
 
 /**
  * --- Onramp Request Interface ---
@@ -6,15 +6,15 @@ import { ApiResponse, handleResponse } from "./index"
  * const { fiatAmount, fiatCurrency, cryptoCurrencyCode, chain, network, ...metadata } = req.body;
  */
 export interface OnrampInitRequest {
-  fiatAmount: number
-  fiatCurrency: string
-  cryptoCurrencyCode: string
-  chain: string
-  network: string
+  fiatAmount: number;
+  fiatCurrency: string;
+  cryptoCurrencyCode: string;
+  chain: string;
+  network: string;
   // Metadata fields - explicitly defined to avoid 'any'
-  paymentMethod?: string
-  providerId?: string
-  source?: "web" | "mobile"
+  paymentMethod?: string;
+  providerId?: string;
+  source?: "web" | "mobile";
 }
 
 /**
@@ -22,18 +22,18 @@ export interface OnrampInitRequest {
  * Matches the 'order' object returned by your backend
  */
 export interface OnrampResponse {
-  transactionId: string
-  checkoutUrl?: string
-  provider: string
-  status: string
-  orderId?: string
+  transactionId: string;
+  checkoutUrl?: string;
+  provider: string;
+  status: string;
+  orderId?: string;
   paymentDetails?: {
-    accountNumber: string
-    bankName: string
-    accountName: string
-    amount: number
-    reference: string
-  }
+    accountNumber: string;
+    bankName: string;
+    accountName: string;
+    amount: number;
+    reference: string;
+  };
 }
 
 /**
@@ -74,7 +74,7 @@ export const onrampService = {
     body: OnrampInitRequest,
   ): Promise<ApiResponse<OnrampResponse>> =>
     post("/api/onramp/paychant/initiate", body),
-}
+};
 
 /**
  * --- Internal POST Helper ---
@@ -84,15 +84,13 @@ async function post(
   endpoint: string,
   body: OnrampInitRequest,
 ): Promise<ApiResponse<OnrampResponse>> {
-  const res = await fetch(endpoint, {
+  const res = await apiFetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    // Required for the backend to identify the user via session/cookies
-    credentials: "include",
     body: JSON.stringify(body),
-  })
+  });
 
-  return handleResponse(res)
+  return handleResponse(res);
 }
