@@ -1,36 +1,44 @@
-// lib/api/provider.ts
-
-import { ApiResponse, handleResponse } from "./index"
+import { ApiResponse, handleResponse } from "./index";
 
 /**
  * --- Strict Request Interfaces ---
  */
 export interface ProviderListQuery {
-  country?: string
-  currency?: string
-  network?: string
-  type?: string
+  country?: string;
+  currency?: string;
+  network?: string;
+  type?: string;
 }
 
 export interface PaycrestRateParams {
-  token: string
-  amount: number
-  currency: string
-  network: string
+  token: string;
+  amount: number;
+  currency: string;
+  network: string;
+  side?: "buy" | "sell";
 }
 
 export interface CentiivQuoteRequest {
-  fromAsset: string
-  toAsset: string
-  amount: number
+  fromAsset: string;
+  toAsset: string;
+  amount: number;
 }
 
 export interface BankVerificationRequest {
-  bankCode: string
-  accountNumber: string
-  save?: boolean
-  bankName?: string
-  accountName?: string
+  bankCode: string;
+  accountNumber: string;
+  save?: boolean;
+  bankName?: string;
+  accountName?: string;
+}
+
+export interface PaycrestAccountVerificationRequest {
+  institution: string;
+  accountIdentifier: string;
+  currency?: string;
+  save?: boolean;
+  bankName?: string;
+  accountName?: string;
 }
 
 /**
@@ -38,43 +46,85 @@ export interface BankVerificationRequest {
  * Defined based on backend controller property access
  */
 export interface PaymentProvider {
-  id: string
-  name: string
-  slug: string
-  isEnabled: boolean
+  id: string;
+  name: string;
+  slug: string;
+  isEnabled: boolean;
+  health?: {
+    state: string;
+    isHealthy: boolean;
+  };
 }
 
 export interface PaycrestRateResponse {
   buy: {
-    rate: string // e.g. "1381.57"
-    providerIds: string[]
-    orderType: string
-    refundTimeoutMinutes: number
-  }
+    rate: string; // e.g. "1381.57"
+    providerIds: string[];
+    orderType: string;
+    refundTimeoutMinutes: number;
+  };
   sell: {
-    rate: string
-    providerIds: string[]
-    orderType: string
-    refundTimeoutMinutes: number
-  }
+    rate: string;
+    providerIds: string[];
+    orderType: string;
+    refundTimeoutMinutes: number;
+  };
 }
 
 export interface CentiivQuoteResponse {
-  rate: string 
-  estimatedReceivableAmount: string 
-  fees: string 
+  rate: string;
+  estimatedReceivableAmount: string;
+  fees: string;
 }
 
 export interface BankAccountData {
-  accountName: string
-  accountNumber: string
-  bankName: string
-  bankCode: string
+  accountName: string;
+  accountNumber: string;
+  bankName: string;
+  bankCode: string;
+  bank_name?: string;
+  account_name?: string;
 }
 
 export interface CentiivBank {
-  name: string
-  code: string
+  name: string;
+  code: string;
+}
+
+export interface PaycrestInstitution {
+  name?: string;
+  code?: string;
+  id?: string;
+  institution?: string;
+  [key: string]: unknown;
+}
+
+export interface PaycrestAccountData {
+  accountName?: string;
+  institutionName?: string;
+  bankName?: string;
+  [key: string]: unknown;
+}
+
+function buildQuery(params: Record<string, string | number | undefined>) {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") {
+      query.set(key, String(value));
+    }
+  });
+
+  return query.toString();
+}
+
+function buildProviderListQuery(params: ProviderListQuery) {
+  return buildQuery({
+    country: params.country,
+    currency: params.currency,
+    network: params.network,
+    type: params.type,
+  });
 }
 
 /**
@@ -88,14 +138,14 @@ export const providerService = {
   listProviders: async (
     params: ProviderListQuery,
   ): Promise<ApiResponse<PaymentProvider[]>> => {
-    const query = new URLSearchParams(
-      params as Record<string, string>,
-    ).toString()
-    const res = await fetch(`/api/providers?${query}`, {
+    const query = buildProviderListQuery(params);
+    const endpoint = query ? `/api/providers?${query}` : "/api/providers";
+
+    const res = await fetch(endpoint, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
-    })
-    return handleResponse(res)
+    });
+    return handleResponse(res);
   },
 
   /**
@@ -105,19 +155,20 @@ export const providerService = {
   getPaycrestRate: async (
     params: PaycrestRateParams,
   ): Promise<ApiResponse<PaycrestRateResponse>> => {
-    const query = new URLSearchParams({
+    const query = buildQuery({
       token: params.token,
-      amount: params.amount.toString(),
+      amount: params.amount,
       currency: params.currency,
       network: params.network,
-    }).toString()
+      side: params.side,
+    });
 
     const res = await fetch(`/api/providers/paycrest/rate?${query}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-    })
-    return handleResponse(res)
+    });
+    return handleResponse(res);
   },
 
   /**
@@ -132,8 +183,8 @@ export const providerService = {
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(body),
-    })
-    return handleResponse(res)
+    });
+    return handleResponse(res);
   },
 
   /**
@@ -148,8 +199,8 @@ export const providerService = {
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(body),
-    })
-    return handleResponse(res)
+    });
+    return handleResponse(res);
   },
 
   /**
@@ -161,7 +212,42 @@ export const providerService = {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-    })
-    return handleResponse(res)
+    });
+    return handleResponse(res);
   },
-}
+
+  /**
+   * GET /api/providers/paycrest/institutions/:currency
+   * controller: getPaycrestInstitutionsHandler
+   */
+  getPaycrestInstitutions: async (
+    currency: string,
+  ): Promise<ApiResponse<PaycrestInstitution[]>> => {
+    const normalizedCurrency = currency.toUpperCase();
+    const res = await fetch(
+      `/api/providers/paycrest/institutions/${encodeURIComponent(normalizedCurrency)}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      },
+    );
+    return handleResponse(res);
+  },
+
+  /**
+   * POST /api/providers/paycrest/verify-account
+   * controller: verifyPaycrestAccountHandler
+   */
+  verifyPaycrestAccount: async (
+    body: PaycrestAccountVerificationRequest,
+  ): Promise<ApiResponse<PaycrestAccountData>> => {
+    const res = await fetch("/api/providers/paycrest/verify-account", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
+    return handleResponse(res);
+  },
+};
