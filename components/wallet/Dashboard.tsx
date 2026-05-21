@@ -215,6 +215,45 @@ function getTransactionStatusClasses(status: Transaction["status"]): string {
   }
 }
 
+function ActivityListSkeleton() {
+  return (
+    <div className="min-h-0 flex-1 overflow-hidden pr-1">
+      <div className="overflow-hidden rounded-xl border border-black/5 bg-white dark:border-white/10 dark:bg-secondary-50">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div
+            key={index}
+            className="flex animate-pulse items-center justify-between gap-3 border-b border-black/5 px-3 py-3 last:border-b-0 dark:border-white/10 min-[900px]:gap-2 min-[900px]:px-2.5 min-[900px]:py-2.5 lg:gap-3 lg:px-3 lg:py-3"
+          >
+            <div className="flex min-w-0 flex-1 items-center gap-3 min-[900px]:gap-2 lg:gap-3">
+              <div className="h-8 w-8 shrink-0 rounded-full bg-gray-100 dark:bg-secondary-60 min-[900px]:h-7 min-[900px]:w-7 lg:h-8 lg:w-8" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <div className="h-3 w-24 rounded-full bg-gray-100 dark:bg-secondary-60 min-[900px]:w-20 lg:w-24" />
+                <div className="flex items-center gap-2 min-[900px]:gap-1.5">
+                  <div className="h-2.5 w-10 rounded-full bg-gray-100 dark:bg-secondary-60" />
+                  <div className="h-1 w-1 rounded-full bg-gray-200 dark:bg-secondary-60" />
+                  <div className="h-2.5 w-12 rounded-full bg-gray-100 dark:bg-secondary-60" />
+                </div>
+              </div>
+            </div>
+            <div className="h-3 w-16 shrink-0 rounded-full bg-gray-100 dark:bg-secondary-60 min-[900px]:w-12 lg:w-16" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkeletonLine({ className }: { className: string }) {
+  return (
+    <span
+      className={cn(
+        "block animate-pulse rounded-full bg-gray-100 dark:bg-secondary-60",
+        className,
+      )}
+    />
+  );
+}
+
 export default function DashboardClient({ profile }: DashboardClientProps) {
   const { countryCode, currencyCode, flag, isDetecting } = useDetectCountry();
   const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
@@ -223,10 +262,11 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
     "LOCAL",
   );
   const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({});
+  const [isPricesLoading, setIsPricesLoading] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>(
     profile.transactions || [],
   );
-  const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
+  const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [transactionsError, setTransactionsError] = useState<string | null>(
     null,
   );
@@ -265,10 +305,12 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
     const loadPrices = async () => {
       if (!assetSymbolsKey) {
         setTokenPrices({});
+        setIsPricesLoading(false);
         return;
       }
 
       const symbols = assetSymbolsKey.split(",").filter(Boolean);
+      setIsPricesLoading(true);
 
       try {
         const prices = await priceService.getMultipleTokenPrices(symbols);
@@ -297,6 +339,10 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
           }, {});
 
         setTokenPrices(fallbackPrices);
+      } finally {
+        if (!isCancelled) {
+          setIsPricesLoading(false);
+        }
       }
     };
 
@@ -427,6 +473,8 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
   const secondaryBalance = isLocalDisplay ? totalUsdBalance : totalLocalBalance;
   const secondaryCurrency = isLocalDisplay ? "USD" : localCurrency;
   const canToggleCurrency = localCurrency !== "USD";
+  const isPortfolioLoading = isDetecting || isRateLoading || isPricesLoading;
+  const isAssetValueLoading = isRateLoading || isPricesLoading;
 
   const portfolioLabel = `Available Balance (${activeCurrency})`;
   const activeBalanceLabel = formatCurrencyAmount(
@@ -520,9 +568,17 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
                       aria-label={`Detected country ${countryCode}`}
                       title={countryCode}
                     >
-                      {flag}
+                      {isDetecting ? (
+                        <SkeletonLine className="h-2.5 w-2.5" />
+                      ) : (
+                        flag
+                      )}
                     </span>
-                    {portfolioLabel}
+                    {isDetecting ? (
+                      <SkeletonLine className="h-2.5 w-32" />
+                    ) : (
+                      portfolioLabel
+                    )}
                     {canToggleCurrency && (
                       <button
                         type="button"
@@ -559,9 +615,11 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
                 <div className="relative flex flex-1 flex-col justify-start self-stretch pt-1 md:justify-center md:pt-0">
                   {/* Market Rate Pill */}
                   <div className="mb-2 flex w-fit items-center gap-1.5 py-1 text-[10px] font-bold uppercase text-primary-40 dark:text-white/75 md:hidden md:mb-3 md:gap-2 md:rounded-md md:border md:border-white/5 md:px-3 md:py-1 md:text-xs dark:md:border-white/10">
-                    {isDetecting || isRateLoading
-                      ? "Updating..."
-                      : marketRateLabel}
+                    {isDetecting || isRateLoading ? (
+                      <SkeletonLine className="h-3 w-28" />
+                    ) : (
+                      marketRateLabel
+                    )}
                   </div>
 
                   {/* Clickable Balance Group */}
@@ -570,18 +628,26 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
                     onClick={() => setIsBalanceVisible((s) => !s)}
                   >
                     <div className="flex items-center justify-start gap-3">
-                      <h2 className="text-3xl font-bold leading-none text-cryptoNight transition-opacity group-active:opacity-70 dark:text-white md:max-w-[11ch] md:text-5xl lg:text-7xl">
-                        {isBalanceVisible
-                          ? activeBalanceLabel
-                          : hiddenActiveBalanceLabel}
-                      </h2>
+                      {isPortfolioLoading && isBalanceVisible ? (
+                        <SkeletonLine className="h-10 w-44 md:h-16 md:w-72 lg:h-20 lg:w-80" />
+                      ) : (
+                        <h2 className="text-3xl font-bold leading-none text-cryptoNight transition-opacity group-active:opacity-70 dark:text-white md:max-w-[11ch] md:text-5xl lg:text-7xl">
+                          {isBalanceVisible
+                            ? activeBalanceLabel
+                            : hiddenActiveBalanceLabel}
+                        </h2>
+                      )}
                     </div>
 
-                    <p className="mt-1 text-xs font-medium text-gray-20 dark:text-gray-40 md:mt-2 md:max-w-xl md:text-base md:dark:text-white/70">
-                      {isBalanceVisible
-                        ? secondaryBalanceLabel
-                        : hiddenSecondaryBalanceLabel}
-                    </p>
+                    {isPortfolioLoading && isBalanceVisible ? (
+                      <SkeletonLine className="mt-3 h-4 w-24 md:w-32" />
+                    ) : (
+                      <p className="mt-1 text-xs font-medium text-gray-20 dark:text-gray-40 md:mt-2 md:max-w-xl md:text-base md:dark:text-white/70">
+                        {isBalanceVisible
+                          ? secondaryBalanceLabel
+                          : hiddenSecondaryBalanceLabel}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -591,11 +657,13 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
                     <p className="text-[10px] font-bold tracking-tight text-gray-30 dark:text-white/35">
                       Exchange Rate
                     </p>
-                    <p className="mt-2 text-sm font-semibold text-cryptoNight dark:text-white">
-                      {isDetecting || isRateLoading
-                        ? "Updating..."
-                        : marketRateLabel}
-                    </p>
+                    {isDetecting || isRateLoading ? (
+                      <SkeletonLine className="mt-2 h-4 w-28" />
+                    ) : (
+                      <p className="mt-2 text-sm font-semibold text-cryptoNight dark:text-white">
+                        {marketRateLabel}
+                      </p>
+                    )}
                   </div>
 
                   <div className="rounded-xl border border-gray-80/80 bg-white/70 p-3 backdrop-blur dark:border-white/10 dark:bg-secondary-50 lg:p-4">
@@ -651,6 +719,7 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
                         value={formatCurrencyAmount(cardValue, activeCurrency)}
                         subtitle={subtitle}
                         hideBalances={!isBalanceVisible}
+                        isValueLoading={isAssetValueLoading}
                         className="px-4 py-3 md:px-4 md:py-3 lg:px-5 lg:py-4"
                       />
                     );
@@ -694,15 +763,7 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
               </div>
 
               {isTransactionsLoading ? (
-                <div className="flex min-h-[250px] flex-1 flex-col items-center justify-center rounded-xl border border-black/5 bg-gray-50 p-8 text-center dark:border-white/10 dark:bg-secondary-50 md:rounded-lg">
-                  <div className="mb-4 h-12 w-12 animate-pulse rounded-full border border-gray-300 bg-gray-200 dark:border-white/5 dark:bg-white/5 md:h-14 md:w-14" />
-                  <h4 className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300 md:text-base">
-                    Loading activity
-                  </h4>
-                  <p className="max-w-[180px] text-xs text-gray-400 dark:text-gray-500 md:text-sm">
-                    Pulling your recent transactions.
-                  </p>
-                </div>
+                <ActivityListSkeleton />
               ) : transactionsError ? (
                 <div className="flex min-h-[250px] flex-1 flex-col items-center justify-center rounded-xl border border-black/5 bg-gray-50 p-8 text-center dark:border-white/10 dark:bg-secondary-50 md:rounded-lg">
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-gray-300 bg-gray-200 dark:border-white/5 dark:bg-white/5 md:h-14 md:w-14">
