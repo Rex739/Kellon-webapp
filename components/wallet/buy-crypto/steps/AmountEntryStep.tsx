@@ -1,46 +1,46 @@
-"use client"
+"use client";
 
 import {
-  Delete,
   CreditCard,
   Landmark,
   Smartphone,
   ChevronDown,
   ArrowRight,
-} from "lucide-react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import { formatNumberWithCommas } from "@/lib/format-number-with-comma"
-import SummaryPill from "../SummaryPill"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { formatNumberWithCommas } from "@/lib/format-number-with-comma";
+import SummaryPill from "../SummaryPill";
+import Keypad from "@/components/Keypad";
 
 interface AmountEntryStepProps {
-  asset: string | null
-  networkName: string | null
-  selectedChain?: { name: string } | null
-  amount: string
-  fiatCurrency: string
-  fiatSymbol: string
-  decimals: number
-  cryptoAmountValue: number
-  exchangeRate: number
-  isRateLoading: boolean
-  isAmountValid: boolean
-  paymentMethod: string
-  paymentMethodLabel: string
-  onOpenPaymentModal: () => void
-  onKeypadPress: (val: string) => void
-  onContinue: () => void
-  onAmountChange?: (value: string) => void
+  asset: string | null;
+  networkName: string | null;
+  selectedChain?: { name: string } | null;
+  amount: string;
+  fiatCurrency: string;
+  fiatSymbol: string;
+  decimals: number;
+  cryptoAmountValue: number;
+  exchangeRate: number;
+  isRateLoading: boolean;
+  isAmountValid: boolean;
+  paymentMethod: string;
+  paymentMethodLabel: string;
+  onOpenPaymentModal: () => void;
+  onKeypadPress: (val: string) => void;
+  onContinue: () => void;
+  onAmountChange?: (value: string) => void;
 }
 
 // Validation schema
@@ -50,12 +50,12 @@ const amountSchema = z.object({
     .min(1, "Amount is required")
     .regex(/^\d+(\.\d{0,2})?$/, "Invalid amount format (max 2 decimal places)")
     .refine((val) => parseFloat(val) > 0, "Amount must be greater than 0"),
-})
+});
 
-type AmountFormValues = z.infer<typeof amountSchema>
+type AmountFormValues = z.infer<typeof amountSchema>;
 
 // Quick amount suggestions - exactly 6 amounts
-const QUICK_AMOUNTS = [500, 2000, 5000, 10000, 25000, 50000]
+const QUICK_AMOUNTS = [500, 2000, 5000, 10000, 25000, 50000];
 
 export function AmountEntryStep({
   asset,
@@ -72,46 +72,31 @@ export function AmountEntryStep({
   onContinue,
   onAmountChange,
 }: AmountEntryStepProps) {
-  const keypadKeys = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    ".",
-    "0",
-    "delete",
-  ]
-
   // Form for desktop
   const form = useForm<AmountFormValues>({
     resolver: zodResolver(amountSchema),
     defaultValues: {
       amount: amount || "",
     },
-  })
+  });
 
   const handleAmountChange = (value: string) => {
-    onAmountChange?.(value)
-    form.setValue("amount", value)
-  }
+    onAmountChange?.(value);
+    form.setValue("amount", value);
+  };
 
   const handleQuickAmount = (value: number) => {
-    const amountStr = value.toString()
-    handleAmountChange(amountStr)
-  }
+    const amountStr = value.toString();
+    handleAmountChange(amountStr);
+  };
 
   const handleFormSubmit = (data: AmountFormValues) => {
     if (parseFloat(data.amount) > 0) {
-      onContinue()
+      onContinue();
     }
-  }
+  };
 
-  const displayAmount = amount ? formatNumberWithCommas(amount) : "0"
+  const displayAmount = amount ? formatNumberWithCommas(amount) : "0";
 
   // Quick amount buttons component
   // Minimalist design
@@ -141,7 +126,7 @@ export function AmountEntryStep({
         ))}
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100dvh-200px)] md:min-h-[500px]">
@@ -199,21 +184,7 @@ export function AmountEntryStep({
 
           {/* Keypad */}
           <div className="w-full pb-4">
-            <div className="grid grid-cols-3 gap-2">
-              {keypadKeys.map((key) => (
-                <button
-                  key={key}
-                  onClick={() => onKeypadPress(key)}
-                  className="flex h-14 items-center justify-center rounded-2xl border border-black/5 bg-white text-xl font-bold transition-colors active:scale-95 hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50"
-                >
-                  {key === "delete" ? (
-                    <Delete className="h-6 w-6 text-gray-500" />
-                  ) : (
-                    key
-                  )}
-                </button>
-              ))}
-            </div>
+            <Keypad onPress={onKeypadPress} />
           </div>
         </div>
 
@@ -242,8 +213,8 @@ export function AmountEntryStep({
                               className="h-12 rounded-xl border-slate-200 bg-slate-50 pl-12 text-center dark:border-white/10 dark:bg-black1"
                               {...field}
                               onChange={(e) => {
-                                field.onChange(e)
-                                handleAmountChange(e.target.value)
+                                field.onChange(e);
+                                handleAmountChange(e.target.value);
                               }}
                             />
                           </FormControl>
@@ -353,5 +324,5 @@ export function AmountEntryStep({
         </div>
       </div>
     </div>
-  )
+  );
 }
