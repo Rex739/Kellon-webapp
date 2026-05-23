@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Check, Copy } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { getChainLabel } from "@/lib/chains";
 import { transactionService } from "@/services/api/transactions";
 import type { Transaction } from "@/types/db";
 import html2canvas from "html2canvas";
@@ -72,36 +73,52 @@ function formatPaidAmount(transaction: Transaction): string | null {
 }
 
 function getTransactionSymbol(transaction: Transaction): string {
-  const metadata = transaction.metadata;
-  const provider = metadata?.provider?.toLowerCase();
+  const metadata = getTransactionMetadata(transaction);
+  const provider =
+    typeof metadata.provider === "string"
+      ? metadata.provider.toLowerCase()
+      : null;
 
   switch (provider) {
     case "paycrest":
-      return metadata?.token || transaction.symbol;
+      return getStringMetadataValue(metadata, ["token"]) || transaction.symbol;
     case "centiiv":
-      return metadata?.asset || transaction.symbol;
+      return getStringMetadataValue(metadata, ["asset"]) || transaction.symbol;
     default:
       return transaction.symbol;
   }
 }
 
 function getProviderAmount(transaction: Transaction): number | null {
-  const metadata = transaction.metadata;
-  const provider = metadata?.provider?.toLowerCase();
+  const metadata = getTransactionMetadata(transaction);
+  const provider =
+    typeof metadata.provider === "string"
+      ? metadata.provider.toLowerCase()
+      : null;
 
   switch (provider) {
-    case "paycrest":
-      const paycrestAmount = metadata?.paycrestResponse?.amount;
+    case "paycrest": {
+      const paycrestAmount = getNestedMetadataValue(
+        metadata,
+        "paycrestResponse",
+        "amount",
+      );
       if (paycrestAmount) {
-        return parseFloat(paycrestAmount);
+        return parseFloat(String(paycrestAmount));
       }
       break;
-    case "centiiv":
-      const centiivAmount = metadata?.centiivResponse?.receivableAmount;
+    }
+    case "centiiv": {
+      const centiivAmount = getNestedMetadataValue(
+        metadata,
+        "centiivResponse",
+        "receivableAmount",
+      );
       if (centiivAmount) {
-        return parseFloat(centiivAmount);
+        return parseFloat(String(centiivAmount));
       }
       break;
+    }
     default:
       return null;
   }
@@ -116,17 +133,73 @@ function getTransactionTitle(transaction: Transaction): string {
 }
 
 function getTransactionNetwork(transaction: Transaction): string {
-  const metadata = transaction.metadata;
-  const provider = metadata?.provider?.toLowerCase();
+  const transactionWithChain = transaction as Transaction & {
+    chain?: string | null;
+    network?: string | null;
+  };
+  const metadata = getTransactionMetadata(transaction);
+  const provider =
+    typeof metadata.provider === "string"
+      ? metadata.provider.toLowerCase()
+      : null;
+  const chain =
+    transactionWithChain.chain ||
+    transactionWithChain.network ||
+    getStringMetadataValue(metadata, [
+      "chain",
+      "network",
+      "networkName",
+      "selectedChain",
+    ]);
 
   switch (provider) {
     case "paycrest":
-      return metadata?.network || transaction.assetType || "Unknown";
+      return getChainLabel(
+        getStringMetadataValue(metadata, ["network"]) || chain,
+      );
     case "centiiv":
-      return metadata?.chain || transaction.assetType || "Unknown";
+      return getChainLabel(
+        getStringMetadataValue(metadata, ["chain"]) || chain,
+      );
     default:
-      return transaction.assetType || "Unknown";
+      return chain ? getChainLabel(chain) : "Unknown";
   }
+}
+
+function getTransactionMetadata(
+  transaction: Transaction,
+): Record<string, unknown> {
+  return transaction.metadata && typeof transaction.metadata === "object"
+    ? (transaction.metadata as Record<string, unknown>)
+    : {};
+}
+
+function getStringMetadataValue(
+  metadata: Record<string, unknown>,
+  keys: string[],
+): string | null {
+  for (const key of keys) {
+    const value = metadata[key];
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
+function getNestedMetadataValue(
+  metadata: Record<string, unknown>,
+  parentKey: string,
+  childKey: string,
+): unknown {
+  const parent = metadata[parentKey];
+
+  if (!parent || typeof parent !== "object") {
+    return null;
+  }
+
+  return (parent as Record<string, unknown>)[childKey] ?? null;
 }
 
 export default function TransactionDetails({ id }: TransactionDetailsProps) {
