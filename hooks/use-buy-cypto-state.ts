@@ -3,8 +3,8 @@ import { useCallback, useMemo, useReducer, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getSupportedChainsForToken } from "@/lib/chains";
 
-export type Step = "asset" | "amount" | "provider" | "review";
-export const STEPS: Step[] = ["asset", "amount", "provider", "review"];
+export type Step = "asset" | "amount" | "provider" | "bank" | "review";
+export const STEPS: Step[] = ["asset", "amount", "provider", "bank", "review"];
 
 type State = {
   step: Step;
@@ -15,6 +15,7 @@ type State = {
   currency: string | null;
   country: string | null;
   countrySource: "auto" | "manual" | null;
+  bankId: string | null;
 };
 
 type Action =
@@ -28,6 +29,7 @@ type Action =
       currency: string;
       source: "auto" | "manual";
     }
+  | { type: "SET_BANK"; bankId: string | null }
   | { type: "SYNC_FROM_URL"; params: URLSearchParams };
 
 function reducer(state: State, action: Action): State {
@@ -44,11 +46,17 @@ function reducer(state: State, action: Action): State {
         asset: action.asset,
         networkName: null,
         networkId: null,
+        bankId: null,
       };
 
     case "SET_NETWORK":
       if (action.name === state.networkName) return state;
-      return { ...state, networkName: action.name, networkId: action.id };
+      return {
+        ...state,
+        networkName: action.name,
+        networkId: action.id,
+        bankId: null,
+      };
 
     case "SET_AMOUNT":
       if (action.amount === state.amount) return state;
@@ -68,6 +76,10 @@ function reducer(state: State, action: Action): State {
         countrySource: action.source,
       };
 
+    case "SET_BANK":
+      if (action.bankId === state.bankId) return state;
+      return { ...state, bankId: action.bankId };
+
     case "SYNC_FROM_URL": {
       const urlStep = (action.params.get("step") as Step) || "asset";
       const urlAsset = action.params.get("asset") || "USDC";
@@ -78,6 +90,7 @@ function reducer(state: State, action: Action): State {
       const urlCountrySource =
         (action.params.get("countrySource") as "auto" | "manual" | null) ||
         null;
+      const urlBankId = action.params.get("bankId");
 
       let urlNetworkId: string | null = null;
       if (urlNetwork && urlAsset) {
@@ -97,6 +110,7 @@ function reducer(state: State, action: Action): State {
         currency: urlCurrency,
         country: urlCountry,
         countrySource: urlCountrySource,
+        bankId: urlBankId,
       };
 
       // Shallow compare – update only if something changed
@@ -108,7 +122,8 @@ function reducer(state: State, action: Action): State {
         newState.amount === state.amount &&
         newState.currency === state.currency &&
         newState.country === state.country &&
-        newState.countrySource === state.countrySource
+        newState.countrySource === state.countrySource &&
+        newState.bankId === state.bankId
       ) {
         return state;
       }
@@ -134,6 +149,7 @@ export function useBuyCryptoState() {
     const urlCountry = searchParams.get("country") || null;
     const urlCountrySource =
       (searchParams.get("countrySource") as "auto" | "manual" | null) || null;
+    const urlBankId = searchParams.get("bankId");
 
     let urlNetworkId: string | null = null;
     if (urlNetwork && urlAsset) {
@@ -153,6 +169,7 @@ export function useBuyCryptoState() {
       currency: urlCurrency,
       country: urlCountry,
       countrySource: urlCountrySource,
+      bankId: urlBankId,
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -200,7 +217,7 @@ export function useBuyCryptoState() {
     (asset: string) => {
       if (asset === state.asset) return;
       dispatch({ type: "SET_ASSET", asset });
-      updateUrl({ asset, network: null });
+      updateUrl({ asset, network: null, bankId: null });
     },
     [state.asset, updateUrl],
   );
@@ -209,7 +226,7 @@ export function useBuyCryptoState() {
     (name: string, id: string) => {
       if (name === state.networkName) return;
       dispatch({ type: "SET_NETWORK", name, id });
-      updateUrl({ network: name });
+      updateUrl({ network: name, bankId: null });
     },
     [state.networkName, updateUrl],
   );
@@ -242,6 +259,15 @@ export function useBuyCryptoState() {
     [state.country, state.currency, state.countrySource, updateUrl],
   );
 
+  const setBankId = useCallback(
+    (bankId: string | null) => {
+      if (bankId === state.bankId) return;
+      dispatch({ type: "SET_BANK", bankId });
+      updateUrl({ bankId }, true);
+    },
+    [state.bankId, updateUrl],
+  );
+
   return {
     step: state.step,
     asset: state.asset,
@@ -251,10 +277,12 @@ export function useBuyCryptoState() {
     currency: state.currency,
     country: state.country,
     countrySource: state.countrySource,
+    bankId: state.bankId,
     setAsset,
     setNetwork,
     setAmount,
     setCountryAndCurrency, // replaces individual setCountry/setCurrency
+    setBankId,
     setStep,
   };
 }
