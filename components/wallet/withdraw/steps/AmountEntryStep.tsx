@@ -83,16 +83,11 @@ export function WithdrawAmountEntryStep({
     ? formatNumberWithCommas(currentAmount)
     : "0";
   const isAmountValid = form.formState.isValid;
-  const quickAmounts = useMemo(() => {
-    const fixed = FIXED_QUICK_AMOUNTS.filter((value) => value <= assetBalance);
-    if (fixed.length >= 3) return fixed.slice(0, 6);
-
-    const percentageFallback = [0.25, 0.5, 0.75, 1]
-      .map((ratio) => Number((assetBalance * ratio).toFixed(6)))
-      .filter((value) => value > 0);
-
-    return Array.from(new Set([...fixed, ...percentageFallback])).slice(0, 6);
-  }, [assetBalance]);
+  const quickAmounts = useMemo(
+    () =>
+      FIXED_QUICK_AMOUNTS.filter((value) => value <= assetBalance).slice(0, 6),
+    [assetBalance],
+  );
 
   const keypadKeys = [
     "1",
@@ -186,29 +181,31 @@ export function WithdrawAmountEntryStep({
               ) : null}
             </div>
 
-            <div className="mb-6 space-y-3">
-              <p className="text-center text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                or choose amount
-              </p>
-              <div className="flex flex-wrap justify-center gap-2">
-                {quickAmounts.map((quickAmount) => (
-                  <button
-                    key={quickAmount}
-                    type="button"
-                    onClick={() => syncAmount(formatAssetAmount(quickAmount))}
-                    className={cn(
-                      "rounded-full border px-4 py-2 text-sm font-medium transition-all active:scale-95",
-                      currentAmount === formatAssetAmount(quickAmount)
-                        ? "border-primary-60 bg-primary-70/10 text-primary-60"
-                        : "border-black/10 bg-white text-gray-700 hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:bg-secondary-50 dark:text-gray-300",
-                    )}
-                  >
-                    {formatNumberWithCommas(formatAssetAmount(quickAmount))}{" "}
-                    {asset}
-                  </button>
-                ))}
+            {quickAmounts.length ? (
+              <div className="mb-6 space-y-3">
+                <p className="text-center text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                  or choose amount
+                </p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {quickAmounts.map((quickAmount) => (
+                    <button
+                      key={quickAmount}
+                      type="button"
+                      onClick={() => syncAmount(formatAssetAmount(quickAmount))}
+                      className={cn(
+                        "rounded-full border px-4 py-2 text-sm font-medium transition-all active:scale-95",
+                        currentAmount === formatAssetAmount(quickAmount)
+                          ? "border-primary-60 bg-primary-70/10 text-primary-60"
+                          : "border-black/10 bg-white text-gray-700 hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:bg-secondary-50 dark:text-gray-300",
+                      )}
+                    >
+                      {formatNumberWithCommas(formatAssetAmount(quickAmount))}{" "}
+                      {asset}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
 
             <div className="w-full pb-4">
               <div className="grid grid-cols-3 gap-2">
@@ -277,33 +274,35 @@ export function WithdrawAmountEntryStep({
                     )}
                   />
 
-                  <div className="space-y-3">
-                    <p className="text-center text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                      or choose amount
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {quickAmounts.map((quickAmount) => (
-                        <button
-                          key={quickAmount}
-                          type="button"
-                          onClick={() =>
-                            syncAmount(formatAssetAmount(quickAmount))
-                          }
-                          className={cn(
-                            "rounded-full border px-4 py-2 text-sm font-medium transition-all active:scale-95",
-                            currentAmount === formatAssetAmount(quickAmount)
-                              ? "border-primary-60 bg-primary-70/10 text-primary-60"
-                              : "border-black/10 bg-white text-gray-700 hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:bg-secondary-50 dark:text-gray-300",
-                          )}
-                        >
-                          {formatNumberWithCommas(
-                            formatAssetAmount(quickAmount),
-                          )}{" "}
-                          {asset}
-                        </button>
-                      ))}
+                  {quickAmounts.length ? (
+                    <div className="space-y-3">
+                      <p className="text-center text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                        or choose amount
+                      </p>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {quickAmounts.map((quickAmount) => (
+                          <button
+                            key={quickAmount}
+                            type="button"
+                            onClick={() =>
+                              syncAmount(formatAssetAmount(quickAmount))
+                            }
+                            className={cn(
+                              "rounded-full border px-4 py-2 text-sm font-medium transition-all active:scale-95",
+                              currentAmount === formatAssetAmount(quickAmount)
+                                ? "border-primary-60 bg-primary-70/10 text-primary-60"
+                                : "border-black/10 bg-white text-gray-700 hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:bg-secondary-50 dark:text-gray-300",
+                            )}
+                          >
+                            {formatNumberWithCommas(
+                              formatAssetAmount(quickAmount),
+                            )}{" "}
+                            {asset}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
                 </div>
               </form>
             </div>
