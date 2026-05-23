@@ -1,46 +1,46 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { FC, HtmlHTMLAttributes } from "react"
+import Link from "next/link";
+import { FC, HtmlHTMLAttributes } from "react";
 
 // IMP START - App Imports
-import { navigationListUrls } from "./navigationUrl"
-import { cn } from "@/lib/utils"
-import { Icons } from "@/components/Icons"
-import { usePathname } from "next/navigation"
-import { isActive } from "@/lib/is-active-link"
+import { navigationListUrls } from "./navigationUrl";
+import { cn } from "@/lib/utils";
+import { Icons } from "@/components/Icons";
+import { usePathname } from "next/navigation";
+import { isActive } from "@/lib/is-active-link";
 
-import NotificationBell from "@/components/notification/NotificationBell"
-import UserNavigation from "./user-navigation/UserNavigation"
-import ModeToggle from "@/components/ModeToggle"
-import SearchBar from "@/components/SearchBar"
+import NotificationBell from "@/components/notification/NotificationBell";
+import UserNavigation from "./user-navigation/UserNavigation";
+import ModeToggle from "@/components/ModeToggle";
+import SearchBar from "@/components/SearchBar";
 
-import { User } from "@/types/db"
+import { User } from "@/types/db";
 
 interface TopbarProps extends HtmlHTMLAttributes<HTMLDivElement> {
-  profile: User
+  profile: User;
 }
 
 const Topbar: FC<TopbarProps> = ({ className, profile }) => {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
-  const HIDDEN_PATHS = ["/continue"]
+  const HIDDEN_PATHS = ["/continue"];
 
   if (HIDDEN_PATHS.includes(pathname)) {
-    return null
+    return null;
   }
 
   return (
     <section
       className={cn(
         className,
-        "hidden md:block px-5 py-2 md:py-0 relative md:fixed w-full md:z-50  ",
+        "hidden md:block px-5 py-2 md:py-0 relative md:fixed w-full md:z-50",
       )}
     >
       <header className="flex justify-between items-center">
         {/* Desktop Navigation */}
         <div className="flex gap-2">
-          <nav className="hidden md:flex gap-5  w-fit capitalize px-5 py-2 my-2 rounded-md border border-input">
+          <nav className="hidden md:flex gap-5 w-fit capitalize px-5 py-2 my-2 rounded-md border border-gray-80 bg-white/85 shadow-sm backdrop-blur dark:border-input dark:bg-transparent dark:shadow-none">
             <Icons.Logo className="h-6 w-6" />
 
             {navigationListUrls.map(({ label, href }, i) => (
@@ -49,8 +49,9 @@ const Topbar: FC<TopbarProps> = ({ className, profile }) => {
                   <Link
                     href={href}
                     className={cn(
-                      "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white font-medium",
-                      isActive(pathname, href) && "text-black dark:text-white",
+                      "text-gray-30 dark:text-gray-40 hover:text-cryptoNight dark:hover:text-white font-medium",
+                      isActive(pathname, href) &&
+                        "text-cryptoNight dark:text-white",
                     )}
                   >
                     {label}
@@ -64,12 +65,12 @@ const Topbar: FC<TopbarProps> = ({ className, profile }) => {
         {/* Desktop Controls */}
         <ul className="hidden md:flex items-center gap-2">
           <li>
-            <SearchBar />
+            <SearchBar profile={profile} />
           </li>
           <li>
-            <div className="flex rounded-md border border-input items-centerspace-x-1">
+            <div className="flex items-center rounded-md border border-gray-80 bg-white/85 shadow-sm backdrop-blur dark:border-input dark:bg-transparent dark:shadow-none">
               <ModeToggle />
-              <div className="h-9 w-[1px] bg-input my-auto"></div>
+              <div className="h-9 w-[1px] bg-gray-80 my-auto dark:bg-input"></div>
               <NotificationBell />
             </div>
           </li>
@@ -78,7 +79,7 @@ const Topbar: FC<TopbarProps> = ({ className, profile }) => {
         </ul>
       </header>
     </section>
-  )
-}
+  );
+};
 
-export default Topbar
+export default Topbar;
