@@ -2,7 +2,7 @@ import { User } from "@/types/db";
 
 type ApiError = {
   message?: string;
-  error?: string;
+  error?: string | { message?: string };
 };
 
 type ApiCredentials = {
@@ -46,7 +46,10 @@ export async function handleResponse<T>(
     try {
       error = await res.json();
     } catch {}
-    throw new Error(error.message || error.error || "Something went wrong");
+    const nestedMessage =
+      typeof error.error === "object" ? error.error.message : error.error;
+
+    throw new Error(error.message || nestedMessage || "Something went wrong");
   }
 
   const json = await res.json().catch(() => null);
