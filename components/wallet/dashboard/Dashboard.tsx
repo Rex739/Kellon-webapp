@@ -1,0 +1,90 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import AddFundsModal from "@/components/modals/AddFundsModal"
+import { cn, getGreeting } from "@/lib/utils"
+import type { User } from "@/types/db"
+import ActivityPanel from "./ActivityPanel"
+import AssetsPanel from "./AssetsPanel"
+import DashboardHeader from "./DashboardHeader"
+import PortfolioBalanceCard from "./PortfolioBalanceCard"
+import QuickActionsPanel from "./QuickActionsPanel"
+import { useDashboardData } from "./use-dashboard-data"
+
+interface DashboardClientProps {
+  profile: User
+}
+
+export default function DashboardClient({ profile }: DashboardClientProps) {
+  const router = useRouter()
+  const [isAddFundsOpen, setIsAddFundsOpen] = useState(false)
+  const greeting = getGreeting()
+  const dashboard = useDashboardData(profile)
+
+  return (
+    <div className="container mx-auto w-full max-w-7xl space-y-6 px-4 pb-32 pt-4 md:space-y-8 md:px-6 md:pb-12 md:pt-28">
+      <DashboardHeader greeting={greeting} profile={profile} />
+
+      <div
+        className={cn(
+          "px-0 py-0 text-gray-20 dark:text-gray-40",
+          "rounded-none",
+          "md:rounded-lg  md:bg-white/30 md:p-4",
+          "md:dark:bg-secondary-50/10",
+        )}
+      >
+        <div className="grid grid-cols-1 gap-6 md:gap-4 min-[900px]:grid-cols-12 min-[900px]:items-start">
+          <div className="contents min-[900px]:col-span-8 min-[900px]:flex min-[900px]:w-full min-[900px]:flex-col min-[900px]:gap-4">
+            <PortfolioBalanceCard
+              activeBalanceLabel={dashboard.activeBalanceLabel}
+              assetCountLabel={dashboard.assetCountLabel}
+              canToggleCurrency={dashboard.canToggleCurrency}
+              countryCode={dashboard.countryCode}
+              flag={dashboard.flag}
+              hiddenActiveBalanceLabel={dashboard.hiddenActiveBalanceLabel}
+              hiddenSecondaryBalanceLabel={
+                dashboard.hiddenSecondaryBalanceLabel
+              }
+              isBalanceVisible={dashboard.isBalanceVisible}
+              isDetecting={dashboard.isDetecting}
+              isLocalDisplay={dashboard.isLocalDisplay}
+              isPortfolioLoading={dashboard.isPortfolioLoading}
+              localCurrency={dashboard.localCurrency}
+              portfolioLabel={dashboard.portfolioLabel}
+              secondaryBalanceLabel={dashboard.secondaryBalanceLabel}
+              setDisplayCurrency={dashboard.setDisplayCurrency}
+              setIsBalanceVisible={dashboard.setIsBalanceVisible}
+              totalNetworks={dashboard.totalNetworks}
+            />
+
+            <AssetsPanel
+              activeCurrency={dashboard.activeCurrency}
+              displayCurrency={dashboard.displayCurrency}
+              groupedAssets={dashboard.groupedAssets}
+              isAssetValueLoading={dashboard.isAssetValueLoading}
+              isBalanceVisible={dashboard.isBalanceVisible}
+            />
+          </div>
+
+          <div className="contents min-[900px]:order-2 min-[900px]:col-span-4 min-[900px]:flex min-[900px]:w-full min-[900px]:flex-col min-[900px]:gap-4">
+            <QuickActionsPanel
+              onAddFunds={() => setIsAddFundsOpen(true)}
+              onSend={() => router.push("/send")}
+              onWithdraw={() => router.push("/withdraw")}
+            />
+
+            <ActivityPanel
+              isBalanceVisible={dashboard.isBalanceVisible}
+              isTransactionsLoading={dashboard.isTransactionsLoading}
+              recentTransactions={dashboard.recentTransactions}
+              transactionsError={dashboard.transactionsError}
+            />
+          </div>
+        </div>
+      </div>
+
+      <AddFundsModal isOpen={isAddFundsOpen} onClose={setIsAddFundsOpen} />
+    </div>
+  )
+}
