@@ -1,30 +1,31 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useState, useMemo } from "react"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import * as React from "react";
+import { useState, useMemo } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { Search, X, CheckCircle, Globe, ArrowLeft } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { ALL_SUPPORTED_COUNTRIES } from "@/lib/supported-countries"
+} from "@/components/ui/drawer";
+import { Search, X, CheckCircle, Globe, ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ALL_SUPPORTED_COUNTRIES } from "@/lib/supported-countries";
+import { Input } from "@/components/ui/input";
 
 interface CountrySelectorModalProps {
-  isVisible: boolean
-  onClose: () => void
-  onSelect: (countryCode: string) => void
-  selectedCountry?: string
-  countries?: string[] // Optional: restrict to specific country codes
+  isVisible: boolean;
+  onClose: () => void;
+  onSelect: (countryCode: string) => void;
+  selectedCountry?: string;
+  countries?: string[]; // Optional: restrict to specific country codes
 }
 
 export const CountrySelectorModal: React.FC<CountrySelectorModalProps> = ({
@@ -34,22 +35,22 @@ export const CountrySelectorModal: React.FC<CountrySelectorModalProps> = ({
   selectedCountry,
   countries,
 }) => {
-  const isDesktop = useMediaQuery("(min-width: 768px)")
-  const [searchQuery, setSearchQuery] = useState("")
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Memoized list filtering logic
   const filteredCountries = useMemo(() => {
     const baseList = countries
       ? ALL_SUPPORTED_COUNTRIES.filter((c) => countries.includes(c.code))
-      : ALL_SUPPORTED_COUNTRIES
+      : ALL_SUPPORTED_COUNTRIES;
 
-    if (!searchQuery) return baseList
-    const q = searchQuery.toLowerCase()
+    if (!searchQuery) return baseList;
+    const q = searchQuery.toLowerCase();
     return baseList.filter(
       (c) =>
         c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q),
-    )
-  }, [searchQuery, countries])
+    );
+  }, [searchQuery, countries]);
 
   // Flag emoji helper
   const getFlag = (code: string) =>
@@ -57,17 +58,18 @@ export const CountrySelectorModal: React.FC<CountrySelectorModalProps> = ({
       .toUpperCase()
       .replace(/./g, (char) =>
         String.fromCodePoint(char.charCodeAt(0) + 127397),
-      )
+      );
 
   const content = (
-    <div className="px-4 pb-8 md:px-0 md:pb-0 flex flex-col h-[600px] md:h-[500px]">
+    <div className="flex h-[600px] flex-col px-4 pb-8 md:h-[500px] md:px-0 md:pb-0">
       {/* Header with Back Button */}
-      <div className="flex justify-start mb-6">
+      <div className="mb-6 flex justify-start">
         <button
+          type="button"
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity outline-none"
+          className="rounded-full border border-black/5 bg-white p-2 outline-none transition-opacity hover:opacity-80 dark:border-none dark:bg-secondary-60/50"
         >
-          <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
+          <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-white" />
         </button>
       </div>
 
@@ -83,43 +85,46 @@ export const CountrySelectorModal: React.FC<CountrySelectorModalProps> = ({
 
       {/* Search Bar */}
       <div className="relative mb-6">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-        <input
+        <Search className="absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400" />
+        <Input
           type="text"
           placeholder="Search country..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-gray-50 dark:bg-[#121324] border border-slate-200 dark:border-gray-800 rounded-2xl py-3 pl-12 pr-10 text-black dark:text-white placeholder:text-gray-500 focus:outline-none focus:border-primary-70 transition-colors"
+          className="h-12 rounded-xl border-black/5 bg-white pl-11 pr-10 text-sm text-black shadow-none placeholder:text-gray-400 focus-visible:border-primary-70 focus-visible:ring-primary-70/15 dark:border-white/10 dark:bg-secondary-60/50 dark:text-white dark:placeholder:text-gray-500"
         />
         {searchQuery && (
           <button
+            type="button"
             onClick={() => setSearchQuery("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2"
+            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 transition hover:bg-gray-100 dark:hover:bg-white/10"
+            aria-label="Clear country search"
           >
-            <X className="w-4 h-4 text-gray-500 hover:text-black dark:hover:text-white" />
+            <X className="h-4 w-4 text-gray-500 hover:text-black dark:hover:text-white" />
           </button>
         )}
       </div>
 
       {/* Country List */}
-      <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+      <div className="custom-scrollbar flex-1 space-y-2 overflow-y-auto pr-1">
         {filteredCountries.length > 0 ? (
           filteredCountries.map((item) => {
             // Strict comparison for selection
             const isSelected =
-              selectedCountry?.toUpperCase() === item.code.toUpperCase()
+              selectedCountry?.toUpperCase() === item.code.toUpperCase();
             return (
               <button
+                type="button"
                 key={item.code}
                 onClick={() => {
-                  onSelect(item.code)
-                  onClose()
+                  onSelect(item.code);
+                  onClose();
                 }}
                 className={cn(
-                  "w-full flex items-center justify-between p-4 rounded-2xl border transition-all outline-none",
+                  "flex w-full cursor-pointer items-center justify-between rounded-[24px] border p-5 outline-none transition-all",
                   isSelected
-                    ? "bg-primary-70/10 border-primary-70"
-                    : "bg-gray-50 dark:bg-[#121324] border-slate-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-700",
+                    ? "border-primary-70 bg-primary-70/10"
+                    : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:hover:bg-secondary-60/50",
                 )}
               >
                 <div className="flex items-center gap-4">
@@ -135,48 +140,48 @@ export const CountrySelectorModal: React.FC<CountrySelectorModalProps> = ({
                     >
                       {item.name}
                     </p>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-tight">
+                    <p className="text-[10px] uppercase tracking-tight text-gray-500">
                       {item.code}
                     </p>
                   </div>
                 </div>
                 {isSelected && (
-                  <CheckCircle className="w-5 h-5 text-primary-70 fill-primary-70/10" />
+                  <CheckCircle className="h-5 w-5 fill-primary-70/10 text-primary-70" />
                 )}
               </button>
-            )
+            );
           })
         ) : (
           <div className="py-20 text-center">
-            <Globe className="w-12 h-12 text-gray-300 dark:text-gray-700 mx-auto mb-3" />
+            <Globe className="mx-auto mb-3 h-12 w-12 text-gray-300 dark:text-gray-700" />
             <p className="text-gray-500">No countries found</p>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 
   if (isDesktop) {
     return (
       <Dialog open={isVisible} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-secondary-20 border-none rounded-[32px] outline-none [&>button]:hidden">
+        <DialogContent className="rounded-[32px] border-none bg-gray-70 outline-none dark:bg-black2 sm:max-w-[425px] [&>button]:hidden">
           <DialogHeader className="sr-only">
             <DialogTitle>Select Country</DialogTitle>
           </DialogHeader>
           {content}
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
     <Drawer open={isVisible} onOpenChange={onClose}>
-      <DrawerContent className="bg-white dark:bg-secondary-20 border-none rounded-t-[32px] outline-none [&>button]:hidden focus:outline-none">
+      <DrawerContent className="rounded-t-[32px] border-none bg-gray-70 outline-none focus:outline-none dark:bg-black2 [&>button]:hidden">
         <DrawerHeader className="sr-only">
           <DrawerTitle>Select Country</DrawerTitle>
         </DrawerHeader>
         {content}
       </DrawerContent>
     </Drawer>
-  )
-}
+  );
+};
