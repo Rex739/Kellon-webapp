@@ -286,7 +286,9 @@ export default function WithdrawFlow({
               : step === "amount"
                 ? "Enter Amount"
                 : step === "bank"
-                  ? "Select Bank"
+                  ? selectedProvider?.name?.toLowerCase() === "paycrest"
+                    ? "Refund Account"
+                    : "Select Bank"
                   : step === "review"
                     ? "Review Withdrawal"
                     : "Withdraw"}
@@ -329,6 +331,7 @@ export default function WithdrawFlow({
                 setAsset(nextAsset);
               }}
               onOpenCountryModal={() => setIsCountryModalOpen(true)}
+              onBackToWallet={() => onAttemptClose(false)}
               onContinue={() => setStep("amount")}
             />
           ) : null}
@@ -364,10 +367,11 @@ export default function WithdrawFlow({
             <WithdrawBankSelectionStep
               asset={asset}
               amount={amount}
-              fiatCurrency={fiatCurrency}
+              amountUnit={asset}
               selectedChain={selectedChain}
               selectedBank={selectedBank}
               savedBanks={savedBanks}
+              providerName={selectedProvider?.name || null}
               onSelectSavedBank={(bank) => setBankId(bank.id)}
               onOpenBankModal={() => setIsBankModalOpen(true)}
               onContinue={() => selectedBank && setStep("review")}
