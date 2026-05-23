@@ -1,18 +1,20 @@
 // components/BuyCryptoFlow/steps/ReviewStep.tsx
-import { ShieldCheck } from "lucide-react"
-import ChainIcon from "@/components/wallet/ChainIcon"
-import SummaryPill from "../SummaryPill"
+import { ShieldCheck } from "lucide-react";
+import ChainIcon from "@/components/wallet/ChainIcon";
+import SummaryPill from "../SummaryPill";
+import type { BankDetail } from "@/types/db";
 
 interface ReviewStepProps {
-  amount: string
-  asset: string | null
-  fiatCurrency: string
-  fiatSymbol: string
-  selectedChain?: { name: string } | null
-  selectedProvider: { name: string; logo?: string } | null
-  estimatedCrypto: number
-  paymentMethodLabel: string
-  onConfirm: () => void
+  amount: string;
+  asset: string | null;
+  fiatCurrency: string;
+  fiatSymbol: string;
+  selectedChain?: { name: string } | null;
+  selectedProvider: { name: string; logo?: string } | null;
+  estimatedCrypto: number;
+  selectedBank?: BankDetail | null;
+  paymentMethodLabel: string;
+  onConfirm: () => void;
 }
 
 export function ReviewStep({
@@ -22,6 +24,7 @@ export function ReviewStep({
   selectedChain,
   selectedProvider,
   estimatedCrypto,
+  selectedBank,
   paymentMethodLabel,
   onConfirm,
 }: ReviewStepProps) {
@@ -30,9 +33,9 @@ export function ReviewStep({
     const cryptoValue =
       typeof estimatedCrypto === "number" && !isNaN(estimatedCrypto)
         ? estimatedCrypto
-        : 0
-    return cryptoValue.toFixed(4)
-  }
+        : 0;
+    return cryptoValue.toFixed(4);
+  };
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100dvh-200px)] md:min-h-[500px]">
@@ -94,6 +97,23 @@ export function ReviewStep({
                 {selectedProvider?.name}
               </span>
             </div>
+
+            {selectedProvider?.name?.toLowerCase() === "paycrest" &&
+            selectedBank ? (
+              <div className="flex justify-between items-center gap-4">
+                <span className="text-sm text-gray-500 font-medium">
+                  Refund Account
+                </span>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-black dark:text-white">
+                    {selectedBank.bankName}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {selectedBank.accountNumber} • {selectedBank.accountName}
+                  </p>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -121,5 +141,5 @@ export function ReviewStep({
         </div>
       </div>
     </div>
-  )
+  );
 }
