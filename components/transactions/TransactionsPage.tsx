@@ -105,6 +105,22 @@ function getProviderAmount(transaction: Transaction): number | null {
   return null;
 }
 
+function parseTransactionAmount(amount: Transaction["amount"]): number | null {
+  const parsed = typeof amount === "string" ? Number(amount) : amount;
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getTransactionDisplayAmount(transaction: Transaction): number | null {
+  const providerAmount = getProviderAmount(transaction);
+  if (providerAmount !== null) return providerAmount;
+
+  if (["TRANSFER_IN", "TRANSFER_OUT"].includes(transaction.type)) {
+    return parseTransactionAmount(transaction.amount);
+  }
+
+  return null;
+}
+
 function getTransactionTitle(transaction: Transaction): string {
   const action = getTransactionAction(transaction.type);
   const symbol = getTransactionSymbol(transaction);
@@ -117,7 +133,7 @@ function getTransactionTitle(transaction: Transaction): string {
 }
 
 function getTransactionAmountLabel(transaction: Transaction): string {
-  const amount = getProviderAmount(transaction);
+  const amount = getTransactionDisplayAmount(transaction);
   const symbol = getTransactionSymbol(transaction);
 
   if (amount === null) {

@@ -5,7 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { transferService } from "@/services/api/transfers";
+import {
+  isTransferVerificationRequiredError,
+  transferService,
+} from "@/services/api/transfers";
 import type { Asset, AssetType, User } from "@/types/db";
 import type {
   AmountFormValues,
@@ -38,6 +41,9 @@ export function useSendFlow(profile: User) {
   const [amount, setAmount] = useState("");
   const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verificationRequest, setVerificationRequest] = useState<{
+    verificationType: "otp" | "totp";
+  } | null>(null);
 
   const recipientKind = getRecipientKind(recipientInput);
   const isRecipientValid = isSupportedRecipient(recipientKind);
@@ -283,7 +289,10 @@ export function useSendFlow(profile: User) {
     }
   };
 
-  const submitTransfer = async () => {
+  const executeTransfer = async (verification?: {
+    verificationCode: string;
+    verificationType: "otp" | "totp";
+  }) => {
     if (
       !selectedAsset ||
       !isAmountValid ||
@@ -300,6 +309,8 @@ export function useSendFlow(profile: User) {
         symbol: selectedAsset.symbol,
         assetType: selectedAsset.assetType || ("CRYPTO" as AssetType),
         chain: selectedAsset.chain,
+        verificationCode: verification?.verificationCode,
+        verificationType: verification?.verificationType,
         recipientEmail:
           recipientKind === "email"
             ? trimmedRecipient.toLowerCase()
@@ -324,6 +335,7 @@ export function useSendFlow(profile: User) {
               },
       });
 
+      setVerificationRequest(null);
       toast.success(
         response.data?.recipient?.type === "pending"
           ? "Transfer invite created"
@@ -331,12 +343,39 @@ export function useSendFlow(profile: User) {
       );
       router.push("/transactions");
     } catch (error) {
+      if (isTransferVerificationRequiredError(error)) {
+        setVerificationRequest({
+          verificationType: error.verificationType,
+        });
+        toast.info("Enter your verification code to continue.");
+        return;
+      }
+
       toast.error(
         error instanceof Error ? error.message : "Unable to process transfer",
       );
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const submitTransfer = () => {
+    void executeTransfer();
+  };
+
+  const submitTransferVerification = (verificationCode: string) => {
+    if (!verificationRequest) return;
+
+    void executeTransfer({
+      verificationCode,
+      verificationType: verificationRequest.verificationType,
+    });
+  };
+
+  const closeTransferVerification = () => {
+    if (isSubmitting) return;
+    setVerificationRequest(null);
+    setStep("review");
   };
 
   const primaryButtonDisabled =
@@ -353,6 +392,7 @@ export function useSendFlow(profile: User) {
     amountForm,
     amountValue,
     closeSend: () => router.push("/"),
+    closeTransferVerification,
     goBack,
     goNext,
     handleAmountKeypadPress,
@@ -368,6 +408,7 @@ export function useSendFlow(profile: User) {
     recipientForm,
     recipientInput,
     recipientKind,
+    verificationRequest,
     selectedAsset,
     sendableAssets,
     setAmount,
@@ -378,6 +419,7 @@ export function useSendFlow(profile: User) {
     setVerifiedRecipient,
     step,
     submitTransfer,
+    submitTransferVerification,
     verifiedRecipient,
     verifyRecipient,
   };

@@ -126,6 +126,22 @@ function getProviderAmount(transaction: Transaction): number | null {
   return null;
 }
 
+function parseTransactionAmount(amount: Transaction["amount"]): number | null {
+  const parsed = typeof amount === "string" ? Number(amount) : amount;
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getTransactionDisplayAmount(transaction: Transaction): number | null {
+  const providerAmount = getProviderAmount(transaction);
+  if (providerAmount !== null) return providerAmount;
+
+  if (["TRANSFER_IN", "TRANSFER_OUT"].includes(transaction.type)) {
+    return parseTransactionAmount(transaction.amount);
+  }
+
+  return null;
+}
+
 function getTransactionTitle(transaction: Transaction): string {
   const type = getTransactionLabel(transaction.type);
   const symbol = getTransactionSymbol(transaction);
@@ -219,7 +235,7 @@ export default function TransactionDetails({ id }: TransactionDetailsProps) {
 
   const amountValue = useMemo(() => {
     if (!transaction) return null;
-    return getProviderAmount(transaction);
+    return getTransactionDisplayAmount(transaction);
   }, [transaction]);
 
   const symbol = useMemo(() => {

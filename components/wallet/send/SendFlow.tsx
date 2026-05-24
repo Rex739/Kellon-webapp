@@ -11,6 +11,7 @@ import AssetStep from "./AssetStep";
 import RecentsPanel from "./RecentsPanel";
 import RecipientStep from "./RecipientStep";
 import ReviewStep from "./ReviewStep";
+import TransferVerificationModal from "./TransferVerificationModal";
 import { SEND_STEPS, stepTitles } from "./send-utils";
 import { useSendFlow } from "./use-send-flow";
 
@@ -23,6 +24,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
     amount,
     amountForm,
     amountValue,
+    closeTransferVerification,
     closeSend,
     goBack,
     goNext,
@@ -49,6 +51,8 @@ export default function SendFlow({ profile }: SendFlowProps) {
     selfRecipientError,
     step,
     submitTransfer,
+    submitTransferVerification,
+    verificationRequest,
     verifiedRecipient,
     verifyRecipient,
   } = useSendFlow(profile);
@@ -167,6 +171,13 @@ export default function SendFlow({ profile }: SendFlowProps) {
       </div>
 
       <AddFundsModal isOpen={isAddFundsOpen} onClose={setIsAddFundsOpen} />
+      <TransferVerificationModal
+        isOpen={Boolean(verificationRequest)}
+        isSubmitting={isSubmitting}
+        verificationType={verificationRequest?.verificationType || "otp"}
+        onClose={closeTransferVerification}
+        onSubmit={submitTransferVerification}
+      />
     </div>
   );
 }
