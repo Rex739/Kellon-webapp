@@ -12,7 +12,6 @@ import { isActive } from "@/lib/is-active-link";
 
 import NotificationBell from "@/components/notification/NotificationBell";
 import UserNavigation from "./user-navigation/UserNavigation";
-import ModeToggle from "@/components/ModeToggle";
 import SearchBar from "@/components/SearchBar";
 
 import { User } from "@/types/db";
@@ -34,24 +33,27 @@ const Topbar: FC<TopbarProps> = ({ className, profile }) => {
     <section
       className={cn(
         className,
-        "hidden md:block px-5 py-2 md:py-0 relative md:fixed w-full md:z-50",
+        "relative hidden w-full px-4 py-3 md:fixed md:z-50 md:block lg:px-5",
       )}
     >
-      <header className="flex justify-between items-center">
+      <header className="mx-auto flex max-w-[1440px] items-center justify-between gap-4">
         {/* Desktop Navigation */}
-        <div className="flex gap-2">
-          <nav className="hidden md:flex gap-5 w-fit capitalize px-5 py-2 my-2 rounded-md border border-gray-80 bg-white/85 shadow-sm backdrop-blur dark:border-input dark:bg-transparent dark:shadow-none">
-            <Icons.Logo className="h-6 w-6" />
+        <div className="flex min-w-0 gap-2">
+          <nav className="hidden w-fit items-center gap-1 rounded-xl border border-gray-80 bg-white/85 p-1 capitalize shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:flex dark:border-white/10 dark:bg-secondary-50/35 dark:shadow-none">
+            <Link href="/" aria-label="Kellon home" className="">
+              <Icons.Logo className="h-8 w-8" />
+            </Link>
 
             {navigationListUrls.map(({ label, href }, i) => (
-              <ul key={i}>
+              <ul key={i} className="min-w-0">
                 <li>
                   <Link
                     href={href}
+                    aria-current={isActive(pathname, href) ? "page" : undefined}
                     className={cn(
-                      "text-gray-30 dark:text-gray-40 hover:text-cryptoNight dark:hover:text-white font-medium",
+                      "flex h-8 items-center rounded-lg px-2.5 text-sm font-semibold text-gray-30 transition-colors hover:text-cryptoNight dark:text-gray-40 dark:hover:text-white lg:px-3",
                       isActive(pathname, href) &&
-                        "text-cryptoNight dark:text-white",
+                        "text-primary-50 dark:text-primary-90",
                     )}
                   >
                     {label}
@@ -63,14 +65,15 @@ const Topbar: FC<TopbarProps> = ({ className, profile }) => {
         </div>
 
         {/* Desktop Controls */}
-        <ul className="hidden md:flex items-center gap-2">
-          <li>
-            <SearchBar profile={profile} />
+        <ul className="hidden min-w-0 items-center gap-2 md:flex">
+          <li className="min-w-0">
+            <SearchBar
+              profile={profile}
+              className="md:max-w-[320px] min-[900px]:max-w-[360px] lg:max-w-sm"
+            />
           </li>
           <li>
-            <div className="flex items-center rounded-md border border-gray-80 bg-white/85 shadow-sm backdrop-blur dark:border-input dark:bg-transparent dark:shadow-none">
-              <ModeToggle />
-              <div className="h-9 w-[1px] bg-gray-80 my-auto dark:bg-input"></div>
+            <div className="flex items-center overflow-hidden rounded-xl border border-gray-80 bg-white/85 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-secondary-50/35 dark:shadow-none">
               <NotificationBell />
             </div>
           </li>
