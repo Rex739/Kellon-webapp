@@ -95,10 +95,6 @@ const SIGNED_ROUTE_PREFIXES = [
   "/api/v1/biometric",
 ];
 
-function canUseBrowserCrypto(): boolean {
-  return typeof crypto !== "undefined" && !!crypto.subtle;
-}
-
 function getStoredValue(key: string): string | undefined {
   if (typeof window === "undefined") return undefined;
 
@@ -163,42 +159,32 @@ function getApiCredentials(): Required<ApiCredentials> {
   return { token, apiSecret, deviceToken };
 }
 
-function toHex(bytes: ArrayBuffer | Uint8Array): string {
-  const view = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-  return Array.from(view)
+function createNonce(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes)
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
 }
 
-function createNonce(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return toHex(bytes);
-}
-
-async function createSignature(
-  apiSecret: string,
-  payload: string,
-): Promise<string> {
-  if (!canUseBrowserCrypto()) {
+async function hmacSha256Hex(secret: string, message: string): Promise<string> {
+  if (typeof crypto === "undefined" || !crypto.subtle) {
     throw new Error("Request signing is unavailable in this browser.");
   }
 
-  const encoder = new TextEncoder();
+  const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
-    encoder.encode(apiSecret),
+    enc.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"],
   );
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode(payload),
-  );
+  const signature = await crypto.subtle.sign("HMAC", key, enc.encode(message));
 
-  return toHex(signature);
+  return Array.from(new Uint8Array(signature))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function normalizeRequestBody(body: RequestInit["body"]): {
@@ -235,16 +221,16 @@ function getBackendUrl(input: string): URL {
   return requestUrl;
 }
 
-function createCanonicalPath(url: URL): string {
-  const path =
-    url.pathname.length > 1 ? url.pathname.replace(/\/+$/, "") : url.pathname;
-  const sortedParams = Array.from(url.searchParams.entries()).sort(
-    ([leftKey, leftValue], [rightKey, rightValue]) =>
-      leftKey === rightKey
-        ? leftValue.localeCompare(rightValue)
-        : leftKey.localeCompare(rightKey),
-  );
-  const query = sortedParams
+function buildCanonicalPath(url: string): string {
+  const parsedUrl = new URL(url);
+  let path = parsedUrl.pathname;
+
+  if (path.length > 1 && path.endsWith("/")) {
+    path = path.slice(0, -1);
+  }
+
+  const query = [...parsedUrl.searchParams.entries()]
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
     .map(
       ([key, value]) =>
         `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
@@ -262,14 +248,17 @@ function shouldSignRequest(canonicalPath: string): boolean {
 
 async function createSigningHeaders(
   method: string,
-  canonicalPath: string,
+  fullUrl: string,
   rawBody: string,
 ): Promise<Record<string, string>> {
   const { token, apiSecret, deviceToken } = getApiCredentials();
   const timestamp = Date.now().toString();
   const nonce = createNonce();
-  const payload = `${timestamp}:${nonce}:${deviceToken}:${method}:${canonicalPath}:${rawBody}`;
-  const signature = await createSignature(apiSecret, payload);
+  const canonicalPath = buildCanonicalPath(fullUrl);
+  const normalizedMethod = method.toUpperCase();
+  const body = ["GET", "DELETE"].includes(normalizedMethod) ? "" : rawBody;
+  const payload = `${timestamp}:${nonce}:${deviceToken}:${normalizedMethod}:${canonicalPath}:${body}`;
+  const signature = await hmacSha256Hex(apiSecret, payload);
 
   return {
     Authorization: `Bearer ${token}`,
@@ -288,7 +277,7 @@ export async function apiFetch(
   const method = (init.method || "GET").toUpperCase();
   const { body, rawBody } = normalizeRequestBody(init.body);
   const backendUrl = getBackendUrl(input);
-  const canonicalPath = createCanonicalPath(backendUrl);
+  const canonicalPath = buildCanonicalPath(backendUrl.toString());
   const mustSign =
     options.signed === true ||
     (options.signed !== false && shouldSignRequest(canonicalPath));
@@ -299,11 +288,10 @@ export async function apiFetch(
   }
 
   if (mustSign) {
-    const signingBody = ["GET", "DELETE"].includes(method) ? "" : rawBody;
     const signingHeaders = await createSigningHeaders(
       method,
-      canonicalPath,
-      signingBody,
+      backendUrl.toString(),
+      rawBody,
     );
 
     Object.entries(signingHeaders).forEach(([key, value]) => {
@@ -313,7 +301,9 @@ export async function apiFetch(
 
   const credentials = init.credentials || (mustSign ? "omit" : "include");
 
-  return fetch(input, {
+  const requestUrl = mustSign ? backendUrl.toString() : input;
+
+  return fetch(requestUrl, {
     ...init,
     method,
     headers,

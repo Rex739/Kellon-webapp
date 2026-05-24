@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { FC, useEffect } from "react"
+import { FC, useEffect } from "react";
 import {
   TabletSmartphone,
   ArrowLeft,
@@ -9,33 +9,32 @@ import {
   Laptop,
   Globe,
   CheckCircle2,
-} from "lucide-react"
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { Button } from "@/components/ui/button"
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { cn } from "@/lib/utils"
-import { User } from "@/types/db"
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
+import type { Device as ProfileDevice, User } from "@/types/db";
 
 interface Device {
-  id: string
-  name: string
-  type: "mobile" | "desktop" | "browser"
-  lastActive: string
-  isCurrent: boolean
-  
+  id: string;
+  name: string;
+  type: "mobile" | "desktop" | "browser";
+  lastActive: string;
+  isCurrent: boolean;
 }
 
 // Mock data for UI development
@@ -61,44 +60,42 @@ const MOCK_DEVICES: Device[] = [
     lastActive: "Yesterday",
     isCurrent: false,
   },
-]
+];
 
 interface TrustedDevicesModalProps {
-  isOpen: boolean
-  onClose: () => void
-  profile: User
+  isOpen: boolean;
+  onClose: () => void;
+  profile?: User | null;
 }
 
 const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
   isOpen,
   onClose,
-  profile
+  profile,
 }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)")
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
-  const devices = profile.devices
-  // console.log("devices", devices)
-
+  const devices = mapTrustedDevices(profile?.devices);
 
   useEffect(() => {
     if (!isOpen) {
       const timer = setTimeout(() => {
-        document.body.style.pointerEvents = "auto"
-      }, 100)
-      return () => clearTimeout(timer)
+        document.body.style.pointerEvents = "auto";
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const DeviceIcon = ({ type }: { type: Device["type"] }) => {
     switch (type) {
       case "mobile":
-        return <Smartphone className="w-5 h-5" />
+        return <Smartphone className="w-5 h-5" />;
       case "desktop":
-        return <Laptop className="w-5 h-5" />
+        return <Laptop className="w-5 h-5" />;
       default:
-        return <Globe className="w-5 h-5" />
+        return <Globe className="w-5 h-5" />;
     }
-  }
+  };
 
   const Content = () => (
     <div className="px-4 pb-8 md:pb-0">
@@ -129,7 +126,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
 
       {/* Devices List */}
       <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-1 custom-scrollbar">
-        {MOCK_DEVICES.map((device) => (
+        {devices.map((device) => (
           <div
             key={device.id}
             className={cn(
@@ -194,7 +191,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
         </Button>
       </div>
     </div>
-  )
+  );
 
   // Using your established Mobile Drawer / Desktop Dialog pattern
   if (isMobile) {
@@ -210,7 +207,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
           <Content />
         </DrawerContent>
       </Drawer>
-    )
+    );
   }
 
   return (
@@ -225,7 +222,81 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
         <Content />
       </DialogContent>
     </Dialog>
-  )
+  );
+};
+
+function formatDeviceName(device: ProfileDevice): string {
+  const parts = [device.brand, device.model].filter(Boolean);
+  if (parts.length > 0) return parts.join(" ");
+  if (device.platform) return device.platform;
+  if (device.userAgent?.toLowerCase().includes("mobile"))
+    return "Mobile device";
+  if (device.userAgent) return "Browser session";
+
+  return "Trusted device";
 }
 
-export default TrustedDevicesModal
+function formatLastActive(value?: Date | string | null): string {
+  if (!value) return "Last active recently";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Last active recently";
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
+
+  if (diffMinutes < 1) return "Active now";
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays}d ago`;
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function getDeviceType(device: ProfileDevice): Device["type"] {
+  const source =
+    `${device.platform || ""} ${device.model || ""} ${device.userAgent || ""}`
+      .toLowerCase()
+      .trim();
+
+  if (
+    source.includes("iphone") ||
+    source.includes("android") ||
+    source.includes("mobile")
+  ) {
+    return "mobile";
+  }
+
+  if (
+    source.includes("mac") ||
+    source.includes("windows") ||
+    source.includes("linux") ||
+    source.includes("desktop")
+  ) {
+    return "desktop";
+  }
+
+  return "browser";
+}
+
+function mapTrustedDevices(profileDevices?: ProfileDevice[]): Device[] {
+  if (!profileDevices || profileDevices.length === 0) return MOCK_DEVICES;
+
+  return profileDevices.map((device, index) => ({
+    id: device.id,
+    name: formatDeviceName(device),
+    type: getDeviceType(device),
+    lastActive: formatLastActive(device.lastUsed),
+    isCurrent: index === 0,
+  }));
+}
+
+export default TrustedDevicesModal;

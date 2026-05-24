@@ -1,4 +1,5 @@
 import { ApiResponse, handleResponse } from "./index";
+import { getCachedApiResponse } from "./cache";
 
 /**
  * --- Strict Request Interfaces ---
@@ -127,6 +128,9 @@ function buildProviderListQuery(params: ProviderListQuery) {
   });
 }
 
+const PROVIDER_REFERENCE_TTL = 5 * 60 * 1000;
+const BANK_DIRECTORY_TTL = 30 * 60 * 1000;
+
 /**
  * --- Provider Service ---
  */
@@ -141,11 +145,17 @@ export const providerService = {
     const query = buildProviderListQuery(params);
     const endpoint = query ? `/api/providers?${query}` : "/api/providers";
 
-    const res = await fetch(endpoint, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    return handleResponse(res);
+    return getCachedApiResponse(
+      `providers:list:${query || "all"}`,
+      PROVIDER_REFERENCE_TTL,
+      async () => {
+        const res = await fetch(endpoint, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        return handleResponse(res);
+      },
+    );
   },
 
   /**
@@ -208,12 +218,18 @@ export const providerService = {
    * controller: getBankListsFromCentiiv
    */
   getBankList: async (): Promise<ApiResponse<CentiivBank[]>> => {
-    const res = await fetch("/api/providers/centiiv/banks", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-    return handleResponse(res);
+    return getCachedApiResponse(
+      "providers:centiiv:banks",
+      BANK_DIRECTORY_TTL,
+      async () => {
+        const res = await fetch("/api/providers/centiiv/banks", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+        return handleResponse(res);
+      },
+    );
   },
 
   /**
@@ -224,15 +240,21 @@ export const providerService = {
     currency: string,
   ): Promise<ApiResponse<PaycrestInstitution[]>> => {
     const normalizedCurrency = currency.toUpperCase();
-    const res = await fetch(
-      `/api/providers/paycrest/institutions/${encodeURIComponent(normalizedCurrency)}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+    return getCachedApiResponse(
+      `providers:paycrest:institutions:${normalizedCurrency}`,
+      BANK_DIRECTORY_TTL,
+      async () => {
+        const res = await fetch(
+          `/api/providers/paycrest/institutions/${encodeURIComponent(normalizedCurrency)}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          },
+        );
+        return handleResponse(res);
       },
     );
-    return handleResponse(res);
   },
 
   /**
