@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { FC, useState } from "react"
-import { Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { toast } from "sonner"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { FC, useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface GuardianListItemProps {
-  id: string
-  label: string // e.g., "Progress Ojemeh"
-  status: string // e.g., "ACTIVE" or "PENDING"
-  showAcceptButton?: boolean
-  onAccept?: () => Promise<void>
+  id: string;
+  label: string; // e.g., "Progress Ojemeh"
+  status: string; // e.g., "ACTIVE" or "PENDING"
+  showAcceptButton?: boolean;
+  onAccept?: () => Promise<void>;
 }
 
 export const GuardianListItem: FC<GuardianListItemProps> = ({
@@ -21,7 +21,12 @@ export const GuardianListItem: FC<GuardianListItemProps> = ({
   showAcceptButton,
   onAccept,
 }) => {
-  const [isAccepting, setIsAccepting] = useState(false)
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [activeDateLabel, setActiveDateLabel] = useState("");
+
+  useEffect(() => {
+    setActiveDateLabel(new Date().toISOString().split("T")[0]);
+  }, []);
 
   // Generate initials for the avatar (e.g., "Progress Ojemeh" -> "PO")
   const initials = label
@@ -31,19 +36,19 @@ export const GuardianListItem: FC<GuardianListItemProps> = ({
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : "?"
+    : "?";
 
   const handleAcceptClick = async () => {
-    if (!onAccept) return
-    setIsAccepting(true)
+    if (!onAccept) return;
+    setIsAccepting(true);
     try {
-      await onAccept()
+      await onAccept();
     } catch {
-      toast.error("Failed to accept invitation")
+      toast.error("Failed to accept invitation");
     } finally {
-      setIsAccepting(false)
+      setIsAccepting(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-between p-4 bg-transparent border border-gray-80 dark:border-secondary-60 rounded-[24px] transition-all">
@@ -68,8 +73,9 @@ export const GuardianListItem: FC<GuardianListItemProps> = ({
             )}
           >
             {status}{" "}
-            {status === "ACTIVE" &&
-              `(${new Date().toISOString().split("T")[0]})`}
+            {status === "ACTIVE" && activeDateLabel
+              ? `(${activeDateLabel})`
+              : null}
           </span>
         </div>
       </div>
@@ -88,5 +94,5 @@ export const GuardianListItem: FC<GuardianListItemProps> = ({
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
