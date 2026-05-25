@@ -25,6 +25,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import HydrationSafeRelativeTime from "@/components/HydrationSafeRelativeTime";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import type { Device as ProfileDevice, User } from "@/types/db";
@@ -33,7 +34,7 @@ interface Device {
   id: string;
   name: string;
   type: "mobile" | "desktop" | "browser";
-  lastActive: string;
+  lastActive: string | Date | null;
   isCurrent: boolean;
 }
 
@@ -157,7 +158,11 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
                   )}
                 </span>
                 <span className="text-[11px] text-gray-20 dark:text-secondary-90">
-                  {device.lastActive}
+                  {isDateLike(device.lastActive) ? (
+                    <HydrationSafeRelativeTime value={device.lastActive} />
+                  ) : (
+                    device.lastActive || "Last active recently"
+                  )}
                 </span>
               </div>
             </div>
@@ -236,31 +241,6 @@ function formatDeviceName(device: ProfileDevice): string {
   return "Trusted device";
 }
 
-function formatLastActive(value?: Date | string | null): string {
-  if (!value) return "Last active recently";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Last active recently";
-
-  const diffMs = Date.now() - date.getTime();
-  const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
-
-  if (diffMinutes < 1) return "Active now";
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-}
-
 function getDeviceType(device: ProfileDevice): Device["type"] {
   const source =
     `${device.platform || ""} ${device.model || ""} ${device.userAgent || ""}`
@@ -287,6 +267,11 @@ function getDeviceType(device: ProfileDevice): Device["type"] {
   return "browser";
 }
 
+function isDateLike(value: Device["lastActive"]): value is Date | string {
+  if (!value) return false;
+  return !Number.isNaN(new Date(value).getTime());
+}
+
 function mapTrustedDevices(profileDevices?: ProfileDevice[]): Device[] {
   if (!profileDevices || profileDevices.length === 0) return MOCK_DEVICES;
 
@@ -294,7 +279,7 @@ function mapTrustedDevices(profileDevices?: ProfileDevice[]): Device[] {
     id: device.id,
     name: formatDeviceName(device),
     type: getDeviceType(device),
-    lastActive: formatLastActive(device.lastUsed),
+    lastActive: device.lastUsed ?? null,
     isCurrent: index === 0,
   }));
 }
