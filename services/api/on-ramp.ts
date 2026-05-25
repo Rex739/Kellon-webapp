@@ -15,6 +15,15 @@ export interface OnrampInitRequest {
   paymentMethod?: string;
   providerId?: string;
   source?: "web" | "mobile";
+  bankId?: string;
+  bankAccountId?: string;
+  refundBankId?: string;
+  refundAccount?: {
+    bankName: string;
+    bankCode?: string | null;
+    accountNumber: string;
+    accountName: string;
+  };
 }
 
 /**
@@ -22,11 +31,37 @@ export interface OnrampInitRequest {
  * Matches the 'order' object returned by your backend
  */
 export interface OnrampResponse {
-  transactionId: string;
+  id?: string;
+  transactionId?: string;
   checkoutUrl?: string;
+  url?: string;
+  paymentUrl?: string;
+  redirectUrl?: string;
   provider: string;
   status: string;
   orderId?: string;
+  reference?: string;
+  providerReference?: string;
+  transactionReference?: string;
+  txId?: string;
+  message?: string;
+  transaction?: {
+    id?: string;
+    transactionId?: string;
+  };
+  order?: {
+    id?: string;
+    transactionId?: string;
+    reference?: string;
+  };
+  providerAccount?: {
+    institution: string;
+    accountIdentifier: string;
+    accountName: string;
+    validUntil?: string;
+    amountToTransfer: string;
+    currency: string;
+  };
   paymentDetails?: {
     accountNumber: string;
     bankName: string;

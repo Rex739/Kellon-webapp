@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { ArrowLeft, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useBuyCryptoState, STEPS } from "@/hooks/use-buy-cypto-state";
 import type { Step } from "@/hooks/use-buy-cypto-state";
 import type { BankDetail } from "@/types/db";
@@ -19,7 +21,14 @@ import { useExchangeRate } from "@/hooks/use-exchange-rate";
 import { useProviders } from "@/hooks/use-provider";
 import { useProviderRates } from "@/hooks/use-provider-rates";
 import { bankService } from "@/services/api/bank";
-import SelectBankModal from "@/components/modals/SelectBankModal";
+import {
+  onrampService,
+  type OnrampInitRequest,
+  type OnrampResponse,
+} from "@/services/api/on-ramp";
+import SelectBankModal, {
+  type SelectableBank,
+} from "@/components/modals/SelectBankModal";
 import StepIndicator from "./BuyCryptoStepIndicator";
 import { AssetSelectionStep } from "./steps/AssetSelectionStep";
 import { AmountEntryStep } from "./steps/AmountEntryStep";
@@ -37,11 +46,37 @@ const methodLabels: Record<string, string> = {
   mobile_money: "Mobile Money",
 };
 
+function getOnrampReferenceCandidates(
+  order: OnrampResponse | null,
+): Record<string, string | undefined> {
+  return {
+    "transaction.id": order?.transaction?.id,
+    "transaction.transactionId": order?.transaction?.transactionId,
+    "order.transactionId": order?.order?.transactionId,
+    transactionId: order?.transactionId,
+    transactionReference: order?.transactionReference,
+    txId: order?.txId,
+    id: order?.id,
+    orderId: order?.orderId,
+    reference: order?.reference,
+    providerReference: order?.providerReference,
+    "order.id": order?.order?.id,
+    "order.reference": order?.order?.reference,
+    "paymentDetails.reference": order?.paymentDetails?.reference,
+  };
+}
+
+function getOnrampTransactionReference(order: OnrampResponse | null): string {
+  const candidates = getOnrampReferenceCandidates(order);
+  return Object.values(candidates).find(Boolean) || "";
+}
+
 export default function BuyCryptoFlow({
   onAttemptClose,
 }: {
   onAttemptClose: (hasStarted: boolean) => void;
 }) {
+  const router = useRouter();
   const {
     step,
     asset,
@@ -68,6 +103,12 @@ export default function BuyCryptoFlow({
     "card" | "bank" | "mobile_money"
   >("card");
   const [savedBanks, setSavedBanks] = useState<BankDetail[]>([]);
+  const [selectedProviderBank, setSelectedProviderBank] =
+    useState<SelectableBank | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [initializedOrder, setInitializedOrder] =
+    useState<OnrampResponse | null>(null);
+  const [isCompletingOrder, setIsCompletingOrder] = useState(false);
 
   // Track if amount was set via input (desktop) or keypad (mobile)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -152,6 +193,19 @@ export default function BuyCryptoFlow({
     [requiresRefundBank],
   );
   const currentStepIndex = Math.max(0, flowSteps.indexOf(step));
+  const hasTransferInstructions = Boolean(initializedOrder?.providerAccount);
+  const stepTitle =
+    step === "provider"
+      ? "Choose Provider"
+      : step === "amount"
+        ? "Enter Amount"
+        : step === "bank"
+          ? "Refund Account"
+          : step === "review"
+            ? hasTransferInstructions
+              ? "Transfer Instructions"
+              : "Review Order"
+            : "Buy Crypto";
 
   useEffect(() => {
     let cancelled = false;
@@ -203,8 +257,113 @@ export default function BuyCryptoFlow({
     }
   };
 
-  const confirmPurchase = () => {
-    alert("Initiating Gateway...");
+  const confirmPurchase = async () => {
+    if (
+      !selectedProvider ||
+      !asset ||
+      !networkName ||
+      !fiatAmountNum ||
+      (requiresRefundBank && !selectedBank)
+    ) {
+      toast.error("Complete the order details before initializing payment");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setInitializedOrder(null);
+    try {
+      const payload: OnrampInitRequest = {
+        fiatAmount: fiatAmountNum,
+        fiatCurrency,
+        cryptoCurrencyCode: asset,
+        chain: networkName,
+        network: networkName,
+        paymentMethod,
+        providerId: selectedProvider.id,
+        source: "web",
+      };
+
+      if (selectedBank) {
+        payload.bankId = selectedBank.id;
+        payload.bankAccountId = selectedBank.id;
+        payload.refundBankId = selectedBank.id;
+        payload.refundAccount = {
+          bankName: selectedBank.bankName,
+          bankCode: selectedBank.bankCode,
+          accountNumber: selectedBank.accountNumber,
+          accountName: selectedBank.accountName,
+        };
+      }
+
+      const providerName = selectedProvider.name.toLowerCase();
+      let response;
+
+      if (providerName === "paycrest") {
+        response = await onrampService.initiatePaycrest(payload);
+      } else if (providerName === "centiiv") {
+        response = await onrampService.initiateCentiiv(payload);
+      } else if (providerName === "transak") {
+        response = await onrampService.initiateTransak(payload);
+      } else if (providerName === "moonpay") {
+        response = await onrampService.initiateMoonpay(payload);
+      } else if (providerName === "quidax") {
+        response = await onrampService.initiateQuidax(payload);
+      } else if (providerName === "paychant") {
+        response = await onrampService.initiatePaychant(payload);
+      } else {
+        response = await onrampService.initiateRamp(payload);
+      }
+
+      const redirectUrl =
+        response.data?.checkoutUrl ||
+        response.data?.paymentUrl ||
+        response.data?.redirectUrl ||
+        response.data?.url;
+
+      if (redirectUrl) {
+        toast.success("Payment initialized. Redirecting...");
+        window.location.assign(redirectUrl);
+        return;
+      }
+
+      if (response.data?.providerAccount) {
+        setInitializedOrder(response.data);
+        toast.success(
+          response.data.message ||
+            "Payment details ready. Send the exact amount.",
+        );
+        return;
+      }
+
+      const successMessage =
+        response.data?.message ||
+        (response.data?.paymentDetails
+          ? "Payment initialized. Use the payment details to complete your order."
+          : "Payment initialized");
+
+      toast.success(successMessage);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to initialize payment",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const confirmMoneySent = async () => {
+    const transactionId = getOnrampTransactionReference(initializedOrder);
+
+    if (!transactionId) {
+      toast.error(
+        "Payment details are missing a transaction reference. Please check your transactions or contact support.",
+      );
+      return;
+    }
+
+    setIsCompletingOrder(true);
+    toast.success("Payment marked as sent");
+    router.push(`/transactions/${transactionId}`);
   };
 
   // Step navigation
@@ -238,15 +397,7 @@ export default function BuyCryptoFlow({
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
         <h2 className="text-lg font-bold text-black dark:text-white">
-          {step === "provider"
-            ? "Choose Provider"
-            : step === "amount"
-              ? "Enter Amount"
-              : step === "bank"
-                ? "Refund Account"
-                : step === "review"
-                  ? "Review Order"
-                  : "Buy Crypto"}
+          {stepTitle}
         </h2>
         <button
           onClick={() => onAttemptClose(true)}
@@ -315,6 +466,7 @@ export default function BuyCryptoFlow({
             onContinue={() => setStep(requiresRefundBank ? "bank" : "review")}
             providerRates={providerRates}
             isRatesLoading={isLoadingRates}
+            requiresRefundAccount={requiresRefundBank}
             fiatCurrency={fiatCurrency}
             fiatSymbol={fiatSymbol}
             decimals={decimals}
@@ -330,8 +482,24 @@ export default function BuyCryptoFlow({
             selectedChain={selectedChain}
             selectedBank={selectedBank}
             savedBanks={savedBanks}
-            onSelectSavedBank={(bank) => setBankId(bank.id)}
+            selectedProviderName={selectedProvider?.name || null}
+            selectedProviderBank={selectedProviderBank}
+            onSelectProviderBank={(bank) => {
+              setSelectedProviderBank(bank);
+              if (bank) setBankId(null);
+            }}
+            onSelectSavedBank={(bank) => {
+              setSelectedProviderBank(null);
+              setBankId(bank.id);
+            }}
             onOpenBankModal={() => setIsBankModalOpen(true)}
+            onAddVerifiedBank={(bank) => {
+              setSavedBanks((current) => {
+                const exists = current.some((item) => item.id === bank.id);
+                return exists ? current : [bank, ...current];
+              });
+              setBankId(bank.id);
+            }}
             onContinue={() => selectedBank && setStep("review")}
           />
         )}
@@ -354,7 +522,11 @@ export default function BuyCryptoFlow({
             }
             selectedBank={selectedBank}
             paymentMethodLabel={methodLabels[paymentMethod]}
+            isSubmitting={isSubmitting}
+            initializedOrder={initializedOrder}
+            isCompleting={isCompletingOrder}
             onConfirm={confirmPurchase}
+            onConfirmSent={confirmMoneySent}
           />
         )}
       </div>
@@ -381,15 +553,10 @@ export default function BuyCryptoFlow({
         onClose={() => setIsBankModalOpen(false)}
         currency={fiatCurrency}
         providerName={selectedProvider?.name || null}
-        savedBanks={savedBanks}
-        selectedBankId={selectedBank?.id || null}
-        onSelectSavedBank={(bank) => setBankId(bank.id)}
-        onAddVerifiedBank={(bank) => {
-          setSavedBanks((current) => {
-            const exists = current.some((item) => item.id === bank.id);
-            return exists ? current : [bank, ...current];
-          });
-          setBankId(bank.id);
+        selectedBankCode={selectedProviderBank?.value || null}
+        onSelectBank={(bank) => {
+          setSelectedProviderBank(bank);
+          setBankId(null);
         }}
       />
     </div>

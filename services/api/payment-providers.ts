@@ -85,6 +85,8 @@ export interface BankAccountData {
   bankCode: string;
   bank_name?: string;
   account_name?: string;
+  raw?: unknown;
+  [key: string]: unknown;
 }
 
 export interface CentiivBank {
@@ -97,13 +99,27 @@ export interface PaycrestInstitution {
   code?: string;
   id?: string;
   institution?: string;
+  logo?: string;
+  logoUrl?: string;
+  image?: string;
+  imageUrl?: string;
+  icon?: string;
+  avatar?: string;
+  metadata?: Record<string, unknown>;
   [key: string]: unknown;
 }
 
 export interface PaycrestAccountData {
   accountName?: string;
+  account_name?: string;
+  accountNumber?: string;
+  account_number?: string;
+  bankCode?: string;
+  bank_code?: string;
+  name?: string;
   institutionName?: string;
   bankName?: string;
+  raw?: unknown;
   [key: string]: unknown;
 }
 
@@ -126,6 +142,111 @@ function buildProviderListQuery(params: ProviderListQuery) {
     network: params.network,
     type: params.type,
   });
+}
+
+function getStringValue(value: unknown): string | undefined {
+  if (typeof value === "string" && value.trim()) return value.trim();
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  return undefined;
+}
+
+function findNestedStringValue(
+  data: unknown,
+  keys: string[],
+): string | undefined {
+  const directValue = getStringValue(data);
+  if (directValue && keys.includes("__self")) return directValue;
+
+  const queue: unknown[] = [data];
+  const visited = new WeakSet<object>();
+
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current || typeof current !== "object") continue;
+    if (visited.has(current)) continue;
+    visited.add(current);
+
+    const record = current as Record<string, unknown>;
+
+    for (const key of keys) {
+      const value = getStringValue(record[key]);
+      if (value) return value;
+    }
+
+    Object.values(record).forEach((value) => {
+      if (value && typeof value === "object") {
+        queue.push(value);
+      }
+    });
+  }
+
+  return undefined;
+}
+
+function normalizeBankVerificationResponse(
+  raw: unknown,
+  fallback: {
+    accountNumber: string;
+    bankCode: string;
+    bankName?: string;
+  },
+): BankAccountData {
+  const accountName =
+    findNestedStringValue(raw, [
+      "__self",
+      "accountName",
+      "account_name",
+      "accountHolderName",
+      "account_holder_name",
+      "accountTitle",
+      "account_title",
+      "customerName",
+      "customer_name",
+      "recipientName",
+      "recipient_name",
+      "verifiedName",
+      "verified_name",
+      "name",
+    ]) || "";
+
+  const accountNumber =
+    findNestedStringValue(raw, [
+      "accountNumber",
+      "account_number",
+      "accountIdentifier",
+      "account_identifier",
+      "number",
+    ]) || fallback.accountNumber;
+
+  const bankName =
+    findNestedStringValue(raw, [
+      "bankName",
+      "bank_name",
+      "institutionName",
+      "institution_name",
+      "institution",
+    ]) ||
+    fallback.bankName ||
+    "";
+
+  const bankCode =
+    findNestedStringValue(raw, [
+      "bankCode",
+      "bank_code",
+      "institution",
+      "institutionCode",
+      "institution_code",
+      "code",
+    ]) || fallback.bankCode;
+
+  return {
+    accountName,
+    account_name: accountName,
+    accountNumber,
+    bankName,
+    bankCode,
+    raw,
+  };
 }
 
 const PROVIDER_REFERENCE_TTL = 5 * 60 * 1000;
@@ -198,19 +319,27 @@ export const providerService = {
   },
 
   /**
-   * POST /api/providers/verify-bank
+   * POST /api/providers/centiiv/verify-bank
    * controller: verifyBank
    */
   verifyBank: async (
     body: BankVerificationRequest,
   ): Promise<ApiResponse<BankAccountData>> => {
-    const res = await fetch("/api/providers/verify-bank", {
+    const res = await fetch("/api/providers/centiiv/verify-bank", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(body),
     });
-    return handleResponse(res);
+    const response = await handleResponse<unknown>(res);
+    return {
+      ...response,
+      data: normalizeBankVerificationResponse(response.data, {
+        accountNumber: body.accountNumber,
+        bankCode: body.bankCode,
+        bankName: body.bankName,
+      }),
+    };
   },
 
   /**
@@ -270,6 +399,14 @@ export const providerService = {
       credentials: "include",
       body: JSON.stringify(body),
     });
-    return handleResponse(res);
+    const response = await handleResponse<unknown>(res);
+    return {
+      ...response,
+      data: normalizeBankVerificationResponse(response.data, {
+        accountNumber: body.accountIdentifier,
+        bankCode: body.institution,
+        bankName: body.bankName,
+      }),
+    };
   },
 };

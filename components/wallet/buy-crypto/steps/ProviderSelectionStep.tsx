@@ -6,43 +6,44 @@ import {
   Check,
   AlertCircle,
   DollarSign,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill"
-import Image from "next/image"
-import { useState } from "react"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
+import Image from "next/image";
+import { useState } from "react";
 
 interface Provider {
-  id: string
-  name: string
-  logo: string
-  deliveryTime: string
-  fee: string
-  isRecommended?: boolean
-  features: string[]
+  id: string;
+  name: string;
+  logo: string;
+  deliveryTime: string;
+  fee: string;
+  isRecommended?: boolean;
+  features: string[];
 }
 
 interface ProviderRateDetails {
-  cryptoAmount: number | null
-  rawRate: number | null
+  cryptoAmount: number | null;
+  rawRate: number | null;
 }
 
 interface ProviderSelectionStepProps {
-  asset: string | null
-  networkName: string | null
-  selectedChain?: { name: string } | null
-  amount: string
-  providers: Provider[]
-  selectedProviderId: string
-  fiatCurrency: string
-  fiatSymbol: string
-  decimals: number
-  cryptoAmountValue: number
-  paymentMethodLabel: string
-  onSelectProvider: (id: string) => void
-  onContinue: () => void
-  providerRates: Record<string, ProviderRateDetails | null>
-  isRatesLoading: boolean
+  asset: string | null;
+  networkName: string | null;
+  selectedChain?: { name: string } | null;
+  amount: string;
+  providers: Provider[];
+  selectedProviderId: string;
+  fiatCurrency: string;
+  fiatSymbol: string;
+  decimals: number;
+  cryptoAmountValue: number;
+  paymentMethodLabel: string;
+  onSelectProvider: (id: string) => void;
+  onContinue: () => void;
+  providerRates: Record<string, ProviderRateDetails | null>;
+  isRatesLoading: boolean;
+  requiresRefundAccount?: boolean;
 }
 
 export function ProviderSelectionStep({
@@ -56,28 +57,29 @@ export function ProviderSelectionStep({
   providerRates,
   isRatesLoading,
   fiatCurrency,
+  requiresRefundAccount = false,
 }: ProviderSelectionStepProps) {
-  const selectedProvider = providers.find((p) => p.id === selectedProviderId)
-  const hasValidSelection = selectedProviderId && selectedProvider
+  const selectedProvider = providers.find((p) => p.id === selectedProviderId);
+  const hasValidSelection = selectedProviderId && selectedProvider;
 
   // Track image loading errors per provider
-  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   const handleImageError = (providerId: string) => {
-    setImageErrors((prev) => ({ ...prev, [providerId]: true }))
-  }
+    setImageErrors((prev) => ({ ...prev, [providerId]: true }));
+  };
 
   const shouldShowIcon = (provider: Provider) => {
-    return imageErrors[provider.id] || !provider.logo
-  }
+    return imageErrors[provider.id] || !provider.logo;
+  };
 
   // Helper to format currency
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(value)
-  }
+    }).format(value);
+  };
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100dvh-200px)] md:min-h-[500px]">
@@ -101,14 +103,14 @@ export function ProviderSelectionStep({
 
           <div className="space-y-3 md:space-y-4">
             {providers.map((provider) => {
-              const rateDetails = providerRates[provider.id]
-              const estimatedAmount = rateDetails?.cryptoAmount
-              const rawRate = rateDetails?.rawRate
-              const isLoadingRate = isRatesLoading && rateDetails === undefined
-              const isSelected = selectedProviderId === provider.id
-              const showFallbackIcon = shouldShowIcon(provider)
+              const rateDetails = providerRates[provider.id];
+              const estimatedAmount = rateDetails?.cryptoAmount;
+              const rawRate = rateDetails?.rawRate;
+              const isLoadingRate = isRatesLoading && rateDetails === undefined;
+              const isSelected = selectedProviderId === provider.id;
+              const showFallbackIcon = shouldShowIcon(provider);
               const hasRateError =
-                !isLoadingRate && rateDetails === null && !isRatesLoading
+                !isLoadingRate && rateDetails === null && !isRatesLoading;
 
               return (
                 <button
@@ -233,7 +235,7 @@ export function ProviderSelectionStep({
                     </div>
                   )}
                 </button>
-              )
+              );
             })}
           </div>
 
@@ -295,7 +297,7 @@ export function ProviderSelectionStep({
                 "Select a Provider to Continue"
               ) : (
                 <>
-                  Review Order
+                  {requiresRefundAccount ? "Select Bank" : "Review Order"}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </>
               )}
@@ -313,5 +315,5 @@ export function ProviderSelectionStep({
         </div>
       </div>
     </div>
-  )
+  );
 }

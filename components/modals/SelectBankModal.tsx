@@ -1,30 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  ChevronRight,
-  Landmark,
-  Loader2,
-  Plus,
-} from "lucide-react";
+import { CheckCircle2, Landmark, Loader2, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   providerService,
   type CentiivBank,
   type PaycrestInstitution,
 } from "@/services/api/payment-providers";
-import { bankService } from "@/services/api/bank";
-import type { BankDetail } from "@/types/db";
 import { cn } from "@/lib/utils";
 
-type AvailableBank = {
+export type SelectableBank = {
   label: string;
   value: string;
+  image?: string | null;
 };
 
 interface SelectBankModalProps {
@@ -32,10 +25,48 @@ interface SelectBankModalProps {
   onClose: () => void;
   currency: string;
   providerName: string | null;
-  savedBanks: BankDetail[];
-  selectedBankId: string | null;
-  onSelectSavedBank: (bank: BankDetail) => void;
-  onAddVerifiedBank: (bank: BankDetail) => void;
+  selectedBankCode?: string | null;
+  onSelectBank: (bank: SelectableBank) => void;
+}
+
+function getStringValue(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function getInstitutionLabel(bank: PaycrestInstitution | CentiivBank) {
+  if ("name" in bank && bank.name) return bank.name;
+  if ("institution" in bank && bank.institution) return bank.institution;
+  if ("code" in bank && bank.code) return bank.code;
+  return "Bank";
+}
+
+function getInstitutionCode(bank: PaycrestInstitution | CentiivBank) {
+  if ("code" in bank && bank.code) return bank.code;
+  if ("id" in bank && bank.id) return bank.id;
+  if ("institution" in bank && bank.institution) return bank.institution;
+  return "";
+}
+
+function getInstitutionImage(bank: PaycrestInstitution | CentiivBank) {
+  const bankRecord = bank as Record<string, unknown>;
+  const metadata =
+    typeof bankRecord.metadata === "object" && bankRecord.metadata
+      ? (bankRecord.metadata as Record<string, unknown>)
+      : {};
+
+  return (
+    getStringValue(bankRecord.logo) ||
+    getStringValue(bankRecord.logoUrl) ||
+    getStringValue(bankRecord.image) ||
+    getStringValue(bankRecord.imageUrl) ||
+    getStringValue(bankRecord.icon) ||
+    getStringValue(bankRecord.avatar) ||
+    getStringValue(metadata.logo) ||
+    getStringValue(metadata.logoUrl) ||
+    getStringValue(metadata.image) ||
+    getStringValue(metadata.imageUrl) ||
+    null
+  );
 }
 
 export default function SelectBankModal({
@@ -43,62 +74,52 @@ export default function SelectBankModal({
   onClose,
   currency,
   providerName,
-  savedBanks,
-  selectedBankId,
-  onSelectSavedBank,
-  onAddVerifiedBank,
+  selectedBankCode,
+  onSelectBank,
 }: SelectBankModalProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [view, setView] = useState<"list" | "add">("list");
-  const [bankOptions, setBankOptions] = useState<AvailableBank[]>([]);
-  const [selectedBankCode, setSelectedBankCode] = useState("");
-  const [selectedBankName, setSelectedBankName] = useState("");
-  const [accountNumber, setAccountNumber] = useState("");
-  const [verifiedAccountName, setVerifiedAccountName] = useState("");
+  const [bankOptions, setBankOptions] = useState<SelectableBank[]>([]);
+  const [bankSearch, setBankSearch] = useState("");
   const [isLoadingBanks, setIsLoadingBanks] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
   const providerKey = providerName?.toLowerCase() || "";
+  const isPaycrest = providerKey === "paycrest";
 
   useEffect(() => {
     if (!isOpen) {
-      setView("list");
-      setSelectedBankCode("");
-      setSelectedBankName("");
-      setAccountNumber("");
-      setVerifiedAccountName("");
+      setBankSearch("");
       return;
     }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen || view !== "add") return;
 
     let cancelled = false;
 
     const loadBanks = async () => {
       setIsLoadingBanks(true);
       try {
-        if (providerKey === "paycrest") {
+        if (isPaycrest) {
           const response =
             await providerService.getPaycrestInstitutions(currency);
           if (cancelled) return;
-          const options = (response.data || []).map(
-            (bank: PaycrestInstitution) => ({
-              label: String(
-                bank.name || bank.institution || bank.code || "Bank",
-              ),
-              value: String(bank.code || bank.id || bank.institution || ""),
-            }),
+
+          setBankOptions(
+            (response.data || [])
+              .map((bank) => ({
+                label: getInstitutionLabel(bank),
+                value: getInstitutionCode(bank),
+                image: getInstitutionImage(bank),
+              }))
+              .filter((bank) => bank.value),
           );
-          setBankOptions(options.filter((option) => option.value));
         } else {
           const response = await providerService.getBankList();
           if (cancelled) return;
-          const options = (response.data || []).map((bank: CentiivBank) => ({
-            label: bank.name,
-            value: bank.code,
-          }));
-          setBankOptions(options);
+
+          setBankOptions(
+            (response.data || []).map((bank) => ({
+              label: bank.name,
+              value: bank.code,
+              image: null,
+            })),
+          );
         }
       } catch (error) {
         if (!cancelled) {
@@ -117,236 +138,101 @@ export default function SelectBankModal({
     return () => {
       cancelled = true;
     };
-  }, [currency, isOpen, providerKey, view]);
+  }, [currency, isOpen, isPaycrest]);
 
-  const selectedSavedBank = useMemo(
-    () => savedBanks.find((bank) => bank.id === selectedBankId) || null,
-    [savedBanks, selectedBankId],
-  );
+  const filteredBanks = useMemo(() => {
+    const query = bankSearch.trim().toLowerCase();
+    if (!query) return bankOptions;
 
-  const verifyBank = async () => {
-    if (!selectedBankCode || accountNumber.length < 10) return;
-
-    setIsVerifying(true);
-    try {
-      if (providerKey === "paycrest") {
-        const response = await providerService.verifyPaycrestAccount({
-          institution: selectedBankCode,
-          accountIdentifier: accountNumber,
-          currency,
-          bankName: selectedBankName,
-        });
-
-        const accountName =
-          response.data?.accountName ||
-          response.data?.institutionName ||
-          response.data?.bankName;
-
-        if (!accountName) {
-          throw new Error("Unable to verify account");
-        }
-
-        const saved = await bankService.addBank({
-          bankName: selectedBankName,
-          bankCode: selectedBankCode,
-          accountNumber,
-          accountName,
-          country: currency,
-        });
-
-        if (saved.success && saved.data) {
-          setVerifiedAccountName(accountName);
-          onAddVerifiedBank(saved.data);
-          toast.success("Bank added successfully");
-          onClose();
-        }
-      } else {
-        const response = await providerService.verifyBank({
-          bankCode: selectedBankCode,
-          accountNumber,
-          bankName: selectedBankName,
-        });
-
-        const accountName =
-          response.data?.accountName || response.data?.account_name;
-
-        if (!accountName) {
-          throw new Error("Unable to verify account");
-        }
-
-        const saved = await bankService.addBank({
-          bankName: response.data.bankName || selectedBankName,
-          bankCode: response.data.bankCode || selectedBankCode,
-          accountNumber: response.data.accountNumber || accountNumber,
-          accountName,
-        });
-
-        if (saved.success && saved.data) {
-          setVerifiedAccountName(accountName);
-          onAddVerifiedBank(saved.data);
-          toast.success("Bank added successfully");
-          onClose();
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error ? error.message : "Bank verification failed",
+    return bankOptions.filter((bank) => {
+      return (
+        bank.label.toLowerCase().includes(query) ||
+        bank.value.toLowerCase().includes(query)
       );
-    } finally {
-      setIsVerifying(false);
-    }
-  };
+    });
+  }, [bankOptions, bankSearch]);
 
   const content = (
-    <div className="relative flex h-[85vh] flex-col sm:h-[700px]">
-      <div className="flex items-center justify-between px-6 py-5">
+    <div className="relative flex h-[85vh] flex-col overflow-hidden sm:h-[700px]">
+      <div className="flex items-center justify-between border-b border-gray-90 px-6 py-5 dark:border-white/5">
+        <div className="h-9 w-9" />
+        <DialogTitle className="text-lg font-semibold text-cryptoNight dark:text-white">
+          Select Bank
+        </DialogTitle>
         <button
           type="button"
-          onClick={() => (view === "list" ? onClose() : setView("list"))}
-          className="rounded-full border border-slate-200 bg-white p-2 dark:border-none dark:bg-secondary-60/50"
+          onClick={onClose}
+          className="rounded-full border border-gray-80 bg-white p-2 text-gray-20 transition hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-60/50 dark:text-white"
         >
-          <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-white" />
+          <X className="h-5 w-5" />
         </button>
-        <DialogTitle className="text-lg font-semibold">
-          {view === "list" ? "Select Bank" : "Add Bank"}
-        </DialogTitle>
-        {view === "list" ? (
-          <button
-            type="button"
-            onClick={() => setView("add")}
-            className="rounded-full bg-white p-2 text-primary-70 dark:bg-secondary-60/50"
-          >
-            <Plus className="h-5 w-5" />
-          </button>
-        ) : (
-          <div className="h-9 w-9" />
-        )}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 pb-8">
-        {view === "list" ? (
-          <div className="space-y-3">
-            {savedBanks.length > 0 ? (
-              savedBanks.map((bank) => {
-                const isSelected = bank.id === selectedSavedBank?.id;
-                return (
-                  <button
-                    key={bank.id}
-                    type="button"
-                    onClick={() => {
-                      onSelectSavedBank(bank);
-                      onClose();
-                    }}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all",
-                      isSelected
-                        ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
-                        : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
-                    )}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="rounded-xl bg-slate-100 p-3 text-primary-70 dark:bg-[#1a1f2e]">
-                        <Landmark className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-black dark:text-white">
-                          {bank.bankName}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {bank.accountName}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {bank.accountNumber}
-                        </p>
-                      </div>
-                    </div>
-                    {isSelected ? (
-                      <CheckCircle2 className="h-5 w-5 text-primary-70" />
+      <div className="flex-1 overflow-hidden px-6 pb-8 pt-5">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-30 dark:text-gray-40" />
+          <Input
+            value={bankSearch}
+            onChange={(event) => setBankSearch(event.target.value)}
+            placeholder="Search banks..."
+            className="h-12 rounded-2xl border-gray-80 bg-white pl-11 text-sm text-cryptoNight placeholder:text-gray-30 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-50 dark:text-white dark:placeholder:text-gray-40"
+          />
+        </div>
+
+        <div className="mt-5 h-[calc(100%-68px)] overflow-y-auto rounded-2xl border border-gray-90 bg-white dark:border-white/10 dark:bg-secondary-50">
+          {isLoadingBanks ? (
+            <div className="flex items-center justify-center gap-2 px-4 py-10 text-sm text-gray-30 dark:text-gray-40">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Loading banks...
+            </div>
+          ) : filteredBanks.length ? (
+            filteredBanks.map((bank, index) => {
+              const isSelected = bank.value === selectedBankCode;
+
+              return (
+                <button
+                  key={`${bank.value}-${index}`}
+                  type="button"
+                  onClick={() => {
+                    onSelectBank(bank);
+                    onClose();
+                  }}
+                  className={cn(
+                    "flex w-full items-center gap-3 border-b border-gray-90 px-4 py-4 text-left transition last:border-b-0 dark:border-white/10",
+                    isSelected
+                      ? "bg-primary-95/80 dark:bg-primary-70/10"
+                      : "hover:bg-gray-95 dark:hover:bg-white/5",
+                  )}
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-95 text-primary-60 dark:bg-primary-70/10 dark:text-primary-80">
+                    {bank.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={bank.image}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
-                      <ChevronRight className="h-5 w-5 text-gray-400" />
+                      <Landmark className="h-4 w-4" />
                     )}
-                  </button>
-                );
-              })
-            ) : (
-              <div className="rounded-2xl border border-dashed border-black/10 bg-white px-5 py-10 text-center dark:border-white/10 dark:bg-secondary-50">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  No saved banks yet.
-                </p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-500">
-                Select bank
-              </label>
-              <select
-                value={selectedBankCode}
-                onChange={(event) => {
-                  const selected = bankOptions.find(
-                    (option) => option.value === event.target.value,
-                  );
-                  setSelectedBankCode(event.target.value);
-                  setSelectedBankName(selected?.label || "");
-                }}
-                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm outline-none dark:border-white/10 dark:bg-secondary-50 dark:text-white"
-              >
-                <option value="">
-                  {isLoadingBanks ? "Loading banks..." : "Choose bank"}
-                </option>
-                {bankOptions.map((bank) => (
-                  <option key={bank.value} value={bank.value}>
-                    {bank.label}
-                  </option>
-                ))}
-              </select>
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-cryptoNight dark:text-white">
+                      {bank.label}
+                    </span>
+                  </span>
+                  {isSelected ? (
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-primary-60" />
+                  ) : null}
+                </button>
+              );
+            })
+          ) : (
+            <div className="px-4 py-10 text-center text-sm text-gray-30 dark:text-gray-40">
+              No banks found.
             </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-500">
-                Account number
-              </label>
-              <input
-                value={accountNumber}
-                onChange={(event) =>
-                  setAccountNumber(event.target.value.replace(/\D/g, ""))
-                }
-                placeholder="Enter account number"
-                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm outline-none dark:border-white/10 dark:bg-secondary-50 dark:text-white"
-              />
-            </div>
-
-            {verifiedAccountName ? (
-              <div className="rounded-xl border border-primary-60/20 bg-primary-70/5 px-4 py-3">
-                <p className="text-xs text-gray-500">Verified account name</p>
-                <p className="mt-1 text-sm font-semibold text-primary-60">
-                  {verifiedAccountName}
-                </p>
-              </div>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={verifyBank}
-              disabled={
-                !selectedBankCode || accountNumber.length < 10 || isVerifying
-              }
-              className="w-full rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isVerifying ? (
-                <span className="inline-flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Verifying...
-                </span>
-              ) : (
-                "Verify bank"
-              )}
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
@@ -354,7 +240,10 @@ export default function SelectBankModal({
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md overflow-hidden rounded-[32px] border-none bg-slate-50 p-0 dark:bg-[#0b101a] [&>button]:hidden">
+        <DialogContent
+          showCloseButton={false}
+          className="overflow-hidden rounded-[28px] border border-gray-90 bg-gray-95 p-0 shadow-xl dark:border-white/10 dark:bg-[#0b101a] sm:max-w-lg"
+        >
           {content}
         </DialogContent>
       </Dialog>
@@ -363,7 +252,7 @@ export default function SelectBankModal({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="rounded-t-[32px] border-none bg-slate-50 outline-none dark:bg-[#0b101a] [&>button]:hidden">
+      <DrawerContent className="max-h-[92vh] rounded-t-[32px] border-none bg-gray-95 outline-none dark:bg-[#0b101a] [&>div:first-child]:bg-gray-80 dark:[&>div:first-child]:bg-white/20">
         <DrawerTitle className="sr-only">Select Bank</DrawerTitle>
         {content}
       </DrawerContent>
