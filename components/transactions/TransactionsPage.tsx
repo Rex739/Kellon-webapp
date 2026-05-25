@@ -11,6 +11,7 @@ import {
   Filter,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import HydrationSafeRelativeTime from "@/components/HydrationSafeRelativeTime";
 import { cn } from "@/lib/utils";
 import { transactionService } from "@/services/api/transactions";
 import type { Transaction } from "@/types/db";
@@ -27,28 +28,6 @@ function formatAssetAmount(value: number): string {
     minimumFractionDigits: value > 0 && value < 1 ? 2 : 0,
     maximumFractionDigits: 2,
   }).format(value);
-}
-
-function formatRelativeDate(value: Date | string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Just now";
-
-  const diffMs = Date.now() - date.getTime();
-  const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
-
-  if (diffMinutes < 1) return "Just now";
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
 }
 
 function getTransactionAction(type: Transaction["type"]): string {
@@ -69,15 +48,33 @@ function isPositiveTransaction(type: Transaction["type"]): boolean {
   return ["DEPOSIT", "BUY", "TRANSFER_IN"].includes(type);
 }
 
+function getMetadataSymbol(metadata: Transaction["metadata"]): string | null {
+  const symbol =
+    metadata?.cryptoCurrencyCode ||
+    metadata?.cryptoCurrency ||
+    metadata?.token ||
+    metadata?.asset ||
+    metadata?.toAsset ||
+    metadata?.targetAsset;
+
+  return typeof symbol === "string" && symbol.trim()
+    ? symbol.toUpperCase()
+    : null;
+}
+
 function getTransactionSymbol(transaction: Transaction): string {
   const metadata = transaction.metadata;
   const provider = metadata?.provider?.toLowerCase();
 
+  if (transaction.type === "BUY") {
+    return getMetadataSymbol(metadata) || transaction.symbol;
+  }
+
   switch (provider) {
     case "paycrest":
-      return metadata?.token || transaction.symbol;
+      return getMetadataSymbol(metadata) || transaction.symbol;
     case "centiiv":
-      return metadata?.asset || transaction.symbol;
+      return getMetadataSymbol(metadata) || transaction.symbol;
     default:
       return transaction.symbol;
   }
@@ -442,7 +439,9 @@ export default function TransactionsPage() {
                     </p>
                     <div className="mt-1 flex items-center gap-2">
                       <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                        {formatRelativeDate(transaction.createdAt)}
+                        <HydrationSafeRelativeTime
+                          value={transaction.createdAt}
+                        />
                       </span>
                       <span className="h-1 w-1 rounded-full bg-gray-300 dark:bg-gray-600" />
                       <span

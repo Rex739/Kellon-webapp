@@ -72,6 +72,20 @@ function formatPaidAmount(transaction: Transaction): string | null {
   }).format(parsed)}`;
 }
 
+function getPreferredCryptoSymbol(
+  metadata: Record<string, unknown>,
+): string | null {
+  const value =
+    getStringMetadataValue(metadata, ["cryptoCurrencyCode"]) ||
+    getStringMetadataValue(metadata, ["cryptoCurrency"]) ||
+    getStringMetadataValue(metadata, ["token"]) ||
+    getStringMetadataValue(metadata, ["asset"]) ||
+    getStringMetadataValue(metadata, ["toAsset"]) ||
+    getStringMetadataValue(metadata, ["targetAsset"]);
+
+  return value ? value.toUpperCase() : null;
+}
+
 function getTransactionSymbol(transaction: Transaction): string {
   const metadata = getTransactionMetadata(transaction);
   const provider =
@@ -79,11 +93,15 @@ function getTransactionSymbol(transaction: Transaction): string {
       ? metadata.provider.toLowerCase()
       : null;
 
+  if (transaction.type === "BUY") {
+    return getPreferredCryptoSymbol(metadata) || transaction.symbol;
+  }
+
   switch (provider) {
     case "paycrest":
-      return getStringMetadataValue(metadata, ["token"]) || transaction.symbol;
+      return getPreferredCryptoSymbol(metadata) || transaction.symbol;
     case "centiiv":
-      return getStringMetadataValue(metadata, ["asset"]) || transaction.symbol;
+      return getPreferredCryptoSymbol(metadata) || transaction.symbol;
     default:
       return transaction.symbol;
   }
@@ -446,7 +464,7 @@ export default function TransactionDetails({ id }: TransactionDetailsProps) {
                   paidAmountLabel
                     ? `
                 <div class="detail-row">
-                  <span class="detail-label">Amount paid</span>
+                  <span class="detail-label">Amount</span>
                   <span class="detail-value">${paidAmountLabel}</span>
                 </div>
                 `
@@ -693,7 +711,7 @@ export default function TransactionDetails({ id }: TransactionDetailsProps) {
           {paidAmountLabel && (
             <div className="flex justify-between border-b border-black/5 pb-3 dark:border-white/5">
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                Amount paid
+                Amount
               </span>
               <span className="text-sm font-medium text-black dark:text-white">
                 {paidAmountLabel}

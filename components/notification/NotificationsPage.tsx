@@ -5,6 +5,7 @@ import { ArrowLeft, Bell, Check, Paintbrush } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import HydrationSafeRelativeTime from "@/components/HydrationSafeRelativeTime";
 import {
   useMarkAllAsRead,
   useMarkAsRead,
@@ -24,27 +25,6 @@ import {
   getTransactionTitle,
   isPositiveTransaction,
 } from "@/components/wallet/dashboard/dashboard-utils";
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function formatRelativeDate(value: Date | string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Just now";
-
-  const diffMs = Date.now() - date.getTime();
-  const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
-
-  if (diffMinutes < 1) return "Just now";
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
 
 type NotificationCategory = "Announcement" | "Latest event" | "System";
 type NotificationCategoryFilter = "All" | NotificationCategory;
@@ -617,7 +597,7 @@ function NotificationItem({
           </span>
           <span className="h-1 w-1 rounded-full bg-gray-60 dark:bg-gray-40" />
           <span className="text-[10px] text-gray-30 dark:text-gray-40">
-            {formatRelativeDate(notification.createdAt)}
+            <HydrationSafeRelativeTime value={notification.createdAt} />
           </span>
 
           {isUnread && (

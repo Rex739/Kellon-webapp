@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { ArrowDownLeft, ArrowUpRight, Clock } from "lucide-react";
+import HydrationSafeRelativeTime from "@/components/HydrationSafeRelativeTime";
 import { cn } from "@/lib/utils";
 import type { Transaction } from "@/types/db";
 import { ActivityListSkeleton } from "./DashboardSkeletons";
 import {
-  formatRelativeDate,
   getTransactionAmountLabel,
   getTransactionStatusClasses,
   getTransactionStatusLabel,
@@ -78,7 +78,9 @@ export default function ActivityPanel({
                     </p>
                     <div className="mt-1 flex items-center gap-2 min-[900px]:gap-1.5">
                       <span className="text-[11px] text-gray-500 dark:text-gray-400 min-[900px]:text-[10px] lg:text-[11px]">
-                        {formatRelativeDate(transaction.createdAt)}
+                        <HydrationSafeRelativeTime
+                          value={transaction.createdAt}
+                        />
                       </span>
                       <span className="h-1 w-1 rounded-full bg-gray-300 dark:bg-gray-600" />
                       <span

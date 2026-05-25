@@ -83,15 +83,33 @@ export function isPositiveTransaction(type: Transaction["type"]): boolean {
   return ["DEPOSIT", "BUY", "TRANSFER_IN"].includes(type);
 }
 
+function getMetadataSymbol(metadata: Transaction["metadata"]): string | null {
+  const symbol =
+    metadata?.cryptoCurrencyCode ||
+    metadata?.cryptoCurrency ||
+    metadata?.token ||
+    metadata?.asset ||
+    metadata?.toAsset ||
+    metadata?.targetAsset;
+
+  return typeof symbol === "string" && symbol.trim()
+    ? symbol.toUpperCase()
+    : null;
+}
+
 export function getTransactionSymbol(transaction: Transaction): string {
   const metadata = transaction.metadata;
   const provider = metadata?.provider?.toLowerCase();
 
+  if (transaction.type === "BUY") {
+    return getMetadataSymbol(metadata) || transaction.symbol;
+  }
+
   switch (provider) {
     case "paycrest":
-      return metadata?.token || transaction.symbol;
+      return getMetadataSymbol(metadata) || transaction.symbol;
     case "centiiv":
-      return metadata?.asset || transaction.symbol;
+      return getMetadataSymbol(metadata) || transaction.symbol;
     default:
       return transaction.symbol;
   }
