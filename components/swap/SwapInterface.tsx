@@ -1,99 +1,98 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback, FC, HtmlHTMLAttributes } from "react"
+import {
+  useState,
+  useEffect,
+  useCallback,
+  FC,
+  HtmlHTMLAttributes,
+} from "react";
 import {
   getTokens,
   getRoutes,
-  executeRoute,
-  getTokenAllowance,
-  setTokenAllowance,
   RoutesRequest,
   Route,
   Token,
   TokensResponse,
   RoutesResponse,
-  getTokenBalance,
-  getToken,
-  config,
-} from "@lifi/sdk"
-import { useQuery } from "@tanstack/react-query"
-import { useAccount, useChainId, useSwitchChain, useWalletClient } from "wagmi"
-import { parseUnits } from "viem"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, FileClock, RotateCw, Settings } from "lucide-react"
-import { toast } from "react-hot-toast"
+} from "@lifi/sdk";
+import { useQuery } from "@tanstack/react-query";
+import { useAccount } from "wagmi";
+import { parseUnits } from "viem";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, FileClock, RotateCw, Settings } from "lucide-react";
+import { toast } from "react-hot-toast";
 import {
   sendAmountFormSchema,
   SendAmountFormSchemaType,
-} from "@/lib/validations/form"
-import { useSupportedChains } from "@/hooks/use-supported-chains"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { cn } from "@/lib/utils"
-import ChainSelect from "./ChainSelect"
-import SwapBox from "./SwapBox"
+} from "@/lib/validations/form";
+import { useSupportedChains } from "@/hooks/use-supported-chains";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@/lib/utils";
+import ChainSelect from "./ChainSelect";
+import SwapBox from "./SwapBox";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/card"
-import { useRouter, useSearchParams } from "next/navigation"
-import SendAmount from "./SendAmount"
-import { Icons } from "@/components/Icons"
-import { useDebounce } from "@/hooks/use-debounce"
-import SelectedRoute from "./SelectedRoute"
-import NoRoutesAvailable from "./NoRoutesAvailable"
-import { RouteOptionSkeleton } from "@/components/Skeletons"
-import RoutesCard from "./RoutesCard"
-import RouteOptionsMobile from "./RouteOptionMobile"
-import { useIsMobile } from "@/hooks/use-is-mobile"
+} from "@/components/ui/card";
+import { useRouter, useSearchParams } from "next/navigation";
+import SendAmount from "./SendAmount";
+import { Icons } from "@/components/Icons";
+import { useDebounce } from "@/hooks/use-debounce";
+import SelectedRoute from "./SelectedRoute";
+import NoRoutesAvailable from "./NoRoutesAvailable";
+import { RouteOptionSkeleton } from "@/components/Skeletons";
+import RoutesCard from "./RoutesCard";
+import RouteOptionsMobile from "./RouteOptionMobile";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 // import { getAPIKey } from "@/lib/APIConfig"
 
-type SwapInterfaceProps = HtmlHTMLAttributes<HTMLDivElement>
+type SwapInterfaceProps = HtmlHTMLAttributes<HTMLDivElement>;
 
 const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
-  const { address, isConnected } = useAccount()
-  const { data: walletClient } = useWalletClient()
-  const chainId = useChainId()
-  const { switchChain } = useSwitchChain()
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const isMobile = useIsMobile(1024)
+  const { address, isConnected } = useAccount();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const isMobile = useIsMobile(1024);
   // Chains (as numbers)
   const fromChain = searchParams.get("fromChain")
     ? Number(searchParams.get("fromChain"))
-    : 0 // default ETH
+    : 0; // default ETH
   const toChain = searchParams.get("toChain")
     ? Number(searchParams.get("toChain"))
-    : 0 // default Polygon
+    : 0; // default Polygon
 
   // Tokens (as addresses)
-  const fromTokenAddress = searchParams.get("fromToken")
-  const toTokenAddress = searchParams.get("toToken")
+  const fromTokenAddress = searchParams.get("fromToken");
+  const toTokenAddress = searchParams.get("toToken");
 
-  const [fromToken, setFromToken] = useState<Token | null>(null)
-  const [toToken, setToToken] = useState<Token | null>(null)
-  const [selectedRoute, setSelectedRoute] = useState<Route | null>(null)
-  const [isBridging, setIsBridging] = useState(false)
-  const { chains } = useSupportedChains()
-  const [isChainSelectOpen, setIsChainSelectOpen] = useState<boolean>(false)
-  const [selectingSide, setSelectingSide] = useState<"from" | "to" | null>(null)
-  const [isRefetched, setIsRefetched] = useState(false)
-  const [showAllRoutes, setShowAllRoutes] = useState(false)
-  const [routesQueryExecuted, setRoutesQueryExecuted] = useState(false) // Track if getRoutes was called
+  const [fromToken, setFromToken] = useState<Token | null>(null);
+  const [toToken, setToToken] = useState<Token | null>(null);
+  const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
+  const isBridging = false;
+  const { chains } = useSupportedChains();
+  const [isChainSelectOpen, setIsChainSelectOpen] = useState<boolean>(false);
+  const [selectingSide, setSelectingSide] = useState<"from" | "to" | null>(
+    null,
+  );
+  const [isRefetched, setIsRefetched] = useState(false);
+  const [showAllRoutes, setShowAllRoutes] = useState(false);
+  const [routesQueryExecuted, setRoutesQueryExecuted] = useState(false); // Track if getRoutes was called
   // ✅ Form with zod
   const form = useForm<SendAmountFormSchemaType>({
     resolver: zodResolver(sendAmountFormSchema),
     defaultValues: {
       sendAmount: "",
     },
-  })
+  });
 
-  const fromAmount = form.watch("sendAmount")
-  const debouncedFromAmount = useDebounce(fromAmount, 1000) // 1 second debounce
+  const fromAmount = form.watch("sendAmount");
+  const debouncedFromAmount = useDebounce(fromAmount, 1000); // 1 second debounce
 
   // Fetch tokens
   const { data: fromTokensData, isLoading: fromTokensLoading } =
@@ -102,7 +101,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
       queryFn: async () => await getTokens({ chains: [fromChain] }),
       staleTime: 45_000,
       gcTime: 1000 * 60 * 10,
-    })
+    });
 
   const { data: toTokensData, isLoading: toTokensLoading } =
     useQuery<TokensResponse>({
@@ -110,29 +109,29 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
       queryFn: async () => await getTokens({ chains: [toChain] }),
       staleTime: 45_000,
       gcTime: 1000 * 60 * 10,
-    })
+    });
 
   useEffect(() => {
     if (fromTokensData?.tokens[fromChain]) {
-      const chainTokens = fromTokensData.tokens[fromChain]
-      const token = chainTokens.find((t) => t.address === fromTokenAddress)
+      const chainTokens = fromTokensData.tokens[fromChain];
+      const token = chainTokens.find((t) => t.address === fromTokenAddress);
       const native = chainTokens.find(
         (t) => t.address === "0x0000000000000000000000000000000000000000",
-      )
-      setFromToken(token || native || chainTokens[0])
+      );
+      setFromToken(token || native || chainTokens[0]);
     }
-  }, [fromTokensData, fromChain, fromTokenAddress])
+  }, [fromTokensData, fromChain, fromTokenAddress]);
 
   useEffect(() => {
     if (toTokensData?.tokens[toChain]) {
-      const chainTokens = toTokensData.tokens[toChain]
-      const token = chainTokens.find((t) => t.address === toTokenAddress)
+      const chainTokens = toTokensData.tokens[toChain];
+      const token = chainTokens.find((t) => t.address === toTokenAddress);
       const native = chainTokens.find(
         (t) => t.address === "0x0000000000000000000000000000000000000000",
-      )
-      setToToken(token || native || chainTokens[0])
+      );
+      setToToken(token || native || chainTokens[0]);
     }
-  }, [toTokensData, toChain, toTokenAddress])
+  }, [toTokensData, toChain, toTokenAddress]);
 
   // Fetch routes with React Query
   const {
@@ -158,7 +157,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
         parseFloat(debouncedFromAmount) <= 0 ||
         !address
       ) {
-        return { routes: [] }
+        return { routes: [] };
       }
 
       const request: RoutesRequest = {
@@ -172,9 +171,9 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
         toTokenAddress: toToken.address,
         fromAddress: address,
         toAddress: address,
-      }
-      setRoutesQueryExecuted(true) // Mark that getRoutes was called
-      return await getRoutes(request)
+      };
+      setRoutesQueryExecuted(true); // Mark that getRoutes was called
+      return await getRoutes(request);
     },
     enabled: Boolean(
       fromToken &&
@@ -185,21 +184,21 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
     ),
     staleTime: 30_000, // 30 seconds
     retry: 2,
-  })
+  });
 
   const handleRouteSelect = useCallback((route: Route) => {
-    setSelectedRoute(route)
-  }, [])
+    setSelectedRoute(route);
+  }, []);
 
   // Handle routes errors
   useEffect(() => {
     if (routesError) {
-      console.error("Error fetching routes:", routesError)
-      toast.error("Failed to fetch routes")
+      console.error("Error fetching routes:", routesError);
+      toast.error("Failed to fetch routes");
     }
-  }, [routesError])
+  }, [routesError]);
 
-  const routes = routesData?.routes || []
+  const routes = routesData?.routes || [];
 
   // Execute swap
   // const executeSwap = async () => {
@@ -255,20 +254,20 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
   // }
 
   const handleChainSelectOpen = (side: "from" | "to") => {
-    setSelectingSide(side)
-    setIsChainSelectOpen(!isChainSelectOpen)
-  }
+    setSelectingSide(side);
+    setIsChainSelectOpen(!isChainSelectOpen);
+  };
 
   const swapChains = () => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("fromChain", toChain.toString())
-    params.set("toChain", fromChain.toString())
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("fromChain", toChain.toString());
+    params.set("toChain", fromChain.toString());
 
-    if (fromToken) params.set("toToken", fromToken.address)
-    if (toToken) params.set("fromToken", toToken.address)
+    if (fromToken) params.set("toToken", fromToken.address);
+    if (toToken) params.set("fromToken", toToken.address);
 
-    router.push(`/?${params.toString()}`)
-  }
+    router.push(`/?${params.toString()}`);
+  };
 
   const isBridge =
     (selectedRoute &&
@@ -277,127 +276,31 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
           (includedStep) => includedStep.type === "cross",
         ),
       )) ||
-    fromChain !== toChain
+    fromChain !== toChain;
 
-  const isRouteOptionsActive = routes?.length > 0
+  const isRouteOptionsActive = routes?.length > 0;
 
   const handleRefetchRoute = () => {
-    setIsRefetched((prev) => !prev)
-    refetchRoutes()
-  }
+    setIsRefetched((prev) => !prev);
+    refetchRoutes();
+  };
 
   const isModifyBorderRadius =
     isRouteOptionsActive ||
     routesLoading ||
-    (routesQueryExecuted && !routesLoading && fromAmount !== "")
+    (routesQueryExecuted && !routesLoading && fromAmount !== "");
 
   const toggleShowAllRoutes = () => {
-    setShowAllRoutes((prev) => !prev)
-  }
+    setShowAllRoutes((prev) => !prev);
+  };
 
   const handleGoBackToRouteOptions = () => {
-    setSelectedRoute(null)
+    setSelectedRoute(null);
     // Only toggle showAllRoutes on mobile screens
     if (isMobile && !showAllRoutes) {
-      toggleShowAllRoutes()
+      toggleShowAllRoutes();
     }
-  }
-
-  const fetchTokenBalance = async () => {
-    try {
-      if (!address || !fromToken) {
-        console.log("Missing address or token")
-        return
-      }
-      const chainId = 1
-      const tokenAddress = "0x0000000000000000000000000000000000000000"
-      const token = await getToken(chainId, tokenAddress)
-      console.log("fromToken", fromToken.address)
-      console.log("chain__id", fromToken.chainId)
-      console.log("address", address)
-      const tokenBalance = await getTokenBalance(address, token)
-      console.log("token_balance:", tokenBalance)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  const chain__Id = 1
-  const tokenAddress = "0x0000000000000000000000000000000000000000"
-
-  const getTokenBalanceByAddressAndTokenAddress = async (
-    address: string,
-    tokenAddress: string,
-  ) => {
-    console.log("Getting balance for:", {
-      address,
-      tokenAddress,
-      chainId: fromChain,
-    })
-
-    // Try viem RPC first (most reliable)
-    try {
-      const { createPublicClient, http, formatEther } = await import("viem")
-      const { mainnet } = await import("viem/chains")
-
-      const publicClient = createPublicClient({
-        chain: mainnet,
-        transport: http(),
-      })
-
-      const balance = await publicClient.getBalance({
-        address: address as `0x${string}`,
-      })
-
-      const formatted = formatEther(balance)
-      console.log(`✅ Balance: ${formatted} ETH`)
-
-      return {
-        amount: balance.toString(),
-        formatted: formatted,
-        symbol: "ETH",
-      }
-    } catch (error) {
-      console.error("RPC method failed:", error)
-    }
-
-    return null
-  }
-
-  const simpleTest = async () => {
-    // Test with DAI on Ethereum (popular token)
-    const testToken = await getToken(
-      1,
-      "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    )
-    console.log("Test token:", testToken)
-
-    if (testToken) {
-      // Use Vitalik's address for testing
-      const testAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
-      const testBalance = await getTokenBalance(testAddress, testToken)
-      console.log("Vitalik's DAI balance:", testBalance)
-
-      if (testBalance) {
-        console.log("✅ SDK is working!")
-      } else {
-        console.log("❌ SDK might have issues")
-      }
-    }
-  }
-  const getConfig = async () => {
-    try {
-      // getChains() returns a Promise, so use await
-      const chains = await config.get()
-      console.log("chains", chains)
-    } catch (error) {
-      console.error("Error fetching chains:", error)
-    }
-    console.log("here")
-  }
-
-  // Call it properly
-  getConfig()
+  };
 
   return (
     <section className={cn(className)}>
@@ -554,18 +457,6 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
               >
                 {routesLoading ? "Finding routes..." : "Swap"}
               </Button>
-              <Button
-                onClick={() =>
-                  getTokenBalanceByAddressAndTokenAddress(
-                    "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-                    tokenAddress,
-                  )
-                }
-              >
-                check balance
-              </Button>
-              <Button onClick={() => simpleTest()}>test</Button>
-              <Button onClick={() => getConfig()}> config </Button>
             </CardFooter>
           </Card>
 
@@ -603,7 +494,7 @@ const SwapInterface: FC<SwapInterfaceProps> = ({ className }) => {
         </div>
       )}
     </section>
-  )
-}
+  );
+};
 
-export default SwapInterface
+export default SwapInterface;

@@ -1,26 +1,26 @@
-"use server"
+"use server";
 
-import { wagmiConfig } from "@/components/providers/wagmi-provider"
-import { EVM, createConfig, ChainId } from "@lifi/sdk"
-
-import { getWalletClient, switchChain } from "@wagmi/core"
+import { createConfig, ChainId } from "@lifi/sdk";
 
 function getRequiredEnv(name: string, varValue: string | undefined): string {
   if (!varValue) {
-    throw new Error(`Missing required environment variable: ${name}`)
+    throw new Error(`Missing required environment variable: ${name}`);
   }
-  return varValue
+  return varValue;
 }
 
 export async function initLifiConfig() {
   // Load API / RPC keys from environment (server-only)
-  const lifiKey = getRequiredEnv("LIFI_API_KEY", process.env.LIFI_API_ID)
-  const ankrKey = getRequiredEnv("ANKR_RPC_KEY", process.env.ANKR_RPC_KEY)
+  const lifiKey = getRequiredEnv("LIFI_API_KEY", process.env.LIFI_API_ID);
+  const ankrKey = getRequiredEnv("ANKR_RPC_KEY", process.env.ANKR_RPC_KEY);
   const alchemyKey = getRequiredEnv(
     "ALCHEMY_RPC_KEY",
     process.env.ALCHEMY_RPC_KEY,
-  )
-  const infuraKey = getRequiredEnv("INFURA_RPC_KEY", process.env.INFURA_RPC_KEY)
+  );
+  const infuraKey = getRequiredEnv(
+    "INFURA_RPC_KEY",
+    process.env.INFURA_RPC_KEY,
+  );
   const config = createConfig({
     integrator: "Kellon",
     apiKey: lifiKey,
@@ -92,6 +92,6 @@ export async function initLifiConfig() {
       fee: 0.002,
       maxPriceImpact: 0.1,
     },
-  })
-  return config
+  });
+  return config;
 }

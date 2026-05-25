@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import React, { FC } from "react"
+import React, { FC } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 
 interface ActionTooltipProps {
-  label: string
-  children: React.ReactNode
-  side?: "top" | "right" | "bottom" | "left"
-  align?: "start" | "center" | "end"
-  disabled?: boolean
+  label: string;
+  children: React.ReactNode;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+  disabled?: boolean;
 }
 
 export const ActionToolTip: FC<ActionTooltipProps> = ({
@@ -23,6 +23,8 @@ export const ActionToolTip: FC<ActionTooltipProps> = ({
   align,
   disabled,
 }) => {
+  if (disabled) return <>{children}</>;
+
   return (
     <TooltipProvider>
       <Tooltip delayDuration={50}>
@@ -38,5 +40,5 @@ export const ActionToolTip: FC<ActionTooltipProps> = ({
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  )
-}
+  );
+};
