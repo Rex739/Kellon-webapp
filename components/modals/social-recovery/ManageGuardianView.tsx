@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { FC } from "react"
-import { ArrowLeft, Plus, Loader2, Users, AtSign } from "lucide-react"
-import { UseFormReturn } from "react-hook-form"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Guardian } from "@/types/db"
-import { cn } from "@/lib/utils"
-import { GuardianFormValues } from "@/lib/validations/social-recovery"
-import { GuardianListItem } from "./GuardianListItem"
+import { FC } from "react";
+import { ArrowLeft, Plus, Loader2, Users } from "lucide-react";
+import { UseFormReturn } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Guardian } from "@/types/db";
+import { cn } from "@/lib/utils";
+import { GuardianFormValues } from "@/lib/validations/social-recovery";
+import { GuardianListItem } from "./GuardianListItem";
 
 interface ManageGuardiansViewProps {
-  onBack: () => void
-  activeTab: "my-guardians" | "guardian-for"
-  setActiveTab: (tab: "my-guardians" | "guardian-for") => void
-  myGuardians: Guardian[]
-  guardianFor: Guardian[]
-  isLoading: boolean
-  guardianForm: UseFormReturn<GuardianFormValues>
-  onAddGuardian: (values: GuardianFormValues) => Promise<void>
-  onAcceptInvite: (userId: string) => Promise<void>
+  onBack: () => void;
+  activeTab: "my-guardians" | "guardian-for";
+  setActiveTab: (tab: "my-guardians" | "guardian-for") => void;
+  myGuardians: Guardian[];
+  guardianFor: Guardian[];
+  isLoading: boolean;
+  guardianForm: UseFormReturn<GuardianFormValues>;
+  onAddGuardian: (values: GuardianFormValues) => Promise<void>;
+  onAcceptInvite: (userId: string) => Promise<void>;
 }
 
 export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
@@ -37,7 +37,7 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = guardianForm
+  } = guardianForm;
 
   return (
     <div className="px-4 pb-8 h-full">
@@ -155,7 +155,6 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
           </div>
         </div>
       ) : (
-        
         <div className="animate-in fade-in slide-in-from-left-2 duration-300">
           <p className="text-[13px] text-gray-20 dark:text-secondary-90 mb-8">
             People who have trusted you as a guardian.
@@ -183,12 +182,12 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 const EmptyState = ({ message }: { message: string }) => (
   <div className="py-12 flex flex-col items-center justify-center opacity-40">
     <Users className="w-12 h-12 mb-2 text-gray-400" />
     <p className="text-sm italic text-gray-500">{message}</p>
   </div>
-)
+);

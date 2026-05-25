@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState, FC } from "react"
-import { ArrowRight } from "lucide-react"
-import { Icons } from "@/components/Icons"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import AuthHero from "@/components/auth/AuthHero"
+import { useState, FC } from "react";
+import { ArrowRight } from "lucide-react";
+import { Icons } from "@/components/Icons";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import AuthHero from "@/components/auth/AuthHero";
 
 const SLIDES = [
   {
@@ -21,30 +21,30 @@ const SLIDES = [
     title: "Fast Payouts",
     desc: "Get paid like a local, anywhere. Issue smart invoices and receive instant settlements via global rails.",
   },
-]
+];
 
 interface WebOnboardingProps {
-  onComplete: () => void
+  onComplete: () => void;
 }
 
 const WebOnboarding: FC<WebOnboardingProps> = ({ onComplete }) => {
-  const [current, setCurrent] = useState(0)
+  const [current, setCurrent] = useState(0);
 
   const handleNext = () => {
     if (current === SLIDES.length - 1) {
-      onComplete()
+      onComplete();
     } else {
-      setCurrent((prev) => prev + 1)
+      setCurrent((prev) => prev + 1);
     }
-  }
+  };
 
   return (
-    <div className="flex min-h-screen w-full overflow-hidden bg-white dark:bg-secondary-60">
+    <div className="flex min-h-screen w-full overflow-hidden">
       {/* --- LEFT SIDE: Brand Identity (Identical to Continue.tsx) --- */}
       <AuthHero />
 
       {/* --- RIGHT SIDE / MOBILE DRAWER --- */}
-      <div className="relative flex flex-1 items-end lg:items-center justify-center overflow-hidden bg-[#fcfcfc] dark:bg-secondary-50">
+      <div className="relative flex flex-1 items-end lg:items-center justify-center overflow-hidden">
         {/* Mobile Header Logo */}
         <div className="absolute top-12 left-0 right-0 flex justify-center lg:hidden z-10">
           <div className="flex items-center gap-3">
@@ -127,7 +127,7 @@ const WebOnboarding: FC<WebOnboardingProps> = ({ onComplete }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WebOnboarding
+export default WebOnboarding;
