@@ -50,14 +50,14 @@ export function WithdrawBankSelectionStep({
 
         <div className="mt-8">
           <h3 className="mb-4 text-[10px] font-bold uppercase tracking-wider text-gray-500">
-            {isPaycrest ? "Refund Account (Required)" : "Bank Details"}
+            {isPaycrest ? "Payout Account (Required)" : "Bank Details"}
           </h3>
 
           {isPaycrest ? (
             <>
               <p className="mb-8 max-w-xl text-sm leading-6 text-gray-500 dark:text-gray-400">
-                Paycrest requires a fallback bank account for potential fiat
-                refunds if the withdrawal cannot be completed.
+                Paycrest requires a verified bank account where your fiat payout
+                will be sent.
               </p>
 
               <div className="mb-8">
@@ -113,7 +113,7 @@ export function WithdrawBankSelectionStep({
                       No saved accounts yet
                     </p>
                     <p className="mt-1 text-xs text-gray-500">
-                      Add a refund account before reviewing this withdrawal.
+                      Add a payout account before reviewing this withdrawal.
                     </p>
                   </div>
                 )}
@@ -283,7 +283,7 @@ export function WithdrawBankSelectionStep({
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
               {!selectedBank ? (
                 isPaycrest ? (
-                  "Select Refund Account"
+                  "Select Payout Account"
                 ) : (
                   "Select Bank to Continue"
                 )

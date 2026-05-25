@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { Asset, BankDetail, User } from "@/types/db";
 import { useWithdrawState, WITHDRAW_STEPS } from "@/hooks/use-withdraw-state";
@@ -14,7 +15,11 @@ import { CountrySelectorModal } from "@/components/modals/CountrySelectorModal";
 import { SUPPORTED_RAMP_COUNTRIES } from "@/lib/supported-countries";
 import { ExitConfirmation } from "@/components/modals/ExitComfirmationModal";
 import { bankService } from "@/services/api/bank";
-import { offrampService } from "@/services/api/off-ramp";
+import {
+  offrampService,
+  type OfframpInitRequest,
+  type OfframpResponse,
+} from "@/services/api/off-ramp";
 import StepIndicator from "@/components/wallet/buy-crypto/BuyCryptoStepIndicator";
 import { WithdrawAssetSelectionStep } from "./steps/AssetSelectionStep";
 import { WithdrawAmountEntryStep } from "./steps/AmountEntryStep";
@@ -28,6 +33,34 @@ function parseAssetAmount(amount: Asset["amount"]): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function getOfframpReferenceCandidates(
+  order: OfframpResponse | null,
+): Record<string, string | undefined> {
+  return {
+    "transaction.id": order?.transaction?.id,
+    "transaction.transactionId": order?.transaction?.transactionId,
+    "order.transactionId": order?.order?.transactionId,
+    transactionId: order?.transactionId,
+    transactionReference: order?.transactionReference,
+    txId: order?.txId,
+    id: order?.id,
+    orderId: order?.orderId,
+    reference: order?.reference,
+    providerReference: order?.providerReference,
+    "order.id": order?.order?.id,
+    "order.reference": order?.order?.reference,
+  };
+}
+
+function getOfframpTransactionReference(order: OfframpResponse | null): string {
+  const candidates = getOfframpReferenceCandidates(order);
+  return Object.values(candidates).find(Boolean) || "";
+}
+
+function normalizeProviderKey(name: string): string {
+  return name.toLowerCase().replace(/[\s_-]+/g, "");
+}
+
 export default function WithdrawFlow({
   profile,
   onAttemptClose,
@@ -35,6 +68,7 @@ export default function WithdrawFlow({
   profile: User;
   onAttemptClose: (hasStarted: boolean) => void;
 }) {
+  const router = useRouter();
   const {
     step,
     asset,
@@ -203,6 +237,13 @@ export default function WithdrawFlow({
     isLoadingProviders,
     side: "sell",
   });
+  const selectedProviderRate = selectedProviderId
+    ? providerRates[selectedProviderId]
+    : null;
+  const estimatedFiatAmount =
+    selectedProviderRate?.fiatAmount && selectedProviderRate.fiatAmount > 0
+      ? selectedProviderRate.fiatAmount
+      : amountValue;
 
   const goBack = () => {
     if (step === "amount") setStep("asset");
@@ -225,21 +266,45 @@ export default function WithdrawFlow({
 
     setIsSubmitting(true);
     try {
-      const payload = {
-        fiatAmount: amountValue,
+      const payload: OfframpInitRequest = {
+        fiatAmount: estimatedFiatAmount,
         fiatCurrency,
+        cryptoAmount: amountValue,
+        assetAmount: amountValue,
         cryptoCurrencyCode: asset,
+        cryptocurrency: asset,
+        asset,
+        token: asset,
         chain: networkName,
         network: networkName,
         bankId: selectedBank.id,
         bankAccountId: selectedBank.id,
-        recipient: selectedBank.accountName,
+        recipient: {
+          bankName: selectedBank.bankName,
+          accountNumber: selectedBank.accountNumber,
+          accountName: selectedBank.accountName,
+          bankCode: selectedBank.bankCode,
+        },
+        bankDetail: {
+          bankName: selectedBank.bankName,
+          accountNumber: selectedBank.accountNumber,
+          accountName: selectedBank.accountName,
+          bankCode: selectedBank.bankCode || "",
+          provider: selectedBank.provider,
+          country: selectedBank.country,
+        },
+        providerId: selectedProvider.id,
+        source: "web",
       };
 
-      const providerName = selectedProvider.name.toLowerCase();
+      const providerName = normalizeProviderKey(selectedProvider.name);
       let response;
 
-      if (providerName === "paycrest") {
+      if (providerName === "moneygram") {
+        response = await offrampService.initiateMoneyGram(payload);
+      } else if (providerName === "paychant") {
+        response = await offrampService.initiatePaychant(payload);
+      } else if (providerName === "paycrest") {
         response = await offrampService.initiatePaycrest(payload);
       } else if (providerName === "centiiv") {
         response = await offrampService.initiateCentiiv(payload);
@@ -253,8 +318,24 @@ export default function WithdrawFlow({
         response = await offrampService.initiateRamp(payload);
       }
 
-      if (response.success) {
-        toast.success(response.data?.message || "Withdrawal initialized");
+      const redirectUrl =
+        response.data?.checkoutUrl ||
+        response.data?.paymentUrl ||
+        response.data?.redirectUrl ||
+        response.data?.url;
+
+      if (redirectUrl) {
+        toast.success("Withdrawal initialized. Redirecting...");
+        window.location.assign(redirectUrl);
+        return;
+      }
+
+      const transactionId = getOfframpTransactionReference(response.data);
+
+      toast.success(response.data?.message || "Withdrawal initialized");
+
+      if (transactionId) {
+        router.push(`/transactions/${transactionId}`);
       }
     } catch (error) {
       toast.error(
@@ -287,7 +368,7 @@ export default function WithdrawFlow({
                 ? "Enter Amount"
                 : step === "bank"
                   ? selectedProvider?.name?.toLowerCase() === "paycrest"
-                    ? "Refund Account"
+                    ? "Payout Account"
                     : "Select Bank"
                   : step === "review"
                     ? "Review Withdrawal"
@@ -408,15 +489,9 @@ export default function WithdrawFlow({
         onClose={() => setIsBankModalOpen(false)}
         currency={fiatCurrency}
         providerName={selectedProvider?.name || null}
-        savedBanks={savedBanks}
-        selectedBankId={selectedBank?.id || null}
-        onSelectSavedBank={(bank) => setBankId(bank.id)}
-        onAddVerifiedBank={(bank) => {
-          setSavedBanks((current) => {
-            const existing = current.some((item) => item.id === bank.id);
-            return existing ? current : [bank, ...current];
-          });
-          setBankId(bank.id);
+        selectedBankCode={selectedBank?.bankCode || null}
+        onSelectBank={() => {
+          toast.info("Bank account entry is handled on the withdrawal step.");
         }}
       />
 
