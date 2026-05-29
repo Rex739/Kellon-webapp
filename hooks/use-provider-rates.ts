@@ -1,24 +1,24 @@
 // hooks/use-provider-rates.ts
-import { useEffect, useState, useRef } from "react"
-import { providerService } from "@/services/api/payment-providers"
+import { useEffect, useState, useRef } from "react";
+import { providerService } from "@/services/api/payment-providers";
 
 interface ProviderRateDetails {
-  cryptoAmount: number | null // Calculated crypto amount
-  fiatAmount: number | null // Calculated fiat amount
-  rawRate: number | null // Raw rate from backend
+  cryptoAmount: number | null; // Calculated crypto amount
+  fiatAmount: number | null; // Calculated fiat amount
+  rawRate: number | null; // Raw rate from backend
 }
 
-type ProviderRatesMap = Record<string, ProviderRateDetails | null>
+type ProviderRatesMap = Record<string, ProviderRateDetails | null>;
 
 interface UseProviderRatesParams {
-  providers: { id: string; name: string }[]
-  asset: string | null
-  amount: number
-  currency: string | null
-  networkName: string | null
-  isAmountValid: boolean
-  isLoadingProviders: boolean
-  side?: "buy" | "sell"
+  providers: { id: string; name: string }[];
+  asset: string | null;
+  amount: number;
+  currency: string | null;
+  networkName: string | null;
+  isAmountValid: boolean;
+  isLoadingProviders: boolean;
+  side?: "buy" | "sell";
 }
 
 export function useProviderRates({
@@ -31,9 +31,9 @@ export function useProviderRates({
   isLoadingProviders,
   side = "buy",
 }: UseProviderRatesParams) {
-  const [rates, setRates] = useState<ProviderRatesMap>({})
-  const [isLoadingRates, setIsLoadingRates] = useState(false)
-  const fetchingRef = useRef(false)
+  const [rates, setRates] = useState<ProviderRatesMap>({});
+  const [isLoadingRates, setIsLoadingRates] = useState(false);
+  const fetchingRef = useRef(false);
 
   useEffect(() => {
     if (
@@ -44,25 +44,25 @@ export function useProviderRates({
       !networkName ||
       providers.length === 0
     ) {
-      if (Object.keys(rates).length > 0) setRates({})
-      setIsLoadingRates(false)
-      fetchingRef.current = false
-      return
+      if (Object.keys(rates).length > 0) setRates({});
+      setIsLoadingRates(false);
+      fetchingRef.current = false;
+      return;
     }
 
-    if (fetchingRef.current) return
-    fetchingRef.current = true
-    setIsLoadingRates(true)
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+    setIsLoadingRates(true);
 
     const fetchRates = async () => {
-      const newRates: ProviderRatesMap = {}
+      const newRates: ProviderRatesMap = {};
 
       try {
         const ratePromises = providers.map(async (provider) => {
           try {
-            let cryptoAmount: number | null = null
-            let fiatAmount: number | null = null
-            let rawRate: number | null = null
+            let cryptoAmount: number | null = null;
+            let fiatAmount: number | null = null;
+            let rawRate: number | null = null;
 
             if (provider.name.toLowerCase() === "paycrest") {
               const res = await providerService.getPaycrestRate({
@@ -71,20 +71,20 @@ export function useProviderRates({
                 currency: currency,
                 network: networkName,
                 side,
-              })
+              });
 
               const paycrestRate =
-                side === "sell" ? res.data?.sell?.rate : res.data?.buy?.rate
+                side === "sell" ? res.data?.sell?.rate : res.data?.buy?.rate;
 
               if (res.success && paycrestRate) {
-                rawRate = parseFloat(paycrestRate)
+                rawRate = parseFloat(paycrestRate);
                 if (!isNaN(rawRate) && rawRate > 0) {
                   if (side === "sell") {
-                    cryptoAmount = amount
-                    fiatAmount = amount * rawRate
+                    cryptoAmount = amount;
+                    fiatAmount = amount * rawRate;
                   } else {
-                    cryptoAmount = amount / rawRate
-                    fiatAmount = amount
+                    cryptoAmount = amount / rawRate;
+                    fiatAmount = amount;
                   }
                 }
               }
@@ -93,20 +93,20 @@ export function useProviderRates({
                 fromAsset: side === "sell" ? asset : currency,
                 toAsset: side === "sell" ? currency || "USD" : asset,
                 amount,
-              })
+              });
 
               if (res.success) {
-                rawRate = res.data?.rate ? parseFloat(res.data.rate) : null
+                rawRate = res.data?.rate ? parseFloat(res.data.rate) : null;
                 const estimatedAmount = res.data?.estimatedReceivableAmount
                   ? parseFloat(res.data.estimatedReceivableAmount)
-                  : null
+                  : null;
 
                 if (side === "sell") {
-                  cryptoAmount = amount
-                  fiatAmount = estimatedAmount
+                  cryptoAmount = amount;
+                  fiatAmount = estimatedAmount;
                 } else {
-                  cryptoAmount = estimatedAmount
-                  fiatAmount = amount
+                  cryptoAmount = estimatedAmount;
+                  fiatAmount = amount;
                 }
               }
             }
@@ -114,25 +114,24 @@ export function useProviderRates({
             newRates[provider.id] =
               cryptoAmount !== null || fiatAmount !== null || rawRate !== null
                 ? { cryptoAmount, fiatAmount, rawRate }
-                : null
+                : null;
           } catch (error) {
-            console.error(`Failed to fetch rate for ${provider.name}:`, error)
-            newRates[provider.id] = null
+            console.error(`Failed to fetch rate for ${provider.name}:`, error);
+            newRates[provider.id] = null;
           }
-        })
+        });
 
-        await Promise.all(ratePromises)
-        console.log("Provider rates with raw rates:", newRates)
-        setRates(newRates)
+        await Promise.all(ratePromises);
+        setRates(newRates);
       } catch (error) {
-        console.error("Error fetching provider rates:", error)
+        console.error("Error fetching provider rates:", error);
       } finally {
-        setIsLoadingRates(false)
-        fetchingRef.current = false
+        setIsLoadingRates(false);
+        fetchingRef.current = false;
       }
-    }
+    };
 
-    fetchRates()
+    fetchRates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     providers,
@@ -143,7 +142,7 @@ export function useProviderRates({
     isAmountValid,
     isLoadingProviders,
     side,
-  ])
+  ]);
 
-  return { rates, isLoadingRates }
+  return { rates, isLoadingRates };
 }

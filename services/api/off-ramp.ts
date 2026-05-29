@@ -15,6 +15,7 @@ export interface OfframpInitRequest {
   token?: string;
   chain: string; // Map from networkId
   network?: string; // Optional alias for chain
+  rate?: number | string | null;
 
   // Banking & Recipient Info
   bankId?: string; // database UUID for a saved bank

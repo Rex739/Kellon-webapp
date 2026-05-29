@@ -277,6 +277,7 @@ export default function WithdrawFlow({
         token: asset,
         chain: networkName,
         network: networkName,
+        rate: selectedProviderRate?.rawRate,
         bankId: selectedBank.id,
         bankAccountId: selectedBank.id,
         recipient: {

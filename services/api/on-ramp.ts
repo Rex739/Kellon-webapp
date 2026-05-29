@@ -9,8 +9,12 @@ export interface OnrampInitRequest {
   fiatAmount: number;
   fiatCurrency: string;
   cryptoCurrencyCode: string;
+  cryptocurrency?: string;
+  asset?: string;
+  token?: string;
   chain: string;
   network: string;
+  rate?: number | string | null;
   // Metadata fields - explicitly defined to avoid 'any'
   paymentMethod?: string;
   providerId?: string;
@@ -109,6 +113,11 @@ export const onrampService = {
     body: OnrampInitRequest,
   ): Promise<ApiResponse<OnrampResponse>> =>
     post("/api/onramp/paychant/initiate", body),
+
+  initiatePaybis: (
+    body: OnrampInitRequest,
+  ): Promise<ApiResponse<OnrampResponse>> =>
+    post("/api/onramp/paybis/initiate", body),
 };
 
 /**

@@ -184,6 +184,13 @@ export default function BuyCryptoFlow({
   });
   const selectedProvider =
     providers.find((provider) => provider.id === selectedProviderId) || null;
+  const selectedProviderRate = selectedProviderId
+    ? providerRates[selectedProviderId]
+    : null;
+  const selectedProviderRawRate =
+    selectedProviderRate?.rawRate && selectedProviderRate.rawRate > 0
+      ? selectedProviderRate.rawRate
+      : undefined;
   const selectedBank = savedBanks.find((bank) => bank.id === bankId) || null;
   const requiresRefundBank =
     selectedProvider?.name?.toLowerCase() === "paycrest";
@@ -276,8 +283,12 @@ export default function BuyCryptoFlow({
         fiatAmount: fiatAmountNum,
         fiatCurrency,
         cryptoCurrencyCode: asset,
+        cryptocurrency: asset,
+        asset,
+        token: asset,
         chain: networkName,
         network: networkName,
+        rate: selectedProviderRawRate,
         paymentMethod,
         providerId: selectedProvider.id,
         source: "web",
@@ -310,6 +321,8 @@ export default function BuyCryptoFlow({
         response = await onrampService.initiateQuidax(payload);
       } else if (providerName === "paychant") {
         response = await onrampService.initiatePaychant(payload);
+      } else if (providerName === "paybis") {
+        response = await onrampService.initiatePaybis(payload);
       } else {
         response = await onrampService.initiateRamp(payload);
       }
