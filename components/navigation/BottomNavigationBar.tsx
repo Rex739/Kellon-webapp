@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { FC, HtmlHTMLAttributes } from "react"
-import { navigationListUrls } from "./navigationUrl"
-import { cn } from "@/lib/utils"
-import { Icons } from "@/components/Icons"
-import { isActive } from "@/lib/is-active-link"
-import { usePathname } from "next/navigation"
-import Slab from "@/components/ui/slab"
-import UserNavigation from "./user-navigation/UserNavigation"
-import { User } from "@/types/db"
+import Link from "next/link";
+import { FC, HtmlHTMLAttributes } from "react";
+import { navigationListUrls } from "./navigationUrl";
+import { cn } from "@/lib/utils";
+import { Icons } from "@/components/Icons";
+import { isActive } from "@/lib/is-active-link";
+import { usePathname } from "next/navigation";
+import Slab from "@/components/ui/slab";
+import UserNavigation from "./user-navigation/UserNavigation";
+import { User } from "@/types/db";
 
 interface BottomNavigationBarProps extends HtmlHTMLAttributes<HTMLDivElement> {
-  profile: User
+  profile: User;
 }
 
 const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
@@ -20,12 +20,19 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
   profile,
 }) => {
   // IMP START - Get Current Route Pathname for Active Link Highlighting
-  const pathname = usePathname()
+  const pathname = usePathname();
   // IMP END - Get Current Route Pathname for Active Link Highlighting
-  const HIDDEN_PATHS = ["/continue", "/settings/profile"]
+  const HIDDEN_PATHS = [
+    "/continue",
+    "/settings/profile",
+    "/buy",
+    "/withdraw",
+    "/send",
+    "/receive",
+  ];
 
   if (HIDDEN_PATHS.includes(pathname)) {
-    return null
+    return null;
   }
 
   return (
@@ -36,7 +43,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
         <ul className="flex justify-around ">
           {/* IMP START - Render Navigation Items */}
           {navigationListUrls.map(({ label, href, icon }, i) => {
-            const Icon = icon && Icons[icon] // IMP - Dynamically map icon string to actual component
+            const Icon = icon && Icons[icon]; // IMP - Dynamically map icon string to actual component
             return (
               <li key={i}>
                 <Slab href={href} className={cn(className)} />
@@ -71,7 +78,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
                   </div>
                 </Link>
               </li>
-            )
+            );
           })}
           {
             // profile &&
@@ -85,7 +92,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
       {/* IMP END - Navigation Menu Container */}
     </section>
     // IMP END - Bottom Navigation Wrapper (Fixed Position)
-  )
-}
+  );
+};
 
-export default BottomNavigationBar
+export default BottomNavigationBar;
