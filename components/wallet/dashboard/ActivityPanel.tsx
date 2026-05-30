@@ -29,13 +29,13 @@ export default function ActivityPanel({
     <div className="order-4 flex w-full flex-col space-y-4 md:h-[360px] md:overflow-hidden md:rounded-lg md:border md:border-input md:p-5 min-[900px]:order-none min-[900px]:col-span-full min-[900px]:space-y-3 min-[900px]:p-4 lg:space-y-4 lg:p-5">
       <div className="flex items-end justify-between">
         <div>
-          <h3 className="text-lg font-semibold tracking-normal text-black dark:text-white md:text-xl">
-            Activity
+          <h3 className="text-base tracking-normal text-black dark:text-white">
+            Recent Activity
           </h3>
         </div>
         <Link
           href="/transactions"
-          className="text-xs font-semibold text-primary-50 hover:opacity-80 md:text-sm"
+          className="text-xs text-primary-50 hover:opacity-80 md:text-sm"
         >
           See All
         </Link>
