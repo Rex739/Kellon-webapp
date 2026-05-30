@@ -51,24 +51,44 @@ export interface PaymentProvider {
   name: string;
   slug: string;
   isEnabled: boolean;
+  fees?: ProviderFee;
   health?: {
     state: string;
     isHealthy: boolean;
   };
 }
 
+export interface ProviderFee {
+  percentage?: number;
+  fixed?: number;
+}
+
+export type ProviderFeesResponse = Record<string, ProviderFee>;
+
 export interface PaycrestRateResponse {
-  buy: {
+  buy?: {
     rate: string; // e.g. "1381.57"
     providerIds: string[];
     orderType: string;
     refundTimeoutMinutes: number;
   };
-  sell: {
+  sell?: {
     rate: string;
     providerIds: string[];
     orderType: string;
     refundTimeoutMinutes: number;
+  };
+  rate?: number | string;
+  sendAmount?: string;
+  sendCurrency?: string;
+  fiatAmount?: number;
+  fees?: number;
+  feeCurrency?: string;
+  receiveAmount?: number;
+  receiveCurrency?: string;
+  data?: {
+    rate?: number | string;
+    [key: string]: unknown;
   };
 }
 
@@ -271,6 +291,24 @@ export const providerService = {
       PROVIDER_REFERENCE_TTL,
       async () => {
         const res = await fetch(endpoint, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        return handleResponse(res);
+      },
+    );
+  },
+
+  /**
+   * GET /api/providers/fees
+   * controller: getProviderFees
+   */
+  getProviderFees: async (): Promise<ApiResponse<ProviderFeesResponse>> => {
+    return getCachedApiResponse(
+      "providers:fees",
+      PROVIDER_REFERENCE_TTL,
+      async () => {
+        const res = await fetch("/api/providers/fees", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });

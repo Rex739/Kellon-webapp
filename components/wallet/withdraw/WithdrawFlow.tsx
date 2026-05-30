@@ -240,6 +240,11 @@ export default function WithdrawFlow({
   const selectedProviderRate = selectedProviderId
     ? providerRates[selectedProviderId]
     : null;
+  const selectedProviderRawRate =
+    selectedProviderRate?.rawRate && selectedProviderRate.rawRate > 0
+      ? selectedProviderRate.rawRate
+      : undefined;
+  const hasSelectedProviderRate = Boolean(selectedProviderRawRate);
   const estimatedFiatAmount =
     selectedProviderRate?.fiatAmount && selectedProviderRate.fiatAmount > 0
       ? selectedProviderRate.fiatAmount
@@ -259,8 +264,14 @@ export default function WithdrawFlow({
       !selectedBank ||
       !asset ||
       !networkName ||
-      !amountValue
+      !amountValue ||
+      !hasSelectedProviderRate
     ) {
+      if (!hasSelectedProviderRate) {
+        toast.error(
+          "Rate unavailable. Please select a provider with an active rate.",
+        );
+      }
       return;
     }
 
@@ -277,7 +288,7 @@ export default function WithdrawFlow({
         token: asset,
         chain: networkName,
         network: networkName,
-        rate: selectedProviderRate?.rawRate,
+        rate: selectedProviderRawRate,
         bankId: selectedBank.id,
         bankAccountId: selectedBank.id,
         recipient: {
@@ -439,7 +450,16 @@ export default function WithdrawFlow({
               providers={providers}
               selectedProviderId={selectedProviderId || null}
               onSelectProvider={setSelectedProviderId}
-              onContinue={() => selectedProviderId && setStep("bank")}
+              onContinue={() => {
+                if (!selectedProviderId) return;
+                if (!hasSelectedProviderRate) {
+                  toast.error(
+                    "Rate unavailable. Please select another provider or try again.",
+                  );
+                  return;
+                }
+                setStep("bank");
+              }}
               providerRates={providerRates}
               isRatesLoading={isLoadingRates}
             />

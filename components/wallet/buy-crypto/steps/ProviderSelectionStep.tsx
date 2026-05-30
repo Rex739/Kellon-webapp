@@ -61,6 +61,17 @@ export function ProviderSelectionStep({
 }: ProviderSelectionStepProps) {
   const selectedProvider = providers.find((p) => p.id === selectedProviderId);
   const hasValidSelection = selectedProviderId && selectedProvider;
+  const selectedProviderRate = selectedProviderId
+    ? providerRates[selectedProviderId]
+    : null;
+  const hasSelectedProviderRate = Boolean(
+    selectedProviderRate?.rawRate && selectedProviderRate.rawRate > 0,
+  );
+  const isSelectedRatePending =
+    Boolean(hasValidSelection) &&
+    (isRatesLoading || selectedProviderRate === undefined);
+  const canContinue =
+    Boolean(hasValidSelection) && hasSelectedProviderRate && !isRatesLoading;
 
   // Track image loading errors per provider
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
@@ -284,17 +295,21 @@ export function ProviderSelectionStep({
 
           <button
             onClick={onContinue}
-            disabled={!hasValidSelection}
+            disabled={!canContinue}
             className={cn(
               "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 md:py-4 font-bold text-white shadow-lg transition-all",
               "hover:shadow-xl active:scale-[0.98]",
               "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-              !hasValidSelection && "from-gray-400 to-gray-500",
+              !canContinue && "from-gray-400 to-gray-500",
             )}
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
               {!hasValidSelection ? (
                 "Select a Provider to Continue"
+              ) : isSelectedRatePending ? (
+                "Fetching Rate..."
+              ) : !hasSelectedProviderRate ? (
+                "Rate Unavailable"
               ) : (
                 <>
                   {requiresRefundAccount ? "Select Bank" : "Review Order"}
@@ -302,7 +317,7 @@ export function ProviderSelectionStep({
                 </>
               )}
             </span>
-            {hasValidSelection && (
+            {canContinue && (
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
             )}
           </button>

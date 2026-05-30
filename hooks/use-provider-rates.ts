@@ -21,6 +21,15 @@ interface UseProviderRatesParams {
   side?: "buy" | "sell";
 }
 
+function parseNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
 export function useProviderRates({
   providers,
   asset,
@@ -74,14 +83,21 @@ export function useProviderRates({
               });
 
               const paycrestRate =
-                side === "sell" ? res.data?.sell?.rate : res.data?.buy?.rate;
+                parseNumber(res.data?.rate) ??
+                parseNumber(res.data?.data?.rate) ??
+                parseNumber(
+                  side === "sell" ? res.data?.sell?.rate : res.data?.buy?.rate,
+                );
 
               if (res.success && paycrestRate) {
-                rawRate = parseFloat(paycrestRate);
-                if (!isNaN(rawRate) && rawRate > 0) {
+                rawRate = paycrestRate;
+                if (rawRate > 0) {
                   if (side === "sell") {
                     cryptoAmount = amount;
-                    fiatAmount = amount * rawRate;
+                    fiatAmount =
+                      parseNumber(res.data?.receiveAmount) ??
+                      parseNumber(res.data?.fiatAmount) ??
+                      amount * rawRate;
                   } else {
                     cryptoAmount = amount / rawRate;
                     fiatAmount = amount;

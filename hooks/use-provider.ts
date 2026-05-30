@@ -23,6 +23,8 @@ export function useProviders(
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchProviders = async () => {
       if (!country || !asset || !networkName || !currency) {
         setProviders([]);
@@ -31,23 +33,40 @@ export function useProviders(
       }
       setIsLoading(true);
       try {
-        const response = await providerService.listProviders({
-          country,
-          currency,
-          network: networkName,
-          type,
-        });
+        const [response, feesResponse] = await Promise.all([
+          providerService.listProviders({
+            country,
+            currency,
+            network: networkName,
+            type,
+          }),
+          providerService.getProviderFees().catch(() => null),
+        ]);
+
+        if (cancelled) return;
+
         if (response.success && response.data) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mapped = response.data.map((p: any) => ({
-            id: p.id,
-            name: p.name,
-            logo: p.logo,
-            deliveryTime: p.processingTime,
-            fee: `${p.fees.percentage}%`,
-            features: p.features || [],
-            isRecommended: p.metadata?.isRecommended || false,
-          }));
+          const mapped = response.data.map((p: any) => {
+            const providerKey = String(p.slug || p.name || "").toLowerCase();
+            const fees = p.fees || feesResponse?.data?.[providerKey];
+            const percentage = Number(fees?.percentage || 0);
+            const fixed = Number(fees?.fixed || 0);
+            const feeParts = [
+              percentage > 0 ? `${percentage}%` : null,
+              fixed > 0 ? `${fixed} fixed` : null,
+            ].filter(Boolean);
+
+            return {
+              id: p.id,
+              name: p.name,
+              logo: p.logo,
+              deliveryTime: p.processingTime,
+              fee: feeParts.length ? feeParts.join(" + ") : "No fee",
+              features: p.features || [],
+              isRecommended: p.metadata?.isRecommended || false,
+            };
+          });
           setProviders(mapped);
           setSelectedProviderId((currentProviderId) => {
             if (!mapped.length) {
@@ -65,14 +84,21 @@ export function useProviders(
           setSelectedProviderId("");
         }
       } catch (error) {
+        if (cancelled) return;
         console.error("Failed to fetch providers:", error);
         setProviders([]);
         setSelectedProviderId("");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
     fetchProviders();
+
+    return () => {
+      cancelled = true;
+    };
   }, [country, asset, networkName, currency, type]);
 
   return {

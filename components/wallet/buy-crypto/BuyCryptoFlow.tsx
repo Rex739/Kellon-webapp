@@ -191,6 +191,7 @@ export default function BuyCryptoFlow({
     selectedProviderRate?.rawRate && selectedProviderRate.rawRate > 0
       ? selectedProviderRate.rawRate
       : undefined;
+  const hasSelectedProviderRate = Boolean(selectedProviderRawRate);
   const selectedBank = savedBanks.find((bank) => bank.id === bankId) || null;
   const requiresRefundBank =
     selectedProvider?.name?.toLowerCase() === "paycrest";
@@ -270,9 +271,14 @@ export default function BuyCryptoFlow({
       !asset ||
       !networkName ||
       !fiatAmountNum ||
+      !hasSelectedProviderRate ||
       (requiresRefundBank && !selectedBank)
     ) {
-      toast.error("Complete the order details before initializing payment");
+      toast.error(
+        !hasSelectedProviderRate
+          ? "Rate unavailable. Please select a provider with an active rate."
+          : "Complete the order details before initializing payment",
+      );
       return;
     }
 
@@ -476,7 +482,15 @@ export default function BuyCryptoFlow({
             selectedProviderId={selectedProviderId}
             paymentMethodLabel={methodLabels[paymentMethod]}
             onSelectProvider={setSelectedProviderId}
-            onContinue={() => setStep(requiresRefundBank ? "bank" : "review")}
+            onContinue={() => {
+              if (!hasSelectedProviderRate) {
+                toast.error(
+                  "Rate unavailable. Please select another provider or try again.",
+                );
+                return;
+              }
+              setStep(requiresRefundBank ? "bank" : "review");
+            }}
             providerRates={providerRates}
             isRatesLoading={isLoadingRates}
             requiresRefundAccount={requiresRefundBank}

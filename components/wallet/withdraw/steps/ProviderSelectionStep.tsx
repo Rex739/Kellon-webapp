@@ -35,12 +35,11 @@ interface ProviderSelectionStepProps {
   onContinue: () => void;
   providerRates: Record<
     string,
-    | {
-        cryptoAmount: number | null;
-        fiatAmount: number | null;
-        rawRate: number | null;
-      }
-    | null
+    {
+      cryptoAmount: number | null;
+      fiatAmount: number | null;
+      rawRate: number | null;
+    } | null
   >;
   isRatesLoading: boolean;
 }
@@ -61,6 +60,17 @@ export function WithdrawProviderSelectionStep({
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const selectedProvider =
     providers.find((provider) => provider.id === selectedProviderId) || null;
+  const selectedProviderRate = selectedProviderId
+    ? providerRates[selectedProviderId]
+    : null;
+  const hasSelectedProviderRate = Boolean(
+    selectedProviderRate?.rawRate && selectedProviderRate.rawRate > 0,
+  );
+  const isSelectedRatePending =
+    Boolean(selectedProvider) &&
+    (isRatesLoading || selectedProviderRate === undefined);
+  const canContinue =
+    Boolean(selectedProvider) && hasSelectedProviderRate && !isRatesLoading;
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
@@ -238,17 +248,21 @@ export function WithdrawProviderSelectionStep({
           <button
             type="button"
             onClick={onContinue}
-            disabled={!selectedProvider}
+            disabled={!canContinue}
             className={cn(
               "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
               "hover:shadow-xl active:scale-[0.98]",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-              !selectedProvider && "from-gray-400 to-gray-500",
+              !canContinue && "from-gray-400 to-gray-500",
             )}
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
               {!selectedProvider ? (
                 "Select a Provider to Continue"
+              ) : isSelectedRatePending ? (
+                "Fetching Rate..."
+              ) : !hasSelectedProviderRate ? (
+                "Rate Unavailable"
               ) : (
                 <>
                   Select Bank
