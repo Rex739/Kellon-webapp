@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { FC, useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
+import { FC, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   X,
   Camera,
@@ -15,9 +15,9 @@ import {
   LucideIcon,
   ArrowLeft,
   Loader2,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -25,55 +25,55 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
-import BankAccountModal from "./BankAccountModal"
-import { bankService } from "@/services/api/bank"
-import { BankDetail, User } from "@/types/db"
-import { updateProfile } from "@/services/api/user"
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import BankAccountModal from "./BankAccountModal";
+import { bankService } from "@/services/api/bank";
+import { BankDetail, User } from "@/types/db";
+import { updateProfile } from "@/services/api/user";
 
 interface ProfilePageProps {
-  initialProfile: User
+  initialProfile: User;
 }
 const profileSchema = z.object({
   displayName: z.string().min(2, "Name is too short"),
   kellonTag: z.string().min(3, "Tag is too short"), // No longer requires user to type @
-})
-type ProfileFormValues = z.infer<typeof profileSchema>
+});
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
-  const router = useRouter()
-  const [isEditing, setIsEditing] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
- const profile = initialProfile
+  const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const profile = initialProfile;
 
   // --- Bank State Lifted Here ---
-  const [banks, setBanks] = useState<BankDetail[]>([])
-  const [isBanksLoading, setIsBanksLoading] = useState(true)
+  const [banks, setBanks] = useState<BankDetail[]>([]);
+  const [isBanksLoading, setIsBanksLoading] = useState(true);
 
   const fetchBanks = async () => {
-    setIsBanksLoading(true)
+    setIsBanksLoading(true);
     try {
-      const response = await bankService.getBanks()
+      const response = await bankService.getBanks();
       if (response?.data) {
-        setBanks(response.data)
+        setBanks(response.data);
       }
-      return response
+      return response;
     } catch (error) {
-      throw error
+      throw error;
     } finally {
-      setIsBanksLoading(false)
+      setIsBanksLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchBanks()
-  }, [])
+    fetchBanks();
+  }, []);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -81,32 +81,32 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
       displayName: profile?.name || "",
       kellonTag: profile?.tag?.replace("@", "") || "",
     },
-  })
+  });
 
   const onSubmit = async (data: ProfileFormValues) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       const res = await updateProfile({
         name: data.displayName,
         tag: data.kellonTag.replace("@", ""),
-      })
+      });
 
       if (res.success) {
-        toast.success("Profile updated successfully!")
+        toast.success("Profile updated successfully!");
 
-        setIsEditing(false)
-        router.refresh()
+        setIsEditing(false);
+        router.refresh();
       } else {
-        toast.error(res.message || "Failed to update profile")
+        toast.error(res.message || "Failed to update profile");
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      toast.error("An unexpected error occurred")
+      toast.error("An unexpected error occurred");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <section className="min-h-screen text-slate-900 dark:text-white pb-10 transition-colors duration-300 lg:py-20">
@@ -138,7 +138,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                   .slice(0, 2) || "?"}
               </AvatarFallback>
             </Avatar>
-            <button className="absolute bottom-0 right-0 p-2 bg-white dark:bg-black1 border-2 border-gray-50 dark:border-[#0b101a] rounded-full text-primary-70 shadow-lg">
+            <button className="absolute bottom-0 right-0 p-2 bg-white dark:bg-black1 border-2 border-gray-50 dark:border-[#0b101a] rounded-full text-primary-70 shadow-lg cursor-pointer">
               <Camera className="w-5 h-5" />
             </button>
           </div>
@@ -162,7 +162,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="p-2 text-primary-70 hover:bg-primary-70/10 rounded-full transition-colors"
+                className="p-2 text-primary-70 hover:bg-primary-70/10 rounded-full transition-colors cursor-pointer"
               >
                 <Pencil className="w-5 h-5" />
               </button>
@@ -286,22 +286,22 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
           banks={banks}
           isLoading={isBanksLoading}
           onRefresh={async () => {
-            await fetchBanks()
+            await fetchBanks();
           }}
         />
       </div>
     </section>
-  )
-}
+  );
+};
 
 const InfoItem = ({
   icon: Icon,
   label,
   value,
 }: {
-  icon: LucideIcon
-  label: string
-  value: string
+  icon: LucideIcon;
+  label: string;
+  value: string;
 }) => (
   <div className="flex items-center gap-4 px-1">
     <div className="p-3 bg-slate-100 dark:bg-black1 rounded-xl text-primary-70">
@@ -314,6 +314,6 @@ const InfoItem = ({
       <p className="text-sm font-medium">{value}</p>
     </div>
   </div>
-)
+);
 
-export default ProfilePage
+export default ProfilePage;

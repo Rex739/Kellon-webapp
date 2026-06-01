@@ -1,32 +1,35 @@
-"use client"
+"use client";
 
-import { FC, useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import Image from "next/image"
-import { useSupportedChains } from "@/hooks/use-supported-chains"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import { FC, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+import { useSupportedChains } from "@/hooks/use-supported-chains";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { ArrowLeft, Search, SearchX } from "lucide-react"
-import TokenSelect from "./TokenSelect"
-import { type Token } from "@lifi/sdk"
-import { useSearchParams } from "next/navigation"
-import Link from "next/link"
-import { ChainSkeletonItem, TopChainSkeletonItem } from "@/components/Skeletons"
+} from "@/components/ui/dialog";
+import { ArrowLeft, Search, SearchX } from "lucide-react";
+import TokenSelect from "./TokenSelect";
+import { type Token } from "@lifi/sdk";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import {
+  ChainSkeletonItem,
+  TopChainSkeletonItem,
+} from "@/components/Skeletons";
 
 // Component Props
 interface ChainSelectProps {
-  side: "from" | "to"
-  selectedChain: number
-  handleChainSelectOpen: (side: "from" | "to") => void
-  tokens?: Token[]
-  loading: boolean
-  selectedToken: Token | null
+  side: "from" | "to";
+  selectedChain: number;
+  handleChainSelectOpen: (side: "from" | "to") => void;
+  tokens?: Token[];
+  loading: boolean;
+  selectedToken: Token | null;
 }
 
 const ChainSelect: FC<ChainSelectProps> = ({
@@ -38,25 +41,25 @@ const ChainSelect: FC<ChainSelectProps> = ({
   tokens,
 }) => {
   // Hooks & State
-  const { chains, loading: chainsLoading } = useSupportedChains()
-  const [search, setSearch] = useState("")
-  const [open, setOpen] = useState(false)
-  const searchParams = useSearchParams()
+  const { chains, loading: chainsLoading } = useSupportedChains();
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+  const searchParams = useSearchParams();
 
   // Helpers
   const filteredChains = chains.filter((chain) =>
     chain.name.toLowerCase().includes(search.toLowerCase()),
-  )
+  );
 
   const buildUrl = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set(key, value)
-    return `/?${params.toString()}`
-  }
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(key, value);
+    return `/?${params.toString()}`;
+  };
 
-  const topChains = chains.slice(0, 8)
-  const base = chains
-  console.log("base", base)
+  const topChains = chains.slice(0, 8);
+  const base = chains;
+  console.log("base", base);
   return (
     <>
       {/* =================== MOBILE VIEW =================== */}
@@ -108,7 +111,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
               ) : (
                 <button
                   onClick={() => setOpen(true)}
-                  className="flex items-center justify-center border border-input rounded-xl hover:bg-accent transition text-black dark:text-white text-xs"
+                  className="flex items-center justify-center border border-input rounded-xl hover:bg-accent transition text-black dark:text-white text-xs cursor-pointer"
                 >
                   +{chains.length - topChains.length}
                 </button>
@@ -260,7 +263,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
         />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ChainSelect
+export default ChainSelect;

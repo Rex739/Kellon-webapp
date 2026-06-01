@@ -19,7 +19,7 @@ const NotificationBell: FC = () => {
           : "Notifications"
       }
       className={cn(
-        "relative flex h-10 w-10 items-center justify-center rounded-xl",
+        "relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl",
         "transition-colors hover:bg-gray-90 dark:hover:bg-secondary-60/50",
         hasUnread &&
           "text-primary-50 dark:text-primary-80 bg-primary-95/70 dark:bg-primary-70/10",

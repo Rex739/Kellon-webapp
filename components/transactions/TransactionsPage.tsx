@@ -413,7 +413,7 @@ export default function TransactionsPage() {
                 key={transaction.id}
                 href={`/transactions/${transaction.id}`}
                 className={cn(
-                  "flex items-center justify-between gap-4 border-b border-black/5 px-4 py-4 transition-colors last:border-b-0 md:px-5",
+                  "flex cursor-pointer items-center justify-between gap-4 border-b border-black/5 px-4 py-4 transition-colors last:border-b-0 md:px-5",
                   "hover:bg-gray-95 dark:border-white/10 dark:hover:bg-secondary-60/40",
                 )}
               >

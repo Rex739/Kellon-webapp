@@ -1,72 +1,71 @@
-"use client"
+"use client";
 
-import { FC, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react";
 import {
   usePrivy,
   useLoginWithOAuth,
   useIdentityToken,
-} from "@privy-io/react-auth"
-import { Loader2 } from "lucide-react"
+} from "@privy-io/react-auth";
+import { Loader2 } from "lucide-react";
 
-import { loginWithPrivy } from "@/services/api/auth"
-import { cn } from "@/lib/utils"
+import { loginWithPrivy } from "@/services/api/auth";
+import { cn } from "@/lib/utils";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Icons } from "@/components/Icons"
-import AuthHero from "./AuthHero"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Icons } from "@/components/Icons";
+import AuthHero from "./AuthHero";
 
 interface ContinueProps {
-  onSuccessRedirect?: string
+  onSuccessRedirect?: string;
 }
 
 const Continue: FC<ContinueProps> = ({ onSuccessRedirect = "/" }) => {
-  const [isSyncing, setIsSyncing] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false);
 
-  const hasSynced = useRef(false)
+  const hasSynced = useRef(false);
 
-  const { authenticated, ready } = usePrivy()
+  const { authenticated, ready } = usePrivy();
 
-  const { initOAuth, loading: oauthLoading } = useLoginWithOAuth()
+  const { initOAuth, loading: oauthLoading } = useLoginWithOAuth();
 
-  const { identityToken } = useIdentityToken()
-
+  const { identityToken } = useIdentityToken();
 
   useEffect(() => {
     const syncUser = async () => {
-      if (!identityToken || hasSynced.current) return
+      if (!identityToken || hasSynced.current) return;
 
-      hasSynced.current = true
-      setIsSyncing(true)
+      hasSynced.current = true;
+      setIsSyncing(true);
 
       try {
-        await loginWithPrivy(identityToken)
+        await loginWithPrivy(identityToken);
 
-        await new Promise((resolve) => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-        window.location.href = onSuccessRedirect
+        window.location.href = onSuccessRedirect;
       } catch (err) {
-        console.error("Auth sync failed:", err)
+        console.error("Auth sync failed:", err);
 
-        setIsSyncing(false)
-        hasSynced.current = false
+        setIsSyncing(false);
+        hasSynced.current = false;
       }
-    }
+    };
 
     if (ready && authenticated && identityToken) {
-      syncUser()
+      syncUser();
     }
-  }, [ready, authenticated, identityToken, onSuccessRedirect])
+  }, [ready, authenticated, identityToken, onSuccessRedirect]);
 
   const handleOAuthLogin = async (provider: "google" | "apple") => {
     try {
-      await initOAuth({ provider })
+      await initOAuth({ provider });
     } catch (err) {
-      console.error(`${provider} login failed:`, err)
+      console.error(`${provider} login failed:`, err);
     }
-  }
+  };
 
-  const isBusy = !ready || oauthLoading || isSyncing
+  const isBusy = !ready || oauthLoading || isSyncing;
 
   return (
     <div className="flex min-h-screen w-full overflow-hidden ">
@@ -135,11 +134,11 @@ const Continue: FC<ContinueProps> = ({ onSuccessRedirect = "/" }) => {
               <div className="mt-10 border-t border-neutral-100 dark:border-gray-500 pt-6">
                 <p className="text-center text-xs leading-relaxed text-gray-400 dark:text-gray-100">
                   By continuing, you agree to our{" "}
-                  <button className="font-semibold text-cryptoNight dark:text-gray-400 hover:underline">
+                  <button className="font-semibold text-cryptoNight dark:text-gray-400 hover:underline cursor-pointer">
                     Terms
                   </button>{" "}
                   and{" "}
-                  <button className="font-semibold text-cryptoNight dark:text-gray-400 hover:underline">
+                  <button className="font-semibold text-cryptoNight dark:text-gray-400 hover:underline cursor-pointer">
                     Privacy Policy
                   </button>
                 </p>
@@ -149,7 +148,7 @@ const Continue: FC<ContinueProps> = ({ onSuccessRedirect = "/" }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Continue
+export default Continue;

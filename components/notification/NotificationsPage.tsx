@@ -24,7 +24,7 @@ import {
   getTransactionStatusLabel,
   getTransactionTitle,
   isPositiveTransaction,
-} from "@/components/wallet/dashboard/dashboard-utils";
+} from "@/lib/dashboard-utils";
 
 type NotificationCategory = "Announcement" | "Latest event" | "System";
 type NotificationCategoryFilter = "All" | NotificationCategory;
@@ -575,6 +575,7 @@ function NotificationItem({
                 disabled={isMarkingRead}
                 aria-label="Mark as read"
                 className={cn(
+                  "cursor-pointer",
                   "shrink-0 rounded-full p-1 text-primary-60 transition-colors hover:bg-primary-95 dark:text-primary-80 dark:hover:bg-primary-0/30",
                   "disabled:opacity-50",
                 )}
@@ -720,6 +721,7 @@ export default function NotificationsPage() {
               type="button"
               onClick={() => setActiveCategory(category)}
               className={cn(
+                "cursor-pointer",
                 "shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
                 isActive
                   ? "border-primary-90 bg-primary-95 text-primary-50 dark:border-primary-70/20 dark:bg-primary-70/15 dark:text-primary-80"

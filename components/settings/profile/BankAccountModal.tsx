@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { FC, useState } from "react"
-import { ArrowLeft, Landmark, Plus, ChevronRight } from "lucide-react"
+import { FC, useState } from "react";
+import { ArrowLeft, Landmark, Plus, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { toast } from "sonner"
-import { BankDetail } from "@/types/db"
-import { bankService } from "@/services/api/bank"
-import BankList from "./BankList"
-import BankForm, { BankFormValues } from "./BankForm"
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { BankDetail } from "@/types/db";
+import { bankService } from "@/services/api/bank";
+import BankList from "./BankList";
+import BankForm, { BankFormValues } from "./BankForm";
 
 interface BankAccountModalProps {
-  banks: BankDetail[]
-  isLoading: boolean
-  onRefresh: () => Promise<void>
+  banks: BankDetail[];
+  isLoading: boolean;
+  onRefresh: () => Promise<void>;
 }
 
 const BankAccountModal: FC<BankAccountModalProps> = ({
@@ -25,65 +25,65 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
   isLoading,
   onRefresh,
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [view, setView] = useState<"list" | "add" | "edit">("list")
-  const [selectedBank, setSelectedBank] = useState<BankDetail | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [selectedBank, setSelectedBank] = useState<BankDetail | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFormSubmit = async (values: BankFormValues) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       const payload = {
         bankName: values.bankName,
         accountName: values.accountHolderName,
         accountNumber: values.accountNumber,
         bankCode: "",
-      }
+      };
 
       const res =
         view === "edit" && selectedBank?.id
           ? await bankService.updateBank(selectedBank.id, payload)
-          : await bankService.addBank(payload as BankDetail)
+          : await bankService.addBank(payload as BankDetail);
 
       if (res.success) {
         toast.success(
           view === "edit"
             ? "Bank account updated successfully"
             : "Bank account added successfully",
-        )
+        );
 
-        await onRefresh()
-        setView("list")
+        await onRefresh();
+        setView("list");
       }
     } catch (err) {
-      toast.error("Operation failed")
-      throw err
+      toast.error("Operation failed");
+      throw err;
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await bankService.deleteBank(id)
+      const res = await bankService.deleteBank(id);
       if (res.success) {
-        await onRefresh()
+        await onRefresh();
       }
     } catch (err) {
-      throw err
+      throw err;
     }
-  }
+  };
 
   return (
     <Dialog
       open={isOpen}
       onOpenChange={(val) => {
-        setIsOpen(val)
-        if (!val) setView("list")
+        setIsOpen(val);
+        if (!val) setView("list");
       }}
     >
       <DialogTrigger asChild className="cursor-pointer">
-        <button className="w-full bg-white dark:bg-secondary-50 border border-slate-100 dark:border-white/10 rounded-[24px] p-5 flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-secondary-60/50 transition-colors ">
+        <button className="w-full bg-white dark:bg-secondary-50 border border-slate-100 dark:border-white/10 rounded-[24px] p-5 flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-secondary-60/50 transition-colors cursor-pointer">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-slate-100 dark:bg-[#1a1f2e] rounded-xl text-primary-70">
               <Landmark className="w-6 h-6" />
@@ -112,7 +112,7 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
               onClick={() =>
                 view === "list" ? setIsOpen(false) : setView("list")
               }
-              className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none"
+              className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none cursor-pointer"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
             </button>
@@ -126,10 +126,10 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
             {view === "list" && (
               <button
                 onClick={() => {
-                  setSelectedBank(null)
-                  setView("add")
+                  setSelectedBank(null);
+                  setView("add");
                 }}
-                className="p-2 bg-white dark:bg-secondary-60/50 rounded-full text-primary-70"
+                className="p-2 bg-white dark:bg-secondary-60/50 rounded-full text-primary-70 cursor-pointer"
               >
                 <Plus className="w-5 h-5" />
               </button>
@@ -143,8 +143,8 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
                 isLoading={isLoading}
                 onAddNew={() => setView("add")}
                 onEdit={(b) => {
-                  setSelectedBank(b)
-                  setView("edit")
+                  setSelectedBank(b);
+                  setView("edit");
                 }}
                 onDelete={handleDelete}
               />
@@ -159,7 +159,7 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default BankAccountModal
+export default BankAccountModal;

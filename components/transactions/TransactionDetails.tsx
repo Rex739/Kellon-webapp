@@ -729,7 +729,7 @@ export default function TransactionDetails({ id }: TransactionDetailsProps) {
               </span>
               <button
                 onClick={() => copyValue(transaction.id)}
-                className="rounded-lg p-1 hover:bg-gray-100 dark:hover:bg-white/10"
+                className="rounded-lg p-1 hover:bg-gray-100 dark:hover:bg-white/10 cursor-copy"
               >
                 {copied ? (
                   <Check className="h-3.5 w-3.5 text-green-500" />

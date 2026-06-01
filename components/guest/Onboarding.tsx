@@ -116,7 +116,7 @@ const WebOnboarding: FC<WebOnboardingProps> = ({ onComplete }) => {
 
                   <button
                     onClick={onComplete}
-                    className="text-xs font-semibold text-gray-400 hover:text-cryptoNight dark:hover:text-white transition-colors"
+                    className="text-xs font-semibold text-gray-400 hover:text-cryptoNight dark:hover:text-white transition-colors cursor-pointer"
                   >
                     Skip exploration
                   </button>
