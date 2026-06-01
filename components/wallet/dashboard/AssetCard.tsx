@@ -38,13 +38,13 @@ const AssetCard: FC<AssetCardProps> = ({
     >
       <div className="flex min-w-0 flex-1 items-center gap-3 xs:gap-4 lg:gap-5">
         {/* Real Crypto Icon Container */}
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-primary-90/40 bg-white shadow-sm shadow-primary-90/20 dark:border-white/5 dark:bg-secondary-40 dark:shadow-none xs:h-12 xs:w-12 lg:h-14 lg:w-14">
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-primary-90/40 shadow-sm shadow-primary-90/20 dark:border-white/5 dark:shadow-none xs:h-12 xs:w-12 lg:h-14 lg:w-14">
           <Image
             src={iconUrl}
             alt={symbol}
             width={40}
             height={40}
-            className="object-contain p-2 md:p-2.5"
+            className="object-contain"
           />
         </div>
 
