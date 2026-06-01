@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Provider from "@/components/providers/Provider";
 import { initLifiConfig } from "@/lib/lifi-config";
@@ -57,6 +57,10 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
 };
+
+export const viewport: Viewport = {
+  themeColor: "#0f172a"
+}
 
 export default async function RootLayout({
   children,

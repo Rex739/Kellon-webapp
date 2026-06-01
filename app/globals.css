@@ -12,7 +12,7 @@
 }
 
 @theme {
- /* Mobile */
+  /* Mobile */
   --breakpoint-xs: 375px;
   --breakpoint-xm: 390px;
 
@@ -77,7 +77,7 @@
   --color-gray-95: #f6f6f6;
   --color-gray-99: #fcfcfc;
   --color-orange-10: #ef5350;
-  --color-violet1:#8a1685;
+  --color-violet1: #8a1685;
   --color-black1: #1a1f2e;
   --color-black2: #0b101a;
   /* fonts */

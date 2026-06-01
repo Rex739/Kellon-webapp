@@ -51,7 +51,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
                   href={href}
                   className={cn(
                     // IMP START - Base Styling for Links
-                    "text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white capitalize text-xs font-medium ",
+                    "cursor-pointer text-gray-20 dark:text-gray-40 hover:text-black dark:hover:text-white capitalize text-xs font-medium ",
                     // IMP END - Base Styling for Links
 
                     // IMP START - Apply Active Link Styling

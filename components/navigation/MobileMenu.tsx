@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { FC, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { X } from "lucide-react"
-import { Icons } from "@/components/Icons"
-import { copyToClipboard } from "@/lib/copy-to-clipboard"
-import { truncateAddress } from "@/lib/truncate-address"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import ModeToggle from "@/components/ModeToggle"
+import { FC, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
+import { Icons } from "@/components/Icons";
+import { copyToClipboard } from "@/lib/copy-to-clipboard";
+import { truncateAddress } from "@/lib/truncate-address";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import ModeToggle from "@/components/ModeToggle";
 
 interface MobileMenuProps {
-  isOpen: boolean
-  onClose: () => void
-  address?: `0x${string}`
-  onDisconnect: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  address?: `0x${string}`;
+  onDisconnect: () => void;
 }
 
 const MobileMenu: FC<MobileMenuProps> = ({
@@ -23,16 +23,16 @@ const MobileMenu: FC<MobileMenuProps> = ({
   address,
   onDisconnect,
 }) => {
-  const truncatedAddress = truncateAddress(address, 4, 4)
+  const truncatedAddress = truncateAddress(address, 4, 4);
 
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    if (!address) return
-    copyToClipboard(address)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) // Reset after 2s
-  }
+    if (!address) return;
+    copyToClipboard(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000); // Reset after 2s
+  };
 
   return (
     <AnimatePresence>
@@ -53,7 +53,11 @@ const MobileMenu: FC<MobileMenuProps> = ({
           >
             {/* Top bar */}
             <div className="flex items-center justify-between mb-6">
-              <button onClick={onClose} aria-label="Close menu">
+              <button
+                onClick={onClose}
+                aria-label="Close menu"
+                className="cursor-pointer"
+              >
                 <X className="h-6 w-6" />
               </button>
               <Icons.Logo className="h-10 w-10 bg-white dark:bg-secondary-60 p-2 rounded-md shadow-2xl border border-black dark:border-white" />
@@ -68,7 +72,7 @@ const MobileMenu: FC<MobileMenuProps> = ({
                   <button
                     onClick={handleCopy}
                     aria-label="Copy address"
-                    className="ml-2"
+                    className="ml-2 cursor-copy"
                   >
                     {copied ? (
                       <Icons.CopySuccess className="h-4 w-4 text-green-500" />
@@ -84,8 +88,8 @@ const MobileMenu: FC<MobileMenuProps> = ({
                       <Button
                         size={"xs"}
                         onClick={() => {
-                          onDisconnect()
-                          onClose()
+                          onDisconnect();
+                          onClose();
                         }}
                         className="text-white text-xs font-semibold"
                       >
@@ -105,7 +109,7 @@ const MobileMenu: FC<MobileMenuProps> = ({
         </motion.div>
       )}
     </AnimatePresence>
-  )
-}
+  );
+};
 
-export default MobileMenu
+export default MobileMenu;

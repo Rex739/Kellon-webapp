@@ -20,7 +20,7 @@ import {
   getTransactionStatusLabel,
   getTransactionTitle,
   isPositiveTransaction,
-} from "@/components/wallet/dashboard/dashboard-utils";
+} from "@/lib/dashboard-utils";
 import type { Asset, Transaction, User } from "@/types/db";
 
 interface SearchBarProps {
@@ -253,10 +253,10 @@ const SearchBar = ({ className, profile }: SearchBarProps) => {
           {results.length > 0 ? (
             <div className="max-h-96 overflow-y-auto p-1">
               {results.map((result) => {
-                const isTransactionResult = result.type === "transaction"
+                const isTransactionResult = result.type === "transaction";
                 const isPositiveResult =
                   result.transaction &&
-                  isPositiveTransaction(result.transaction.type)
+                  isPositiveTransaction(result.transaction.type);
                 const Icon =
                   result.type === "user"
                     ? UserRound
@@ -264,16 +264,16 @@ const SearchBar = ({ className, profile }: SearchBarProps) => {
                       ? WalletCards
                       : isPositiveResult
                         ? ArrowDownLeft
-                        : ArrowUpRight
+                        : ArrowUpRight;
 
                 return (
                   <Link
                     key={result.id}
                     href={result.href}
-                    className="flex items-center gap-3 rounded-md px-3 py-2.5 transition hover:bg-gray-95 dark:hover:bg-white/[0.06]"
+                    className="flex items-center gap-3 rounded-md px-3 py-2.5 transition hover:bg-gray-95 dark:hover:bg-white/[0.06] cursor-pointer"
                     onClick={() => {
-                      setQuery("")
-                      setIsFocused(false)
+                      setQuery("");
+                      setIsFocused(false);
                     }}
                   >
                     <div
@@ -318,7 +318,7 @@ const SearchBar = ({ className, profile }: SearchBarProps) => {
                       )}
                     </div>
                   </Link>
-                )
+                );
               })}
             </div>
           ) : (
@@ -336,7 +336,7 @@ const SearchBar = ({ className, profile }: SearchBarProps) => {
         </div>
       ) : null}
     </div>
-  )
+  );
 };
 
 export default SearchBar;

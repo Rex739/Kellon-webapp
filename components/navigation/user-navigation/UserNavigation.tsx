@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { FC, useState } from "react"
-import { ArrowLeft } from "lucide-react"
+import { FC, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Drawer,
   DrawerContent,
@@ -14,52 +14,54 @@ import {
   DrawerTitle,
   DrawerTrigger,
   DrawerDescription,
-} from "@/components/ui/drawer"
-import { useTheme } from "next-themes"
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { ActionToolTip } from "@/components/ActionTooltip"
-import { Icons } from "@/components/Icons"
-import Slab from "@/components/ui/slab"
-import toast from "react-hot-toast"
+} from "@/components/ui/drawer";
+import { useTheme } from "next-themes";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { ActionToolTip } from "@/components/ActionTooltip";
+import { Icons } from "@/components/Icons";
+import Slab from "@/components/ui/slab";
+import toast from "react-hot-toast";
 
-import { MenuContent } from "./MenuContent"
-import Image from "next/image"
-import { User } from "@/types/db"
+import { MenuContent } from "./MenuContent";
+import Image from "next/image";
+import { User } from "@/types/db";
 
 // Modals
-import StellarKeyRecoveryModal from "@/components/modals/StellarRecoveryModal"
-import TrustedDevicesModal from "@/components/modals/TrustedDevicesModal"
-import SocialRecoveryModal from "@/components/modals/social-recovery/SocialRevoveryModal"
-import NetworkInformationModal from "@/components/modals/NetworkInformationModal"
-import HelpSupportModal from "@/components/modals/HelpSupportModal"
-import AppearanceModal from "@/components/modals/AppearanceModal"
-import { ModalType } from "./user-navigation-types"
+import StellarKeyRecoveryModal from "@/components/modals/StellarRecoveryModal";
+import TrustedDevicesModal from "@/components/modals/TrustedDevicesModal";
+import SocialRecoveryModal from "@/components/modals/social-recovery/SocialRevoveryModal";
+import NetworkInformationModal from "@/components/modals/NetworkInformationModal";
+import HelpSupportModal from "@/components/modals/HelpSupportModal";
+import AppearanceModal from "@/components/modals/AppearanceModal";
+import { ModalType } from "./user-navigation-types";
 
 const UserNavigation: FC<{ profile: User }> = ({ profile }) => {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [activeModal, setActiveModal] = useState<ModalType>(null)
-  const isMobile = useMediaQuery("(max-width: 767px)")
-  const { theme } = useTheme()
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const { theme } = useTheme();
 
   const handleOpenModal = (name: ModalType) => {
-    setMenuOpen(false)
-    setTimeout(() => setActiveModal(name), 150)
-  }
+    setMenuOpen(false);
+    setTimeout(() => setActiveModal(name), 150);
+  };
 
   const handleShare = async () => {
-    const shareUrl = "https://kellon.xyz"
+    const shareUrl = "https://kellon.xyz";
     try {
       if (navigator.share) {
-        await navigator.share({ title: "Kellon", url: shareUrl })
+        await navigator.share({ title: "Kellon", url: shareUrl });
       } else {
-        await navigator.clipboard.writeText(shareUrl)
-        toast.success("Link copied to clipboard", { position: "bottom-center" })
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Link copied to clipboard", {
+          position: "bottom-center",
+        });
       }
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError")
-        toast.error("Could not share link")
+        toast.error("Could not share link");
     }
-  }
+  };
 
   const ModalGroup = () => (
     <>
@@ -89,7 +91,7 @@ const UserNavigation: FC<{ profile: User }> = ({ profile }) => {
         onClose={() => setActiveModal(null)}
       />
     </>
-  )
+  );
 
   const commonContentProps = {
     profile,
@@ -97,7 +99,7 @@ const UserNavigation: FC<{ profile: User }> = ({ profile }) => {
     onOpenModal: handleOpenModal,
     onShare: handleShare,
     onCloseMenu: () => setMenuOpen(false),
-  }
+  };
 
   if (isMobile) {
     return (
@@ -117,7 +119,7 @@ const UserNavigation: FC<{ profile: User }> = ({ profile }) => {
               <div className="flex justify-start">
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none"
+                  className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none cursor-pointer"
                 >
                   <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
                 </button>
@@ -137,7 +139,7 @@ const UserNavigation: FC<{ profile: User }> = ({ profile }) => {
         </Drawer>
         <ModalGroup />
       </>
-    )
+    );
   }
 
   return (
@@ -177,7 +179,7 @@ const UserNavigation: FC<{ profile: User }> = ({ profile }) => {
       </DropdownMenu>
       <ModalGroup />
     </>
-  )
-}
+  );
+};
 
-export default UserNavigation
+export default UserNavigation;

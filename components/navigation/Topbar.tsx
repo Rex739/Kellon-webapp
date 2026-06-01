@@ -40,7 +40,7 @@ const Topbar: FC<TopbarProps> = ({ className, profile }) => {
         {/* Desktop Navigation */}
         <div className="flex min-w-0 gap-2">
           <nav className="hidden w-fit items-center gap-1 rounded-xl border border-gray-80 bg-white/85 p-1 capitalize shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:flex dark:border-white/10 dark:bg-secondary-50/35 dark:shadow-none">
-            <Link href="/" aria-label="Kellon home" className="">
+            <Link href="/" aria-label="Kellon home" className="cursor-pointer">
               <Icons.Logo className="h-8 w-8" />
             </Link>
 
@@ -51,7 +51,7 @@ const Topbar: FC<TopbarProps> = ({ className, profile }) => {
                     href={href}
                     aria-current={isActive(pathname, href) ? "page" : undefined}
                     className={cn(
-                      "flex h-8 items-center rounded-lg px-2.5 text-sm font-semibold text-gray-30 transition-colors hover:text-cryptoNight dark:text-gray-40 dark:hover:text-white lg:px-3",
+                      "flex h-8 cursor-pointer items-center rounded-lg px-2.5 text-sm font-semibold text-gray-30 transition-colors hover:text-cryptoNight dark:text-gray-40 dark:hover:text-white lg:px-3",
                       isActive(pathname, href) &&
                         "text-primary-50 dark:text-primary-90",
                     )}

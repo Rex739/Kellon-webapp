@@ -1,6 +1,6 @@
-import { FC } from "react"
-import Image from "next/image"
-import Link from "next/link"
+import { FC } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import {
   Key,
   TabletSmartphone,
@@ -14,21 +14,21 @@ import {
   AlertCircle,
   Pencil,
   ChevronRight,
-} from "lucide-react"
-import { Icons } from "@/components/Icons"
-import Signout from "@/components/auth/Signout"
-import NotificationSwitch from "./NotificationSwitch"
-import { SectionHeader, NavigationItem, LinkItem } from "./NavItems"
-import { User } from "@/types/db"
-import { ModalType } from "./user-navigation-types"
+} from "lucide-react";
+import { Icons } from "@/components/Icons";
+import Signout from "@/components/auth/Signout";
+import NotificationSwitch from "./NotificationSwitch";
+import { SectionHeader, NavigationItem, LinkItem } from "./NavItems";
+import { User } from "@/types/db";
+import { ModalType } from "./user-navigation-types";
 
 interface MenuContentProps {
-  profile: User
-  theme: string | undefined
-  onOpenModal: (name: ModalType) => void
-  onShare: () => void
-  onCloseMenu: () => void
-  hideProfile?: boolean
+  profile: User;
+  theme: string | undefined;
+  onOpenModal: (name: ModalType) => void;
+  onShare: () => void;
+  onCloseMenu: () => void;
+  hideProfile?: boolean;
 }
 
 export const MenuContent: FC<MenuContentProps> = ({
@@ -61,7 +61,7 @@ export const MenuContent: FC<MenuContentProps> = ({
           <Link
             href="/settings/profile"
             onClick={onCloseMenu}
-            className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-primary-70 rounded-full border-2 border-white dark:border-secondary-60 flex items-center justify-center shadow-md hover:bg-primary-60 transition-colors"
+            className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-primary-70 rounded-full border-2 border-white dark:border-secondary-60 flex items-center justify-center shadow-md hover:bg-primary-60 transition-colors cursor-pointer"
           >
             <Pencil className="w-2.5 h-2.5 text-white" />
           </Link>
@@ -76,7 +76,7 @@ export const MenuContent: FC<MenuContentProps> = ({
           <Link
             href="/settings/profile"
             onClick={onCloseMenu}
-            className="text-primary-70 text-[10px] font-bold flex items-center mt-1 group"
+            className="text-primary-70 text-[10px] font-bold flex items-center mt-1 group cursor-pointer"
           >
             Edit Profile
             <ChevronRight className="ml-0.5 h-2.5 w-2.5 group-hover:translate-x-0.5 transition-transform" />
@@ -178,4 +178,4 @@ export const MenuContent: FC<MenuContentProps> = ({
       <Signout />
     </div>
   </div>
-)
+);
