@@ -23,7 +23,7 @@ export default function AssetsPanel({
     <div className="order-3 flex w-full flex-col gap-4 rounded-2xl border border-white/70 bg-white/55 p-3 shadow-sm shadow-primary-90/20 backdrop-blur-xl dark:border-white/10 dark:bg-secondary-50/20 dark:shadow-none xs:p-4 md:h-[300px] md:overflow-hidden md:rounded-xl md:border md:border-white/70 md:bg-white/60 md:p-5 md:dark:border-white/10 md:dark:bg-transparent min-[900px]:col-span-full min-[900px]:!h-[270px]">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold tracking-normal text-black dark:text-white">
+          <h3 className="text-[15px] font-semibold leading-tight tracking-normal text-black dark:text-white md:text-base">
             My Assets
           </h3>
         </div>
