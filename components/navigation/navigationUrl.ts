@@ -2,9 +2,9 @@ import { INavigationListUrl } from "@/types/navigation"
 
 export const navigationListUrls: INavigationListUrl[] = [
   {
-    label: "wallet",
+    label: "home",
     href: "/",
-    icon: "Wallet",
+    icon: "Home",
   },
   // {
   //   label: "swap",
