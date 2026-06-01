@@ -45,7 +45,7 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={onBack}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none shadow-sm"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none shadow-sm cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -62,6 +62,7 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
+              "cursor-pointer",
               "flex-1 pb-3 text-sm font-bold capitalize transition-all",
               activeTab === tab
                 ? "text-primary-20 border-b-2 border-primary-20"

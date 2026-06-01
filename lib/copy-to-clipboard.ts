@@ -1,4 +1,4 @@
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 /**
  * Copies text to clipboard and triggers a global toast notification.
@@ -10,18 +10,17 @@ export async function copyToClipboard(
   message: string = "Copied to clipboard",
 ) {
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
 
     toast.success(message, {
       id: "global-copy-toast", // Prevents toast stacking if clicked multiple times
       duration: 2000,
-      icon: "📋",
-    })
+    });
 
-    return true
+    return true;
   } catch (err) {
-    console.error("Failed to copy:", err)
-    toast.error("Failed to copy to clipboard")
-    return false
+    console.error("Failed to copy:", err);
+    toast.error("Failed to copy to clipboard");
+    return false;
   }
 }

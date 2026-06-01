@@ -67,7 +67,7 @@ export const CountrySelectorModal: React.FC<CountrySelectorModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-black/5 bg-white p-2 outline-none transition-opacity hover:opacity-80 dark:border-none dark:bg-secondary-60/50"
+          className="rounded-full border border-black/5 bg-white p-2 outline-none transition-opacity hover:opacity-80 dark:border-none dark:bg-secondary-60/50 cursor-pointer"
         >
           <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-white" />
         </button>
@@ -97,7 +97,7 @@ export const CountrySelectorModal: React.FC<CountrySelectorModalProps> = ({
           <button
             type="button"
             onClick={() => setSearchQuery("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 transition hover:bg-gray-100 dark:hover:bg-white/10"
+            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 transition hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer"
             aria-label="Clear country search"
           >
             <X className="h-4 w-4 text-gray-500 hover:text-black dark:hover:text-white" />

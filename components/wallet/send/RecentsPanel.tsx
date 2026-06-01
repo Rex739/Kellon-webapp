@@ -60,7 +60,7 @@ export default function RecentsPanel({
                   setVerifiedRecipient(null);
                   setStep("recipient");
                 }}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-gray-80 bg-white p-3 text-left transition hover:border-primary-90 hover:bg-primary-99 dark:border-white/10 dark:bg-secondary-60/25 dark:hover:border-primary-70/30 dark:hover:bg-primary-70/10 md:rounded-lg"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-gray-80 bg-white p-3 text-left transition hover:border-primary-90 hover:bg-primary-99 dark:border-white/10 dark:bg-secondary-60/25 dark:hover:border-primary-70/30 dark:hover:bg-primary-70/10 md:rounded-lg cursor-pointer"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-95 text-primary-50 dark:bg-primary-70/15 dark:text-primary-80">

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { FC } from "react"
-import { useTheme } from "next-themes"
+import { FC } from "react";
+import { useTheme } from "next-themes";
 // IMP START - Updated imports to include ArrowLeft and remove X
 import {
   ArrowLeft,
@@ -11,31 +11,27 @@ import {
   Monitor,
   CheckCircle2,
   LucideIcon,
-} from "lucide-react"
+} from "lucide-react";
 // IMP END - Updated imports
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
 
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { cn } from "@/lib/utils"
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 
 interface AppearanceModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)")
-  const { theme, setTheme } = useTheme()
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const { theme, setTheme } = useTheme();
 
   const ThemeOption = ({
     id,
@@ -43,17 +39,18 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
     description,
     icon: Icon,
   }: {
-    id: string
-    title: string
-    description: string
-    icon: LucideIcon
+    id: string;
+    title: string;
+    description: string;
+    icon: LucideIcon;
   }) => {
-    const isActive = theme === id
+    const isActive = theme === id;
 
     return (
       <button
         onClick={() => setTheme(id)}
         className={cn(
+          "cursor-pointer",
           "w-full flex items-center justify-between p-4 rounded-[20px] transition-all border-2 text-left mb-3",
           isActive
             ? "border-primary-70 bg-primary-70/5 dark:bg-primary-70/10"
@@ -84,8 +81,8 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
           <CheckCircle2 className="w-5 h-5 text-primary-70 fill-primary-70/20" />
         )}
       </button>
-    )
-  }
+    );
+  };
 
   const Content = () => (
     // IMP START - Updated padding to accommodate top back button
@@ -96,7 +93,7 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
       <div className="w-full flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -137,7 +134,7 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
         />
       </div>
     </div>
-  )
+  );
 
   if (isMobile) {
     return (
@@ -151,7 +148,7 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
           <Content />
         </DrawerContent>
       </Drawer>
-    )
+    );
   }
 
   return (
@@ -168,7 +165,7 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
       </DialogContent>
       {/* IMP END - Dialog structure update */}
     </Dialog>
-  )
-}
+  );
+};
 
-export default AppearanceModal
+export default AppearanceModal;

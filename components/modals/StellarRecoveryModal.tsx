@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { FC, useState, useEffect } from "react"
+import { FC, useState, useEffect } from "react";
 import {
   Key,
   Copy,
@@ -9,29 +9,29 @@ import {
   EyeOff,
   Info,
   ArrowLeft,
-} from "lucide-react"
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
-import { useMediaQuery } from "@/hooks/use-media-query"
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface StellarKeyRecoveryModalProps {
-  isOpen: boolean
-  onClose: () => void
-  secretKey?: string
+  isOpen: boolean;
+  onClose: () => void;
+  secretKey?: string;
 }
 
 const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
@@ -39,27 +39,27 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
   onClose,
   secretKey = "SAOPI...EXAMPLE...KEY...12345",
 }) => {
-  const [isRevealed, setIsRevealed] = useState(false)
-  const isMobile = useMediaQuery("(max-width: 768px)")
+  const [isRevealed, setIsRevealed] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
     if (!isOpen) {
       const timer = setTimeout(() => {
-        document.body.style.pointerEvents = "auto"
-      }, 100)
-      return () => clearTimeout(timer)
+        document.body.style.pointerEvents = "auto";
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const copyToClipboard = async (): Promise<void> => {
     try {
-      await navigator.clipboard.writeText(secretKey)
-      toast.success("Secret key copied t clipboard")
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      await navigator.clipboard.writeText(secretKey);
+      toast.success("Secret key copied t clipboard");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      toast.error("Failed to copy key")
+      toast.error("Failed to copy key");
     }
-  }
+  };
 
   const Content = () => (
     <div className="px-4 pb-8 md:pb-0">
@@ -67,7 +67,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -92,7 +92,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
         {!isRevealed ? (
           <button
             onClick={() => setIsRevealed(true)}
-            className="flex flex-col items-center gap-2 text-primary-70 hover:opacity-80 transition-opacity"
+            className="flex flex-col items-center gap-2 text-primary-70 hover:opacity-80 transition-opacity cursor-pointer"
           >
             <span className="text-2xl tracking-widest font-bold">
               ••••••••••••
@@ -119,7 +119,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
                 size="sm"
                 variant="ghost"
                 onClick={copyToClipboard}
-                className="text-xs text-primary-70"
+                className="text-xs text-primary-70 cursor-copy"
               >
                 <Copy className="w-3 h-3 mr-1" /> Copy
               </Button>
@@ -152,7 +152,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
         </Button>
       </div>
     </div>
-  )
+  );
 
   if (isMobile) {
     return (
@@ -167,7 +167,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
           <Content />
         </DrawerContent>
       </Drawer>
-    )
+    );
   }
 
   return (
@@ -182,7 +182,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
         <Content />
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default StellarKeyRecoveryModal
+export default StellarKeyRecoveryModal;

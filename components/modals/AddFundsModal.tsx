@@ -1,55 +1,55 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter } from "next/navigation" // Import the router
-import { useMediaQuery } from "@/hooks/use-media-query"
+import * as React from "react";
+import { useRouter } from "next/navigation"; // Import the router
+import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
 import {
   Landmark,
   ArrowDownCircle,
   ArrowLeft,
   ChevronRight,
-} from "lucide-react"
-import { FC } from "react"
+} from "lucide-react";
+import { FC } from "react";
 
 interface AddFundsModalProps {
-  isOpen: boolean
-  onClose: (open: boolean) => void
+  isOpen: boolean;
+  onClose: (open: boolean) => void;
 }
 const AddFundsModal: FC<AddFundsModalProps> = ({
   isOpen,
   onClose,
 }: AddFundsModalProps) => {
-  const isDesktop = useMediaQuery("(min-width: 768px)")
-  const router = useRouter() // Initialize router
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const router = useRouter(); // Initialize router
 
   const handleBankDeposit = () => {
-    onClose(false)
-    router.push("/buy") // Navigate to the dedicated page
-  }
+    onClose(false);
+    router.push("/buy"); // Navigate to the dedicated page
+  };
 
   const handleCryptoDeposit = () => {
-    onClose(false)
-    router.push("/receive") // Navigate to the dedicated page
-  }
+    onClose(false);
+    router.push("/receive"); // Navigate to the dedicated page
+  };
 
   const content = (
     <div className="px-4 pb-8 md:px-0 md:pb-0">
       <div className="flex justify-start mb-6">
         <button
           onClick={() => onClose(false)}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -79,7 +79,7 @@ const AddFundsModal: FC<AddFundsModalProps> = ({
         />
       </div>
     </div>
-  )
+  );
 
   if (isDesktop) {
     return (
@@ -91,7 +91,7 @@ const AddFundsModal: FC<AddFundsModalProps> = ({
           {content}
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
@@ -103,8 +103,8 @@ const AddFundsModal: FC<AddFundsModalProps> = ({
         {content}
       </DrawerContent>
     </Drawer>
-  )
-}
+  );
+};
 
 function AddOption({
   icon,
@@ -112,10 +112,10 @@ function AddOption({
   description,
   onClick,
 }: {
-  icon: React.ReactNode
-  title: string
-  description: string
-  onClick?: () => void
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  onClick?: () => void;
 }) {
   return (
     <button
@@ -137,7 +137,7 @@ function AddOption({
       </div>
       <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
     </button>
-  )
+  );
 }
 
-export default AddFundsModal
+export default AddFundsModal;

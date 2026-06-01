@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { FC, useState, useMemo, useEffect, useRef } from "react"
+import { FC, useState, useMemo, useEffect, useRef } from "react";
 import {
   ArrowLeft,
   X,
@@ -8,68 +8,68 @@ import {
   Copy,
   Check,
   ReceiptText,
-} from "lucide-react"
-import { useRouter } from "next/navigation"
-import QRCode from "qrcode"
-import ChainIcon from "@/components/wallet/ChainIcon"
-import { ChainAccount } from "@/types/db"
-import { copyToClipboard } from "@/lib/copy-to-clipboard"
-import { cn } from "@/lib/utils"
-import SelectNetworkModal from "@/components/modals/SelectNetworkModal"
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import QRCode from "qrcode";
+import ChainIcon from "@/components/wallet/ChainIcon";
+import { ChainAccount } from "@/types/db";
+import { copyToClipboard } from "@/lib/copy-to-clipboard";
+import { cn } from "@/lib/utils";
+import SelectNetworkModal from "@/components/modals/SelectNetworkModal";
 
 interface ReceiveCryptoProps {
-  chainAccounts: ChainAccount[]
-  onClose?: () => void
+  chainAccounts: ChainAccount[];
+  onClose?: () => void;
 }
 
 const ReceiveCrypto: FC<ReceiveCryptoProps> = ({ chainAccounts, onClose }) => {
-  const router = useRouter()
+  const router = useRouter();
   // Filter out avalanche and sort networks
   const filteredChainAccounts = useMemo(() => {
     return chainAccounts
       .filter((account) => account.chain.toLowerCase() !== "avalanche")
-      .sort((a, b) => a.chain.localeCompare(b.chain))
-  }, [chainAccounts])
+      .sort((a, b) => a.chain.localeCompare(b.chain));
+  }, [chainAccounts]);
 
   const [selectedChainId, setSelectedChainId] = useState<string>(
     filteredChainAccounts?.[0]?.id || "",
-  )
-  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  );
+  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const goBack = () => router.back()
-  const handleClose = () => (onClose ? onClose() : router.back())
+  const goBack = () => router.back();
+  const handleClose = () => (onClose ? onClose() : router.back());
 
   const selectedAccount = useMemo(
     () => filteredChainAccounts?.find((acc) => acc.id === selectedChainId),
     [filteredChainAccounts, selectedChainId],
-  )
+  );
 
   // Get address based on chain type
   const address = useMemo(() => {
-    if (!selectedAccount) return ""
+    if (!selectedAccount) return "";
     // For Stellar, use publicKey
     if (selectedAccount.chain.toLowerCase() === "stellar") {
-      return selectedAccount.publicKey || ""
+      return selectedAccount.publicKey || "";
     }
     // For other chains, use smartAccountAddress
-    return selectedAccount.smartAccountAddress || ""
-  }, [selectedAccount])
+    return selectedAccount.smartAccountAddress || "";
+  }, [selectedAccount]);
 
-  const chainName = selectedAccount?.chain || ""
+  const chainName = selectedAccount?.chain || "";
 
   // Transform chainAccounts to the format expected by SelectNetworkModal
   const networks = useMemo(() => {
     return filteredChainAccounts.map((account) => ({
       id: account.id,
       name: account.chain.charAt(0).toUpperCase() + account.chain.slice(1),
-    }))
-  }, [filteredChainAccounts])
+    }));
+  }, [filteredChainAccounts]);
 
   // Generate QR code on address change
   useEffect(() => {
-    if (!address || !canvasRef.current) return
+    if (!address || !canvasRef.current) return;
     QRCode.toCanvas(
       canvasRef.current,
       address,
@@ -83,38 +83,38 @@ const ReceiveCrypto: FC<ReceiveCryptoProps> = ({ chainAccounts, onClose }) => {
         errorCorrectionLevel: "H",
       },
       (error) => {
-        if (error) console.error("QR generation failed", error)
+        if (error) console.error("QR generation failed", error);
       },
-    )
-  }, [address])
+    );
+  }, [address]);
 
   const handleCopyAddress = async () => {
-    if (!address) return
-    await copyToClipboard(address, "Address copied to clipboard")
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    if (!address) return;
+    await copyToClipboard(address, "Address copied to clipboard");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const shareAddress = async () => {
-    if (!address) return
+    if (!address) return;
     if (navigator.share) {
       try {
         await navigator.share({
           title: "Receive Crypto",
           text: `My ${chainName} address:`,
           url: address,
-        })
+        });
       } catch (err) {
-        console.error("Share failed", err)
+        console.error("Share failed", err);
       }
     } else {
-      await handleCopyAddress()
+      await handleCopyAddress();
     }
-  }
+  };
 
   const handleSelectNetwork = (chainId: string) => {
-    setSelectedChainId(chainId)
-  }
+    setSelectedChainId(chainId);
+  };
 
   if (filteredChainAccounts.length === 0) {
     return (
@@ -131,7 +131,7 @@ const ReceiveCrypto: FC<ReceiveCryptoProps> = ({ chainAccounts, onClose }) => {
           </h2>
           <button
             onClick={handleClose}
-            className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none"
+            className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none cursor-pointer"
           >
             <X className="w-5 h-5 text-slate-600 dark:text-white" />
           </button>
@@ -144,7 +144,7 @@ const ReceiveCrypto: FC<ReceiveCryptoProps> = ({ chainAccounts, onClose }) => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -209,7 +209,7 @@ const ReceiveCrypto: FC<ReceiveCryptoProps> = ({ chainAccounts, onClose }) => {
           {address && (
             <button
               onClick={handleCopyAddress}
-              className="flex-shrink-0 p-1 hover:bg-gray-200 dark:hover:bg-secondary-60 rounded-lg transition-colors cursor-pointer"
+              className="flex-shrink-0 p-1 hover:bg-gray-200 dark:hover:bg-secondary-60 rounded-lg transition-colors cursor-copy"
               aria-label="Copy address"
             >
               {copied ? (
@@ -234,7 +234,7 @@ const ReceiveCrypto: FC<ReceiveCryptoProps> = ({ chainAccounts, onClose }) => {
         <button
           onClick={handleCopyAddress}
           className={cn(
-            "group relative flex-1 overflow-hidden rounded-xl border border-black/5 bg-white py-3 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50 active:scale-95 cursor-pointer font-bold",
+            "group relative flex-1 overflow-hidden rounded-xl border border-black/5 bg-white py-3 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50 active:scale-95 cursor-copy font-bold",
           )}
         >
           <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
@@ -263,7 +263,7 @@ const ReceiveCrypto: FC<ReceiveCryptoProps> = ({ chainAccounts, onClose }) => {
         onSelectChain={handleSelectNetwork}
       />
     </div>
-  )
-}
+  );
+};
 
-export default ReceiveCrypto
+export default ReceiveCrypto;

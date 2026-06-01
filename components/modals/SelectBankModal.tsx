@@ -162,7 +162,7 @@ export default function SelectBankModal({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-gray-80 bg-white p-2 text-gray-20 transition hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-60/50 dark:text-white"
+          className="rounded-full border border-gray-80 bg-white p-2 text-gray-20 transition hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-60/50 dark:text-white cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
@@ -198,6 +198,7 @@ export default function SelectBankModal({
                     onClose();
                   }}
                   className={cn(
+                    "cursor-pointer",
                     "flex w-full items-center gap-3 border-b border-gray-90 px-4 py-4 text-left transition last:border-b-0 dark:border-white/10",
                     isSelected
                       ? "bg-primary-95/80 dark:bg-primary-70/10"

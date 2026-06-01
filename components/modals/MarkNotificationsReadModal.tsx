@@ -45,7 +45,7 @@ export default function MarkNotificationsReadModal({
               type="button"
               onClick={() => onClose(false)}
               disabled={isConfirming}
-              className="h-11 rounded-xl border border-gray-80 bg-white text-sm font-semibold text-gray-20 transition hover:bg-gray-95 disabled:opacity-50 dark:border-white/10 dark:bg-secondary-50 dark:text-gray-40 dark:hover:bg-secondary-60"
+              className="h-11 rounded-xl border border-gray-80 bg-white text-sm font-semibold text-gray-20 transition hover:bg-gray-95 disabled:opacity-50 dark:border-white/10 dark:bg-secondary-50 dark:text-gray-40 dark:hover:bg-secondary-60 cursor-pointer"
             >
               Cancel
             </button>
@@ -53,7 +53,7 @@ export default function MarkNotificationsReadModal({
               type="button"
               onClick={onConfirm}
               disabled={isConfirming}
-              className="h-11 rounded-xl bg-primary-50 text-sm font-semibold text-white transition hover:bg-primary-40 disabled:opacity-60 dark:bg-primary-70 dark:hover:bg-primary-80"
+              className="h-11 rounded-xl bg-primary-50 text-sm font-semibold text-white transition hover:bg-primary-40 disabled:opacity-60 dark:bg-primary-70 dark:hover:bg-primary-80 cursor-pointer"
             >
               {isConfirming ? "Marking..." : "Confirm"}
             </button>

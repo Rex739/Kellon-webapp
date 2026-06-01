@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight, Send, X } from "lucide-react";
 import AddFundsModal from "@/components/modals/AddFundsModal";
 import StepIndicator from "@/components/wallet/buy-crypto/BuyCryptoStepIndicator";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { User } from "@/types/db";
 import AmountStep from "./AmountStep";
 import AssetStep from "./AssetStep";
@@ -63,7 +62,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
         <button
           type="button"
           onClick={goBack}
-          className="rounded-full border border-gray-80 bg-white p-2 text-gray-20 transition hover:bg-gray-95 hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-60/50 dark:text-white dark:hover:bg-secondary-60"
+          className="rounded-full border border-gray-80 bg-white p-2 text-gray-20 transition hover:bg-gray-95 hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-60/50 dark:text-white dark:hover:bg-secondary-60 cursor-pointer"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -75,7 +74,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
         <button
           type="button"
           onClick={closeSend}
-          className="rounded-full border border-gray-80 bg-white p-2 text-gray-20 transition hover:bg-gray-95 hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-60/50 dark:text-white dark:hover:bg-secondary-60"
+          className="rounded-full border border-gray-80 bg-white p-2 text-gray-20 transition hover:bg-gray-95 hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-60/50 dark:text-white dark:hover:bg-secondary-60 cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
@@ -143,14 +142,10 @@ export default function SendFlow({ profile }: SendFlowProps) {
 
       <div className="mx-auto mt-6 w-full max-w-4xl">
         <Button
-          size={"full"}
+          variant="flow"
+          size="flow"
           onClick={step === "review" ? submitTransfer : goNext}
           disabled={primaryButtonDisabled}
-          className={cn(
-            "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 md:py-4 font-bold text-white hadow-lg transition-all",
-            "hover:shadow-xl active:scale-[0.98]",
-            "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-          )}
         >
           <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
             {step === "review"

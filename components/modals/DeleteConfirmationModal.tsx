@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { FC, ReactNode, useState } from "react"
-import { Loader2, Trash2 } from "lucide-react"
+import { FC, ReactNode, useState } from "react";
+import { Loader2, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,15 +12,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 interface DeleteConfirmationModalProps {
-  trigger?: ReactNode
-  title?: string
-  description?: string
-  onConfirm: () => Promise<void>
-  isDeleting: boolean
-  itemName?: string
+  trigger?: ReactNode;
+  title?: string;
+  description?: string;
+  onConfirm: () => Promise<void>;
+  isDeleting: boolean;
+  itemName?: string;
 }
 
 const DeleteConfirmationModal: FC<DeleteConfirmationModalProps> = ({
@@ -32,19 +32,19 @@ const DeleteConfirmationModal: FC<DeleteConfirmationModalProps> = ({
   itemName,
 }) => {
   // Add state to control modal visibility
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const handleConfirm = async (e: React.MouseEvent) => {
-    e.preventDefault() // Prevent auto-closing so we can wait for the API
-    await onConfirm()
-    setOpen(false) // Manually close the modal on success
-  }
+    e.preventDefault(); // Prevent auto-closing so we can wait for the API
+    await onConfirm();
+    setOpen(false); // Manually close the modal on success
+  };
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         {trigger || (
-          <button className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors">
+          <button className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors cursor-pointer">
             <Trash2 className="w-4 h-4" />
           </button>
         )}
@@ -87,7 +87,7 @@ const DeleteConfirmationModal: FC<DeleteConfirmationModalProps> = ({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
-}
+  );
+};
 
-export default DeleteConfirmationModal
+export default DeleteConfirmationModal;

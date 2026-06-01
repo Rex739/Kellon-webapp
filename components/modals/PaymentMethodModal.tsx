@@ -1,35 +1,35 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import * as React from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
 import {
   CreditCard,
   Landmark,
   Smartphone,
   CheckCircle2,
   ArrowLeft,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export type PaymentMethod = "card" | "bank" | "mobile_money"
+export type PaymentMethod = "card" | "bank" | "mobile_money";
 
 interface PaymentMethodModalProps {
-  isOpen: boolean
-  onClose: (open: boolean) => void
-  selectedMethod: PaymentMethod
-  onSelect: (method: PaymentMethod) => void
+  isOpen: boolean;
+  onClose: (open: boolean) => void;
+  selectedMethod: PaymentMethod;
+  onSelect: (method: PaymentMethod) => void;
 }
 
 const METHODS = [
@@ -48,7 +48,7 @@ const METHODS = [
     title: "Mobile Money",
     icon: <Smartphone className="w-5 h-5 text-orange-500" />,
   },
-]
+];
 
 export default function PaymentMethodModal({
   isOpen,
@@ -56,14 +56,14 @@ export default function PaymentMethodModal({
   selectedMethod,
   onSelect,
 }: PaymentMethodModalProps) {
-  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const content = (
     <div className="px-4 pb-8 md:px-0 md:pb-6">
       <div className="flex justify-start mb-6">
         <button
           onClick={() => onClose(false)}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity outline-none"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -77,13 +77,13 @@ export default function PaymentMethodModal({
 
       <div className="space-y-3">
         {METHODS.map((method) => {
-          const isSelected = selectedMethod === method.id
+          const isSelected = selectedMethod === method.id;
           return (
             <button
               key={method.id}
               onClick={() => {
-                onSelect(method.id)
-                onClose(false)
+                onSelect(method.id);
+                onClose(false);
               }}
               className={cn(
                 "w-full flex items-center justify-between p-5 rounded-[24px] border transition-all outline-none",
@@ -111,11 +111,11 @@ export default function PaymentMethodModal({
                 <CheckCircle2 className="w-5 h-5 text-primary-70" />
               )}
             </button>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 
   if (isDesktop) {
     return (
@@ -127,7 +127,7 @@ export default function PaymentMethodModal({
           {content}
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
@@ -139,5 +139,5 @@ export default function PaymentMethodModal({
         {content}
       </DrawerContent>
     </Drawer>
-  )
+  );
 }

@@ -104,7 +104,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -169,7 +169,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
 
             {!device.isCurrent && (
               <button
-                className="p-2 text-gray-20 hover:text-red-500 transition-colors"
+                className="p-2 text-gray-20 hover:text-red-500 transition-colors cursor-pointer"
                 onClick={() => console.log("Revoke", device.id)}
               >
                 <Trash2 className="w-4 h-4" />

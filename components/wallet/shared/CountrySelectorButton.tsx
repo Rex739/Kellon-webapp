@@ -23,7 +23,7 @@ export default function CountrySelectorButton({
       onClick={onClick}
       disabled={isDetecting}
       className={cn(
-        "flex items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-1.5 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
+        "flex cursor-pointer items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-1.5 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
         isDetecting && "animate-pulse opacity-70",
         className,
       )}

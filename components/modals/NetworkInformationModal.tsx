@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { FC, useEffect } from "react"
-import { Info, ArrowLeft, Activity } from "lucide-react"
+import { FC, useEffect } from "react";
+import { Info, ArrowLeft, Activity } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/drawer";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 
 interface NetworkItem {
-  name: string
-  chainId: string | number
-  isActive: boolean
+  name: string;
+  chainId: string | number;
+  isActive: boolean;
 }
 
 const NETWORKS: NetworkItem[] = [
@@ -31,27 +31,27 @@ const NETWORKS: NetworkItem[] = [
   { name: "Polygon", chainId: 137, isActive: true },
   { name: "Celo", chainId: 42220, isActive: true },
   { name: "BNB Chain", chainId: 56, isActive: true },
-]
+];
 
 interface NetworkInformationModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const NetworkInformationModal: FC<NetworkInformationModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)")
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
     if (!isOpen) {
       const timer = setTimeout(() => {
-        document.body.style.pointerEvents = "auto"
-      }, 100)
-      return () => clearTimeout(timer)
+        document.body.style.pointerEvents = "auto";
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const Content = () => (
     <div className="px-4 pb-8 md:pb-0">
@@ -59,7 +59,7 @@ const NetworkInformationModal: FC<NetworkInformationModalProps> = ({
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -125,7 +125,7 @@ const NetworkInformationModal: FC<NetworkInformationModalProps> = ({
         </p>
       </div>
     </div>
-  )
+  );
 
   if (isMobile) {
     return (
@@ -140,7 +140,7 @@ const NetworkInformationModal: FC<NetworkInformationModalProps> = ({
           <Content />
         </DrawerContent>
       </Drawer>
-    )
+    );
   }
 
   return (
@@ -155,7 +155,7 @@ const NetworkInformationModal: FC<NetworkInformationModalProps> = ({
         <Content />
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default NetworkInformationModal
+export default NetworkInformationModal;

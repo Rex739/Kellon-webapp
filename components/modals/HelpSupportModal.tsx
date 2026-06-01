@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { FC, useEffect } from "react"
+import { FC, useEffect } from "react";
 import {
   HelpCircle,
   ArrowLeft,
@@ -8,22 +8,22 @@ import {
   MessageCircle,
   ChevronRight,
   LucideIcon,
-} from "lucide-react"
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { useMediaQuery } from "@/hooks/use-media-query"
+} from "@/components/ui/drawer";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 // Custom X (formerly Twitter) Icon Component
 const XIcon = ({ className }: { className?: string }) => (
@@ -35,14 +35,14 @@ const XIcon = ({ className }: { className?: string }) => (
   >
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>
-)
+);
 
 interface SupportItemProps {
-  icon: LucideIcon | FC<{ className?: string }>
-  title: string
-  subtitle: string
-  href: string
-  isCustomIcon?: boolean
+  icon: LucideIcon | FC<{ className?: string }>;
+  title: string;
+  subtitle: string;
+  href: string;
+  isCustomIcon?: boolean;
 }
 
 const SupportItem: FC<SupportItemProps> = ({
@@ -56,7 +56,7 @@ const SupportItem: FC<SupportItemProps> = ({
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="w-full flex items-center justify-between p-4 rounded-2xl bg-gray-95 dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 hover:opacity-80 transition-opacity group"
+    className="w-full flex items-center justify-between p-4 rounded-2xl bg-gray-95 dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 hover:opacity-80 transition-opacity group cursor-pointer"
   >
     <div className="flex items-center gap-4">
       <div className="p-2 bg-pink-500/10 dark:bg-pink-500/20 rounded-lg text-[#D64692]">
@@ -78,31 +78,31 @@ const SupportItem: FC<SupportItemProps> = ({
     </div>
     <ChevronRight className="w-4 h-4 text-gray-30 group-hover:translate-x-0.5 transition-transform" />
   </a>
-)
+);
 
 interface HelpSupportModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const HelpSupportModal: FC<HelpSupportModalProps> = ({ isOpen, onClose }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)")
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
     if (!isOpen) {
       const timer = setTimeout(() => {
-        document.body.style.pointerEvents = "auto"
-      }, 100)
-      return () => clearTimeout(timer)
+        document.body.style.pointerEvents = "auto";
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const Content = () => (
     <div className="px-4 pb-8 md:pb-0">
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -145,7 +145,7 @@ const HelpSupportModal: FC<HelpSupportModalProps> = ({ isOpen, onClose }) => {
         />
       </div>
     </div>
-  )
+  );
 
   if (isMobile) {
     return (
@@ -160,7 +160,7 @@ const HelpSupportModal: FC<HelpSupportModalProps> = ({ isOpen, onClose }) => {
           <Content />
         </DrawerContent>
       </Drawer>
-    )
+    );
   }
 
   return (
@@ -175,7 +175,7 @@ const HelpSupportModal: FC<HelpSupportModalProps> = ({ isOpen, onClose }) => {
         <Content />
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default HelpSupportModal
+export default HelpSupportModal;

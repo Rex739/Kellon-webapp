@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { format } from "date-fns"
-import { CalendarRange, X } from "lucide-react"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { useState } from "react";
+import { format } from "date-fns";
+import { CalendarRange, X } from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { Calendar } from "@/components/ui/calendar"
+} from "@/components/ui/drawer";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export type ActivityFilter =
   | "all"
@@ -33,7 +33,7 @@ export type ActivityFilter =
   | "invoices"
   | "gifts"
   | "cards"
-  | "earn"
+  | "earn";
 
 export const ACTIVITY_FILTERS: ActivityFilter[] = [
   "all",
@@ -45,19 +45,19 @@ export const ACTIVITY_FILTERS: ActivityFilter[] = [
   "gifts",
   "cards",
   "earn",
-]
+];
 
 interface TransactionFilterModalProps {
-  isOpen: boolean
-  onClose: (open: boolean) => void
-  activityFilter: ActivityFilter
-  startDate: string
-  endDate: string
-  onActivityFilterChange: (filter: ActivityFilter) => void
-  onStartDateChange: (date: string) => void
-  onEndDateChange: (date: string) => void
-  onReset: () => void
-  onApply: () => void
+  isOpen: boolean;
+  onClose: (open: boolean) => void;
+  activityFilter: ActivityFilter;
+  startDate: string;
+  endDate: string;
+  onActivityFilterChange: (filter: ActivityFilter) => void;
+  onStartDateChange: (date: string) => void;
+  onEndDateChange: (date: string) => void;
+  onReset: () => void;
+  onApply: () => void;
 }
 
 export default function TransactionFilterModal({
@@ -72,7 +72,7 @@ export default function TransactionFilterModal({
   onReset,
   onApply,
 }: TransactionFilterModalProps) {
-  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const content = (
     <div className="px-4 pb-8 md:px-0 md:pb-0">
@@ -89,7 +89,7 @@ export default function TransactionFilterModal({
         <button
           type="button"
           onClick={() => onClose(false)}
-          className="rounded-full border border-black/5 bg-white p-2 transition-opacity hover:opacity-80 dark:border-white/10 dark:bg-secondary-60/50"
+          className="rounded-full border border-black/5 bg-white p-2 transition-opacity hover:opacity-80 dark:border-white/10 dark:bg-secondary-60/50 cursor-pointer"
           aria-label="Close filters"
         >
           <X className="h-4 w-4 text-gray-600 dark:text-white" />
@@ -121,6 +121,7 @@ export default function TransactionFilterModal({
                 type="button"
                 onClick={() => onActivityFilterChange(filter)}
                 className={cn(
+                  "cursor-pointer",
                   "rounded-full border px-3 py-2 text-[11px] font-semibold capitalize transition",
                   activityFilter === filter
                     ? "border-primary-60 bg-primary-70/10 text-primary-60 dark:bg-primary-70/15 dark:text-primary-80"
@@ -158,7 +159,7 @@ export default function TransactionFilterModal({
         </button>
       </div>
     </div>
-  )
+  );
 
   if (isDesktop) {
     return (
@@ -170,7 +171,7 @@ export default function TransactionFilterModal({
           {content}
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
@@ -182,7 +183,7 @@ export default function TransactionFilterModal({
         {content}
       </DrawerContent>
     </Drawer>
-  )
+  );
 }
 
 function DateField({
@@ -190,12 +191,12 @@ function DateField({
   value,
   onChange,
 }: {
-  label: string
-  value: string
-  onChange: (value: string) => void
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const selectedDate = parseDateValue(value)
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedDate = parseDateValue(value);
 
   return (
     <div>
@@ -207,7 +208,7 @@ function DateField({
           <button
             type="button"
             className={cn(
-              "flex w-full items-center gap-2 rounded-2xl border border-black/5 bg-white px-3 py-3 text-left text-xs transition hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:hover:bg-secondary-60/60",
+              "flex w-full cursor-pointer items-center gap-2 rounded-2xl border border-black/5 bg-white px-3 py-3 text-left text-xs transition hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:hover:bg-secondary-60/60",
               selectedDate
                 ? "text-black dark:text-white"
                 : "text-gray-500 dark:text-gray-400",
@@ -234,19 +235,19 @@ function DateField({
             selected={selectedDate}
             defaultMonth={selectedDate}
             onSelect={(date) => {
-              onChange(date ? format(date, "yyyy-MM-dd") : "")
-              setIsOpen(false)
+              onChange(date ? format(date, "yyyy-MM-dd") : "");
+              setIsOpen(false);
             }}
           />
         </PopoverContent>
       </Popover>
     </div>
-  )
+  );
 }
 
 function parseDateValue(value: string): Date | undefined {
-  if (!value) return undefined
+  if (!value) return undefined;
 
-  const date = new Date(`${value}T00:00:00.000`)
-  return Number.isNaN(date.getTime()) ? undefined : date
+  const date = new Date(`${value}T00:00:00.000`);
+  return Number.isNaN(date.getTime()) ? undefined : date;
 }

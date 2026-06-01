@@ -1,19 +1,26 @@
-"use client"
+"use client";
 
-import { FC } from "react"
-import { ArrowLeft, ShieldCheck, Zap, Users, Loader2, AlertCircle } from "lucide-react"
-import { UseFormReturn } from "react-hook-form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { ActionButton } from "./ActionButton"
+import { FC } from "react";
+import {
+  ArrowLeft,
+  ShieldCheck,
+  Zap,
+  Users,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
+import { UseFormReturn } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ActionButton } from "./ActionButton";
 
 // Types match the schemas used in the custom hook
 interface MainViewProps {
-  onClose: () => void
-  onNavigate: () => void
-  approvalForm: UseFormReturn<{ requestId: string }>
-  onApprove: (values: { requestId: string }) => Promise<void>
+  onClose: () => void;
+  onNavigate: () => void;
+  approvalForm: UseFormReturn<{ requestId: string }>;
+  onApprove: (values: { requestId: string }) => Promise<void>;
 }
 
 export const MainView: FC<MainViewProps> = ({
@@ -26,7 +33,7 @@ export const MainView: FC<MainViewProps> = ({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = approvalForm
+  } = approvalForm;
 
   return (
     <div className="px-4 pb-8 animate-in fade-in duration-300">
@@ -34,7 +41,7 @@ export const MainView: FC<MainViewProps> = ({
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none shadow-sm"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none shadow-sm cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -86,7 +93,6 @@ export const MainView: FC<MainViewProps> = ({
           }}
         />
 
-        
         <ActionButton
           variant="dark"
           icon={Users}
@@ -140,5 +146,5 @@ export const MainView: FC<MainViewProps> = ({
         </form>
       </div>
     </div>
-  )
-}
+  );
+};

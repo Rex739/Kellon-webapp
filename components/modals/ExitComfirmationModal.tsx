@@ -5,12 +5,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 interface ExitConfirmationProps {
-  isOpen: boolean
-  onStay: () => void
-  onLeave: () => void
+  isOpen: boolean;
+  onStay: () => void;
+  onLeave: () => void;
 }
 
 export function ExitConfirmation({
@@ -32,18 +32,18 @@ export function ExitConfirmation({
         <AlertDialogFooter className="flex-row justify-end gap-4 sm:justify-end">
           <button
             onClick={onStay}
-            className="text-sm font-bold text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+            className="text-sm font-bold text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
           >
             STAY
           </button>
           <button
             onClick={onLeave}
-            className="text-sm font-bold text-primary-70 hover:opacity-80 transition-opacity"
+            className="text-sm font-bold text-primary-70 hover:opacity-80 transition-opacity cursor-pointer"
           >
             LEAVE
           </button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

@@ -33,6 +33,7 @@ export default function AssetStep({
               type="button"
               onClick={() => onSelectAsset(asset.key)}
               className={cn(
+                "cursor-pointer",
                 "flex items-center justify-between gap-4 rounded-2xl border p-4 text-left transition md:rounded-lg",
                 isSelected
                   ? "border-primary-70 bg-primary-99 dark:border-primary-70/50 dark:bg-primary-70/10"
