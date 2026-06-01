@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   ArrowDownLeft,
@@ -10,21 +10,21 @@ import {
   Copy,
   Info,
   Plus,
-} from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { ActionToolTip } from "@/components/ActionTooltip"
-import { useDetectCountry } from "@/hooks/use-detect-country"
-import { useExchangeRate } from "@/hooks/use-exchange-rate"
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { ActionToolTip } from "@/components/ActionTooltip";
+import { useDetectCountry } from "@/hooks/use-detect-country";
+import { useExchangeRate } from "@/hooks/use-exchange-rate";
 import {
   CHAIN_UI_DATA,
   getChainLabel,
   type SupportedChainKeys,
-} from "@/lib/chains"
-import { copyToClipboard } from "@/lib/copy-to-clipboard"
+} from "@/lib/chains";
+import { copyToClipboard } from "@/lib/copy-to-clipboard";
 import {
   formatCurrencyAmount,
   getProviderAmount,
@@ -34,35 +34,35 @@ import {
   getTransactionTitle,
   getTransactionSymbol,
   isPositiveTransaction,
-} from "@/lib/dashboard-utils"
-import { cn } from "@/lib/utils"
-import priceService from "@/services/price-service"
-import { transactionService } from "@/services/api/transactions"
-import type { Asset, Transaction, User } from "@/types/db"
+} from "@/lib/dashboard-utils";
+import { cn } from "@/lib/utils";
+import priceService from "@/services/price-service";
+import { transactionService } from "@/services/api/transactions";
+import type { Asset, Transaction, User } from "@/types/db";
 
 interface AssetDetailsPageProps {
-  profile: User
-  symbol: string
+  profile: User;
+  symbol: string;
 }
 
 interface ChainBalance {
-  chain: string
-  label: string
-  amount: number
-  percentage: number
-  value: number
-  color: string
+  chain: string;
+  label: string;
+  amount: number;
+  percentage: number;
+  value: number;
+  color: string;
 }
 
-const DEFAULT_TOKEN_PRICE = 1
+const DEFAULT_TOKEN_PRICE = 1;
 const CHAIN_ORDER: SupportedChainKeys[] = [
   "base",
   "stellar",
   "celo",
   "polygon",
   "bnb",
-]
-const HIDDEN_CHAINS = new Set(["avalanche", "avax"])
+];
+const HIDDEN_CHAINS = new Set(["avalanche", "avax"]);
 const FALLBACK_CHAIN_COLORS = [
   "#0052FF",
   "#111111",
@@ -70,105 +70,105 @@ const FALLBACK_CHAIN_COLORS = [
   "#8247E5",
   "#F3BA2F",
   "#C15CA5",
-]
+];
 
 function parseAmount(amount: Asset["amount"]): number {
-  const parsed = typeof amount === "string" ? Number(amount) : amount
-  return Number.isFinite(parsed) ? parsed : 0
+  const parsed = typeof amount === "string" ? Number(amount) : amount;
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function normalizeChain(chain?: string | null): string {
-  return chain?.trim().toLowerCase() || "unknown"
+  return chain?.trim().toLowerCase() || "unknown";
 }
 
 function formatTokenAmount(value: number): string {
   return new Intl.NumberFormat("en-US", {
     minimumFractionDigits: value > 0 && value < 1 ? 2 : 0,
     maximumFractionDigits: 6,
-  }).format(value)
+  }).format(value);
 }
 
 function formatShortDate(value: Date | string): string {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return "Recent"
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Recent";
 
   return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
-  })
+  });
 }
 
 function getTransactionChain(transaction: Transaction): string | null {
-  const metadata = transaction.metadata
+  const metadata = transaction.metadata;
   const chain =
     metadata?.chain ||
     metadata?.network ||
     metadata?.sourceChain ||
     metadata?.targetChain ||
     metadata?.fromChain ||
-    metadata?.toChain
+    metadata?.toChain;
 
   return typeof chain === "string" && chain.trim()
     ? normalizeChain(chain)
-    : null
+    : null;
 }
 
 function getTransactionNumericAmount(transaction: Transaction): number | null {
-  const providerAmount = getProviderAmount(transaction)
-  if (providerAmount !== null) return providerAmount
+  const providerAmount = getProviderAmount(transaction);
+  if (providerAmount !== null) return providerAmount;
 
   const parsed =
     typeof transaction.amount === "string"
       ? Number(transaction.amount)
-      : transaction.amount
+      : transaction.amount;
 
-  return Number.isFinite(parsed) ? parsed : null
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function getChainColor(chain: string, index: number): string {
-  const normalizedChain = normalizeChain(chain) as SupportedChainKeys
+  const normalizedChain = normalizeChain(chain) as SupportedChainKeys;
   return (
     CHAIN_UI_DATA[normalizedChain]?.color ||
     FALLBACK_CHAIN_COLORS[index % FALLBACK_CHAIN_COLORS.length]
-  )
+  );
 }
 
 function getShortChainLabel(chain: string): string {
   switch (normalizeChain(chain)) {
     case "base":
-      return "Base"
+      return "Base";
     case "stellar":
-      return "Stellar"
+      return "Stellar";
     case "celo":
-      return "Celo"
+      return "Celo";
     case "polygon":
-      return "Polygon"
+      return "Polygon";
     case "bnb":
-      return "BNB"
+      return "BNB";
     default:
-      return getChainLabel(chain).replace(" Network", "")
+      return getChainLabel(chain).replace(" Network", "");
   }
 }
 
 function getAssetIcon(symbol: string) {
-  return `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${symbol.toLowerCase()}.png`
+  return `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${symbol.toLowerCase()}.png`;
 }
 
 export default function AssetDetailsPage({
   profile,
   symbol,
 }: AssetDetailsPageProps) {
-  const router = useRouter()
-  const normalizedSymbol = symbol.toUpperCase()
-  const { currencyCode } = useDetectCountry()
-  const localCurrency = currencyCode || "USD"
-  const { exchangeRate, isRateLoading } = useExchangeRate(localCurrency, null)
-  const [tokenPrice, setTokenPrice] = useState(DEFAULT_TOKEN_PRICE)
-  const [isPriceLoading, setIsPriceLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState("overview")
+  const router = useRouter();
+  const normalizedSymbol = symbol.toUpperCase();
+  const { currencyCode } = useDetectCountry();
+  const localCurrency = currencyCode || "USD";
+  const { exchangeRate, isRateLoading } = useExchangeRate(localCurrency, null);
+  const [tokenPrice, setTokenPrice] = useState(DEFAULT_TOKEN_PRICE);
+  const [isPriceLoading, setIsPriceLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("overview");
   const [copiedAddressChain, setCopiedAddressChain] = useState<string | null>(
     null,
-  )
+  );
 
   const assetHoldings = useMemo(
     () =>
@@ -177,72 +177,72 @@ export default function AssetDetailsPage({
           Boolean(asset) && asset.symbol?.toUpperCase() === normalizedSymbol,
       ),
     [normalizedSymbol, profile.assets],
-  )
+  );
 
   useEffect(() => {
-    let isCancelled = false
+    let isCancelled = false;
 
     const loadPrice = async () => {
-      setIsPriceLoading(true)
+      setIsPriceLoading(true);
 
       try {
         const prices = await priceService.getMultipleTokenPrices([
           normalizedSymbol,
-        ])
+        ]);
 
         if (!isCancelled) {
-          setTokenPrice(prices[normalizedSymbol] || DEFAULT_TOKEN_PRICE)
+          setTokenPrice(prices[normalizedSymbol] || DEFAULT_TOKEN_PRICE);
         }
       } catch {
         if (!isCancelled) {
-          setTokenPrice(DEFAULT_TOKEN_PRICE)
+          setTokenPrice(DEFAULT_TOKEN_PRICE);
         }
       } finally {
         if (!isCancelled) {
-          setIsPriceLoading(false)
+          setIsPriceLoading(false);
         }
       }
-    }
+    };
 
-    loadPrice()
+    loadPrice();
 
     return () => {
-      isCancelled = true
-    }
-  }, [normalizedSymbol])
+      isCancelled = true;
+    };
+  }, [normalizedSymbol]);
 
   const supportedChainKeys = useMemo<string[]>(() => {
     if (normalizedSymbol === "USDC" || normalizedSymbol === "USDT") {
-      return CHAIN_ORDER
+      return CHAIN_ORDER;
     }
 
-    return []
-  }, [normalizedSymbol])
+    return [];
+  }, [normalizedSymbol]);
 
   const chainBalances = useMemo<ChainBalance[]>(() => {
-    const totals = new Map<string, number>()
+    const totals = new Map<string, number>();
 
     assetHoldings.forEach((asset) => {
-      const chain = normalizeChain(asset.chain)
-      if (HIDDEN_CHAINS.has(chain)) return
+      const chain = normalizeChain(asset.chain);
+      if (HIDDEN_CHAINS.has(chain)) return;
       if (
         supportedChainKeys.length > 0 &&
         !supportedChainKeys.includes(chain)
       ) {
-        return
+        return;
       }
 
-      totals.set(chain, (totals.get(chain) || 0) + parseAmount(asset.amount))
-    })
+      totals.set(chain, (totals.get(chain) || 0) + parseAmount(asset.amount));
+    });
 
     supportedChainKeys.forEach((chain) => {
-      if (!totals.has(chain)) totals.set(chain, 0)
-    })
+      if (!totals.has(chain)) totals.set(chain, 0);
+    });
 
     const totalAmount = Array.from(totals.values()).reduce(
       (sum, amount) => sum + amount,
       0,
-    )
+    );
 
     return Array.from(totals.entries())
       .map(([chain, amount], index) => ({
@@ -254,19 +254,19 @@ export default function AssetDetailsPage({
         color: getChainColor(chain, index),
       }))
       .sort((left, right) => {
-        const leftIndex = CHAIN_ORDER.indexOf(left.chain as SupportedChainKeys)
+        const leftIndex = CHAIN_ORDER.indexOf(left.chain as SupportedChainKeys);
         const rightIndex = CHAIN_ORDER.indexOf(
           right.chain as SupportedChainKeys,
-        )
+        );
 
         if (leftIndex === -1 && rightIndex === -1) {
-          return right.amount - left.amount
+          return right.amount - left.amount;
         }
-        if (leftIndex === -1) return 1
-        if (rightIndex === -1) return -1
-        return leftIndex - rightIndex
-      })
-  }, [assetHoldings, exchangeRate, supportedChainKeys, tokenPrice])
+        if (leftIndex === -1) return 1;
+        if (rightIndex === -1) return -1;
+        return leftIndex - rightIndex;
+      });
+  }, [assetHoldings, exchangeRate, supportedChainKeys, tokenPrice]);
 
   const totalAmount = useMemo(
     () =>
@@ -275,79 +275,80 @@ export default function AssetDetailsPage({
         0,
       ),
     [chainBalances],
-  )
-  const totalValue = totalAmount * tokenPrice * exchangeRate
+  );
+  const totalValue = totalAmount * tokenPrice * exchangeRate;
   const activeChainBalance =
     activeTab === "overview"
       ? null
-      : chainBalances.find((item) => item.chain === activeTab) || null
-  const displayAmount = activeChainBalance?.amount ?? totalAmount
-  const displayValue = activeChainBalance?.value ?? totalValue
-  const isValueLoading = isRateLoading || isPriceLoading
-  const ringColor = activeChainBalance?.color || CHAIN_UI_DATA.base.color
+      : chainBalances.find((item) => item.chain === activeTab) || null;
+  const displayAmount = activeChainBalance?.amount ?? totalAmount;
+  const displayValue = activeChainBalance?.value ?? totalValue;
+  const isValueLoading = isRateLoading || isPriceLoading;
+  const ringColor = activeChainBalance?.color || CHAIN_UI_DATA.base.color;
   const activeChainAddress = useMemo(() => {
-    if (!activeChainBalance) return null
+    if (!activeChainBalance) return null;
 
     const account = (profile.chainAccounts || []).find(
       (chainAccount) =>
         normalizeChain(chainAccount.chain) === activeChainBalance.chain,
-    )
+    );
 
-    return account?.smartAccountAddress || account?.publicKey || null
-  }, [activeChainBalance, profile.chainAccounts])
+    return account?.smartAccountAddress || account?.publicKey || null;
+  }, [activeChainBalance, profile.chainAccounts]);
   const { data: allTransactions = [], isLoading: isTransactionsLoading } =
     useQuery({
       queryKey: ["transactions"],
       queryFn: async () => {
-        const response = await transactionService.getTransactions()
-        return response.data || []
+        const response = await transactionService.getTransactions();
+        return response.data || [];
       },
       staleTime: 1000 * 60 * 2,
-    })
+    });
 
   const activeChainTransactions = useMemo(() => {
-    if (!activeChainBalance) return []
+    if (!activeChainBalance) return [];
 
     return allTransactions
       .filter((transaction) => {
-        if (getTransactionSymbol(transaction) !== normalizedSymbol) return false
-        const transactionChain = getTransactionChain(transaction)
-        return transactionChain === activeChainBalance.chain
+        if (getTransactionSymbol(transaction) !== normalizedSymbol)
+          return false;
+        const transactionChain = getTransactionChain(transaction);
+        return transactionChain === activeChainBalance.chain;
       })
       .sort(
         (left, right) =>
           new Date(right.createdAt).getTime() -
           new Date(left.createdAt).getTime(),
-      )
-  }, [activeChainBalance, normalizedSymbol, allTransactions])
+      );
+  }, [activeChainBalance, normalizedSymbol, allTransactions]);
 
   const handleCopyAddress = async () => {
-    if (!activeChainAddress || !activeChainBalance) return
+    if (!activeChainAddress || !activeChainBalance) return;
 
     const copied = await copyToClipboard(
       activeChainAddress,
       `${activeChainBalance.label} address copied`,
-    )
+    );
 
-    if (!copied) return
+    if (!copied) return;
 
-    setCopiedAddressChain(activeChainBalance.chain)
+    setCopiedAddressChain(activeChainBalance.chain);
     window.setTimeout(() => {
       setCopiedAddressChain((currentChain) =>
         currentChain === activeChainBalance.chain ? null : currentChain,
-      )
-    }, 2000)
-  }
+      );
+    }, 2000);
+  };
 
   const handleAction = (action: "send" | "buy" | "withdraw") => {
     const query = activeChainBalance
       ? `?asset=${normalizedSymbol}&network=${activeChainBalance.chain}`
-      : `?asset=${normalizedSymbol}`
+      : `?asset=${normalizedSymbol}`;
 
-    if (action === "send") router.push(`/send${query}`)
-    if (action === "buy") router.push(`/buy${query}`)
-    if (action === "withdraw") router.push(`/withdraw${query}`)
-  }
+    if (action === "send") router.push(`/send${query}`);
+    if (action === "buy") router.push(`/buy${query}`);
+    if (action === "withdraw") router.push(`/withdraw${query}`);
+  };
 
   return (
     <div className="container mx-auto flex min-h-[90dvh] w-full max-w-5xl flex-col px-4 pb-28 pt-4 md:px-6 md:pb-16 md:pt-12 ">
@@ -399,7 +400,7 @@ export default function AssetDetailsPage({
               label: item.label,
             })),
           ].map((tab) => {
-            const isActive = activeTab === tab.id
+            const isActive = activeTab === tab.id;
 
             return (
               <button
@@ -415,7 +416,7 @@ export default function AssetDetailsPage({
               >
                 {tab.label}
               </button>
-            )
+            );
           })}
         </div>
       </nav>
@@ -452,7 +453,7 @@ export default function AssetDetailsPage({
               { id: "buy" as const, label: "Buy", icon: Plus },
               { id: "withdraw" as const, label: "Withdraw", icon: ArrowUp },
             ].map((action) => {
-              const Icon = action.icon
+              const Icon = action.icon;
               return (
                 <button
                   key={action.id}
@@ -465,7 +466,7 @@ export default function AssetDetailsPage({
                   </span>
                   <span className="text-xs font-semibold">{action.label}</span>
                 </button>
-              )
+              );
             })}
           </section>
 
@@ -506,7 +507,7 @@ export default function AssetDetailsPage({
           {/* Recent history */}
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-black dark:text-white">
+              <h3 className="text-[15px] font-semibold leading-tight text-black dark:text-white md:text-base">
                 Recent History
               </h3>
               {activeChainTransactions.length > 0 && (
@@ -540,16 +541,16 @@ export default function AssetDetailsPage({
             ) : activeChainTransactions.length > 0 ? (
               <div className="overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/10 dark:bg-secondary-50 max-h-[420px] overflow-y-auto">
                 {activeChainTransactions.slice(0, 8).map((transaction) => {
-                  const isPositive = isPositiveTransaction(transaction.type)
+                  const isPositive = isPositiveTransaction(transaction.type);
                   const transactionAmount =
-                    getTransactionNumericAmount(transaction)
+                    getTransactionNumericAmount(transaction);
                   const transactionValue =
                     transactionAmount !== null
                       ? transactionAmount * tokenPrice * exchangeRate
-                      : null
+                      : null;
                   const DirectionIcon = isPositive
                     ? ArrowDownLeft
-                    : ArrowUpRight
+                    : ArrowUpRight;
 
                   return (
                     <button
@@ -606,7 +607,7 @@ export default function AssetDetailsPage({
                         <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
                       </div>
                     </button>
-                  )
+                  );
                 })}
 
                 {activeChainTransactions.length > 8 && (
@@ -670,7 +671,7 @@ export default function AssetDetailsPage({
             {/* Right — distribution */}
             <section className="rounded-2xl border hover:bg-gray-50  bg-white/30 p-4 shadow-sm dark:border-white/10 md:dark:bg-secondary-50/10 ">
               <div className="mb-3">
-                <h3 className="text-sm font-bold text-black dark:text-white">
+                <h3 className="text-[15px] font-semibold leading-tight text-black dark:text-white md:text-base">
                   Balance Distribution
                 </h3>
                 <p className="text-[10px] text-gray-500 dark:text-gray-400">
@@ -725,5 +726,5 @@ export default function AssetDetailsPage({
         </main>
       )}
     </div>
-  )
+  );
 }
