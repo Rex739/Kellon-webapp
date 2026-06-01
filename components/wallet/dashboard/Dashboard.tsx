@@ -10,7 +10,7 @@ import AssetsPanel from "./AssetsPanel";
 import DashboardHeader from "./DashboardHeader";
 import PortfolioBalanceCard from "./PortfolioBalanceCard";
 import QuickActionsPanel from "./QuickActionsPanel";
-import { useDashboardData } from "./use-dashboard-data";
+import { useDashboardData } from "@/lib/use-dashboard-data";
 
 interface DashboardClientProps {
   profile: User;
@@ -34,8 +34,9 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
         className={cn(
           "px-0 py-0 text-gray-20 dark:text-gray-40",
           "rounded-none",
-          "md:rounded-lg  md:bg-white/30 md:p-4",
+          "md:rounded-xl md:border md:border-white/70 md:bg-white/45 md:p-4 md:shadow-sm md:shadow-primary-90/30 md:backdrop-blur-xl",
           "md:dark:bg-secondary-50/10",
+          "md:dark:border-white/0 md:dark:shadow-none",
         )}
       >
         <div className="grid grid-cols-1 gap-6 md:gap-4 min-[900px]:grid-cols-12 min-[900px]:items-start">

@@ -34,7 +34,7 @@ export default function DashboardHeader({
 
           <Link
             href="/settings/profile"
-            className="flex flex-col justify-center"
+            className="flex flex-col justify-center cursor-pointer"
           >
             <span className="text-xs font-medium capitalize text-gray-20 dark:text-gray-40">
               {greeting}

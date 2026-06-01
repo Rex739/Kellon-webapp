@@ -10,7 +10,7 @@ import {
   getTransactionStatusLabel,
   getTransactionTitle,
   isPositiveTransaction,
-} from "./dashboard-utils";
+} from "@/lib/dashboard-utils";
 
 interface ActivityPanelProps {
   isBalanceVisible: boolean;
@@ -26,16 +26,16 @@ export default function ActivityPanel({
   transactionsError,
 }: ActivityPanelProps) {
   return (
-    <div className="order-4 flex w-full flex-col space-y-4 md:h-[360px] md:overflow-hidden md:rounded-lg md:border md:border-input md:p-5 min-[900px]:order-none min-[900px]:col-span-full min-[900px]:space-y-3 min-[900px]:p-4 lg:space-y-4 lg:p-5">
+    <div className="order-4 flex w-full flex-col space-y-4 rounded-2xl border border-white/70 bg-white/55 p-3 shadow-sm shadow-primary-90/20 backdrop-blur-xl dark:border-white/10 dark:bg-secondary-50/20 dark:shadow-none xs:p-4 md:h-[360px] md:overflow-hidden md:rounded-xl md:border md:border-white/70 md:bg-white/60 md:p-5 md:dark:border-white/10 md:dark:bg-transparent min-[900px]:order-none min-[900px]:col-span-full min-[900px]:space-y-3 min-[900px]:p-4 lg:space-y-4 lg:p-5">
       <div className="flex items-end justify-between">
         <div>
-          <h3 className="text-base tracking-normal text-black dark:text-white">
+          <h3 className="text-base font-semibold tracking-normal text-black dark:text-white">
             Recent Activity
           </h3>
         </div>
         <Link
           href="/transactions"
-          className="text-xs text-primary-50 hover:opacity-80 md:text-sm"
+          className="text-xs text-primary-50 hover:opacity-80 md:text-sm cursor-pointer"
         >
           See All
         </Link>
@@ -50,20 +50,20 @@ export default function ActivityPanel({
         />
       ) : recentTransactions.length > 0 ? (
         <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-          <div className="overflow-hidden rounded-xl border border-black/5 bg-white dark:border-white/10 dark:bg-secondary-50">
+          <div className="overflow-hidden rounded-xl border border-primary-90/45 bg-white/80 shadow-sm shadow-primary-90/10 dark:border-white/10 dark:bg-secondary-50 dark:shadow-none">
             {recentTransactions.map((transaction) => (
               <Link
                 key={transaction.id}
                 href={`/transactions/${transaction.id}`}
-                className="flex items-center justify-between gap-3 border-b border-black/5 px-3 py-3 transition-colors last:border-b-0 hover:bg-gray-95 dark:border-white/10 dark:hover:bg-secondary-60/40 min-[900px]:gap-2 min-[900px]:px-2.5 min-[900px]:py-2.5 lg:gap-3 lg:px-3 lg:py-3"
+                className="flex cursor-pointer items-center justify-between gap-2 border-b border-primary-90/35 px-2.5 py-3 transition-colors last:border-b-0 hover:bg-primary-99/80 dark:border-white/10 dark:hover:bg-secondary-60/40 xs:gap-3 xs:px-3 min-[900px]:gap-2 min-[900px]:px-2.5 min-[900px]:py-2.5 lg:gap-3 lg:px-3 lg:py-3"
               >
-                <div className="flex min-w-0 items-center gap-3 min-[900px]:gap-2 lg:gap-3">
+                <div className="flex min-w-0 flex-1 items-center gap-2 xs:gap-3 min-[900px]:gap-2 lg:gap-3">
                   <div
                     className={cn(
                       "flex h-8 w-8 shrink-0 items-center justify-center rounded-full min-[900px]:h-7 min-[900px]:w-7 lg:h-8 lg:w-8",
                       isPositiveTransaction(transaction.type)
                         ? "bg-primary-95 dark:bg-primary-70/15"
-                        : "bg-gray-95 dark:bg-secondary-60",
+                        : "bg-white dark:bg-secondary-60",
                     )}
                   >
                     {isPositiveTransaction(transaction.type) ? (
@@ -95,8 +95,8 @@ export default function ActivityPanel({
                   </div>
                 </div>
 
-                <div className="ml-3 min-w-[56px] shrink-0 text-right min-[900px]:ml-2 min-[900px]:min-w-[48px] lg:ml-3 lg:min-w-[56px]">
-                  <p className="break-words text-xs font-medium leading-tight text-black dark:text-white min-[900px]:text-[11px] lg:text-sm">
+                <div className="ml-2 min-w-[50px] shrink-0 text-right xs:min-w-[56px] min-[900px]:ml-2 min-[900px]:min-w-[48px] lg:ml-3 lg:min-w-[56px]">
+                  <p className="break-words text-[11px] font-medium leading-tight text-black dark:text-white xs:text-xs min-[900px]:text-[11px] lg:text-sm">
                     {isBalanceVisible
                       ? getTransactionAmountLabel(transaction)
                       : "••••"}
@@ -118,11 +118,11 @@ export default function ActivityPanel({
 
 function ActivityEmptyState({ title, text }: { title: string; text: string }) {
   return (
-    <div className="flex min-h-[250px] flex-1 flex-col items-center justify-center rounded-xl border border-black/5 bg-gray-50 p-8 text-center dark:border-white/10 dark:bg-secondary-50 md:rounded-lg">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-gray-300 bg-gray-200 dark:border-white/5 dark:bg-white/5 md:mb-5 md:h-14 md:w-14">
+    <div className="flex min-h-[250px] flex-1 flex-col items-center justify-center rounded-xl border border-primary-90/50 bg-white/70 p-8 text-center shadow-sm shadow-primary-90/10 dark:border-white/10 dark:bg-secondary-50 dark:shadow-none md:rounded-lg">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-primary-90/50 bg-primary-99 dark:border-white/5 dark:bg-white/5 md:mb-5 md:h-14 md:w-14">
         <Clock
           size={24}
-          className="text-gray-400 dark:text-gray-600 md:h-7 md:w-7"
+          className="text-primary-50 dark:text-gray-600 md:h-7 md:w-7"
         />
       </div>
       <h4 className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300 md:text-base">

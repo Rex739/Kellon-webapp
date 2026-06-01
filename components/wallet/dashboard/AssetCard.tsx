@@ -1,5 +1,6 @@
 import { FC } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface AssetCardProps {
@@ -26,28 +27,29 @@ const AssetCard: FC<AssetCardProps> = ({
   const iconUrl = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${symbol.toLowerCase()}.png`;
 
   return (
-    <div
+    <Link
+      href={`/assets/${symbol.toLowerCase()}`}
       className={cn(
-        "group flex w-full cursor-pointer items-center justify-between gap-4 rounded-xl p-4 transition-all md:rounded-lg md:p-4 lg:p-6",
-        "bg-white border border-black/5 hover:bg-gray-50",
+        "group flex w-full min-w-0 cursor-pointer items-center justify-between gap-3 rounded-xl p-3 transition-all xs:gap-4 xs:p-4 md:rounded-lg md:p-4 lg:p-6",
+        "border border-primary-90/45 bg-white/80  shadow-primary-90/10 hover:border-primary-80/70 hover:bg-primary-99/80",
         "dark:bg-secondary-50 dark:border-white/10 dark:hover:bg-secondary-60/50 ",
         className,
       )}
     >
-      <div className="flex min-w-0 items-center gap-4 lg:gap-5">
+      <div className="flex min-w-0 flex-1 items-center gap-3 xs:gap-4 lg:gap-5">
         {/* Real Crypto Icon Container */}
-        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-black/5 bg-gray-50 dark:border-white/5 dark:bg-secondary-40 lg:h-14 lg:w-14">
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-primary-90/40 bg-white shadow-sm shadow-primary-90/20 dark:border-white/5 dark:bg-secondary-40 dark:shadow-none xs:h-12 xs:w-12 lg:h-14 lg:w-14">
           <Image
             src={iconUrl}
             alt={symbol}
-            width={48}
-            height={48}
+            width={40}
+            height={40}
             className="object-contain p-2 md:p-2.5"
           />
         </div>
 
         <div className="min-w-0">
-          <p className="truncate text-base text-black transition-colors dark:text-white lg:text-lg">
+          <p className="truncate text-sm text-black transition-colors dark:text-white xs:text-base lg:text-lg">
             {name}
           </p>
           <p className="truncate text-[10px] tracking-normal text-gray-500 dark:text-gray-400 lg:text-xs">
@@ -56,19 +58,19 @@ const AssetCard: FC<AssetCardProps> = ({
         </div>
       </div>
 
-      <div className="shrink-0 text-right">
-        <p className="text-lg tracking-tight text-black dark:text-white lg:text-xl">
+      <div className="min-w-[52px] shrink-0 text-right xs:min-w-[64px]">
+        <p className="text-base  text-black dark:text-white xs:text-lg lg:text-xl">
           {hideBalances ? "••••" : amount}
         </p>
         {isValueLoading && !hideBalances ? (
           <span className="mt-1 block h-3 w-16 animate-pulse rounded-full bg-gray-100 dark:bg-secondary-60 lg:h-3.5 lg:w-20" />
         ) : (
-          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 lg:text-sm">
+          <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 xs:text-xs lg:text-sm">
             {hideBalances ? "••••••" : value}
           </p>
         )}
       </div>
-    </div>
+    </Link>
   );
 };
 
