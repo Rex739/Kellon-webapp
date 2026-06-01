@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { formatNumberWithCommas } from "@/lib/format-number-with-comma";
 import SummaryPill from "../SummaryPill";
 import Keypad from "@/components/Keypad";
+import { Button } from "@/components/ui/button";
 
 interface AmountEntryStepProps {
   asset: string | null;
@@ -112,6 +113,7 @@ export function AmountEntryStep({
             type="button"
             onClick={() => handleQuickAmount(quickAmount)}
             className={cn(
+              "cursor-pointer",
               "rounded-full px-4 py-2 text-sm font-medium transition-all",
               "border",
               amount === quickAmount.toString()
@@ -161,7 +163,7 @@ export function AmountEntryStep({
           <div className="mb-4 w-full">
             <button
               onClick={onOpenPaymentModal}
-              className="flex w-full items-center justify-between rounded-2xl border border-black/5 bg-white p-4 transition-transform active:scale-[0.98] hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50"
+              className="flex w-full items-center justify-between rounded-2xl border border-black/5 bg-white p-4 transition-transform active:scale-[0.98] hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50 cursor-pointer"
             >
               <span className="text-[11px] font-medium text-gray-500">
                 Select payment method
@@ -234,7 +236,7 @@ export function AmountEntryStep({
           <div className="mt-4 w-full">
             <button
               onClick={onOpenPaymentModal}
-              className="flex w-full items-center justify-between rounded-xl border border-black/5 bg-white p-4 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50"
+              className="flex w-full items-center justify-between rounded-xl border border-black/5 bg-white p-4 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50 cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-gray-100 p-2 dark:bg-secondary-60/60">
@@ -261,15 +263,13 @@ export function AmountEntryStep({
 
           {/* Desktop Continue Button - Below payment method */}
           <div className="mt-6 w-full">
-            <button
+            <Button
+              type="button"
+              variant="flow"
+              size="flow"
               onClick={onContinue}
               disabled={!isAmountValid || isRateLoading}
-              className={cn(
-                "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-4 font-bold text-white shadow-lg transition-all",
-                "hover:shadow-xl active:scale-[0.98]",
-                "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-                !isAmountValid && "from-gray-400 to-gray-500",
-              )}
+              className={cn(!isAmountValid && "from-gray-400 to-gray-500")}
             >
               <span className="relative z-10 flex items-center justify-center gap-2 text-base">
                 {isRateLoading
@@ -284,7 +284,7 @@ export function AmountEntryStep({
               {isAmountValid && !isRateLoading && (
                 <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -292,15 +292,13 @@ export function AmountEntryStep({
       {/* Mobile Sticky Footer */}
       <div className="sticky bottom-0 left-0 right-0 border-t border-black/5 pt-6 pb-4 px-4 dark:border-white/5  lg:hidden">
         <div className="mx-auto max-w-md">
-          <button
+          <Button
+            type="button"
+            variant="flow"
+            size="flow"
             onClick={onContinue}
             disabled={!isAmountValid || isRateLoading}
-            className={cn(
-              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all",
-              "hover:shadow-xl active:scale-[0.98]",
-              "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-              !isAmountValid && "from-gray-400 to-gray-500",
-            )}
+            className={cn(!isAmountValid && "from-gray-400 to-gray-500")}
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
               {isRateLoading
@@ -315,7 +313,7 @@ export function AmountEntryStep({
             {isAmountValid && !isRateLoading && (
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
             )}
-          </button>
+          </Button>
 
           <p className="mt-3 text-center text-[10px] text-gray-400">
             Enter the amount you want to spend • Providers will show you their

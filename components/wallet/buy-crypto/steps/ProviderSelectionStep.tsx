@@ -1,16 +1,10 @@
 // components/BuyCryptoFlow/steps/ProviderSelectionStep.tsx
-import {
-  Globe,
-  ArrowRight,
-  Loader2,
-  Check,
-  AlertCircle,
-  DollarSign,
-} from "lucide-react";
+import { Globe, ArrowRight, Loader2, Check, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
 import Image from "next/image";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface Provider {
   id: string;
@@ -25,6 +19,17 @@ interface Provider {
 interface ProviderRateDetails {
   cryptoAmount: number | null;
   rawRate: number | null;
+}
+
+function hasUsableProviderRate(
+  rateDetails: ProviderRateDetails | null | undefined,
+) {
+  return Boolean(
+    rateDetails?.rawRate &&
+      rateDetails.rawRate > 0 &&
+      rateDetails.cryptoAmount &&
+      rateDetails.cryptoAmount > 0,
+  );
 }
 
 interface ProviderSelectionStepProps {
@@ -59,14 +64,20 @@ export function ProviderSelectionStep({
   fiatCurrency,
   requiresRefundAccount = false,
 }: ProviderSelectionStepProps) {
-  const selectedProvider = providers.find((p) => p.id === selectedProviderId);
+  const visibleProviders = isRatesLoading
+    ? providers
+    : providers.filter((provider) =>
+        hasUsableProviderRate(providerRates[provider.id]),
+      );
+  const visibleProviderCount = visibleProviders.length;
+  const selectedProvider = visibleProviders.find(
+    (p) => p.id === selectedProviderId,
+  );
   const hasValidSelection = selectedProviderId && selectedProvider;
   const selectedProviderRate = selectedProviderId
     ? providerRates[selectedProviderId]
     : null;
-  const hasSelectedProviderRate = Boolean(
-    selectedProviderRate?.rawRate && selectedProviderRate.rawRate > 0,
-  );
+  const hasSelectedProviderRate = hasUsableProviderRate(selectedProviderRate);
   const isSelectedRatePending =
     Boolean(hasValidSelection) &&
     (isRatesLoading || selectedProviderRate === undefined);
@@ -108,26 +119,25 @@ export function ProviderSelectionStep({
               Available Providers
             </h3>
             <span className="text-[9px] md:text-[10px] text-gray-400">
-              {providers.length} options
+              {isRatesLoading ? providers.length : visibleProviderCount} options
             </span>
           </div>
 
           <div className="space-y-3 md:space-y-4">
-            {providers.map((provider) => {
+            {visibleProviders.map((provider) => {
               const rateDetails = providerRates[provider.id];
               const estimatedAmount = rateDetails?.cryptoAmount;
               const rawRate = rateDetails?.rawRate;
               const isLoadingRate = isRatesLoading && rateDetails === undefined;
               const isSelected = selectedProviderId === provider.id;
               const showFallbackIcon = shouldShowIcon(provider);
-              const hasRateError =
-                !isLoadingRate && rateDetails === null && !isRatesLoading;
 
               return (
                 <button
                   key={provider.id}
                   onClick={() => onSelectProvider(provider.id)}
                   className={cn(
+                    "cursor-pointer",
                     "w-full p-4 md:p-5 rounded-2xl border transition-all text-left relative",
                     "hover:shadow-md active:scale-[0.99]",
                     isSelected
@@ -187,18 +197,6 @@ export function ProviderSelectionStep({
                             </span>
                           </div>
                         </div>
-                      ) : hasRateError ? (
-                        <div className="flex flex-col items-end gap-1">
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="w-3 h-3 text-amber-500" />
-                            <span className="text-xs text-amber-500">
-                              Rate unavailable
-                            </span>
-                          </div>
-                          <p className="text-[9px] md:text-[10px] text-gray-500">
-                            Fee: {provider.fee}
-                          </p>
-                        </div>
                       ) : estimatedAmount && estimatedAmount > 0 ? (
                         <>
                           <p className="font-bold text-sm md:text-base text-primary-60">
@@ -251,16 +249,18 @@ export function ProviderSelectionStep({
           </div>
 
           {/* No providers message */}
-          {providers.length === 0 && (
+          {!isRatesLoading && visibleProviderCount === 0 && (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-secondary-60/40 mb-4">
                 <AlertCircle className="w-8 h-8 text-gray-400" />
               </div>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                No providers available
+                {providers.length === 0
+                  ? "No providers available"
+                  : "No providers with live rates"}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                Please try different amount or asset
+                Please try a different amount, asset, or network.
               </p>
             </div>
           )}
@@ -271,7 +271,7 @@ export function ProviderSelectionStep({
       <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t  pt-6 pb-4 px-4 md:px-0 mt-6 border-t border-black/5 dark:border-white/5">
         <div className="max-w-md mx-auto md:max-w-full">
           {/* Selection summary (only when provider selected) */}
-          {hasValidSelection && providerRates[selectedProviderId] && (
+          {hasValidSelection && selectedProviderRate && (
             <div className="mb-3 p-3 rounded-xl bg-primary-70/5 border border-primary-60/20">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-gray-600 dark:text-gray-400">
@@ -286,24 +286,21 @@ export function ProviderSelectionStep({
                   Est. Receive
                 </span>
                 <span className="font-medium">
-                  {providerRates[selectedProviderId]?.cryptoAmount?.toFixed(6)}{" "}
-                  {asset}
+                  {selectedProviderRate.cryptoAmount?.toFixed(6)} {asset}
                 </span>
               </div>
             </div>
           )}
 
-          <button
+          <Button
+            type="button"
+            variant="flow"
+            size="flow"
             onClick={onContinue}
             disabled={!canContinue}
-            className={cn(
-              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 md:py-4 font-bold text-white shadow-lg transition-all",
-              "hover:shadow-xl active:scale-[0.98]",
-              "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-              !canContinue && "from-gray-400 to-gray-500",
-            )}
+            className={cn(!canContinue && "from-gray-400 to-gray-500")}
           >
-            <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+            <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base ">
               {!hasValidSelection ? (
                 "Select a Provider to Continue"
               ) : isSelectedRatePending ? (
@@ -320,12 +317,13 @@ export function ProviderSelectionStep({
             {canContinue && (
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
             )}
-          </button>
+          </Button>
 
           {/* Help text */}
           <p className="text-center text-[10px] md:text-xs text-gray-400 mt-3">
-            Comparing rates from {providers.length} providers • Best rate will
-            be applied
+            Comparing live rates from{" "}
+            {isRatesLoading ? providers.length : visibleProviderCount} providers
+            • Best rate will be applied
           </p>
         </div>
       </div>

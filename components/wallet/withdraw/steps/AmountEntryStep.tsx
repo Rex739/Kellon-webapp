@@ -16,6 +16,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 
 interface AmountEntryStepProps {
   asset: string | null;
@@ -169,7 +170,7 @@ export function WithdrawAmountEntryStep({
                 <button
                   type="button"
                   onClick={() => syncAmount(formatAssetAmount(assetBalance))}
-                  className="rounded-full border border-black/10 px-2 py-0.5 text-[11px] font-semibold text-primary-60 transition hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:hover:bg-white/5"
+                  className="rounded-full border border-black/10 px-2 py-0.5 text-[11px] font-semibold text-primary-60 transition hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:hover:bg-white/5 cursor-pointer"
                 >
                   Max
                 </button>
@@ -193,6 +194,7 @@ export function WithdrawAmountEntryStep({
                       type="button"
                       onClick={() => syncAmount(formatAssetAmount(quickAmount))}
                       className={cn(
+                        "cursor-pointer",
                         "rounded-full border px-4 py-2 text-sm font-medium transition-all active:scale-95",
                         currentAmount === formatAssetAmount(quickAmount)
                           ? "border-primary-60 bg-primary-70/10 text-primary-60"
@@ -214,7 +216,7 @@ export function WithdrawAmountEntryStep({
                     key={key}
                     type="button"
                     onClick={() => handleKeypadPress(key)}
-                    className="flex h-14 items-center justify-center rounded-2xl border border-black/5 bg-white text-xl font-bold transition-colors active:scale-95 hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50"
+                    className="flex h-14 items-center justify-center rounded-2xl border border-black/5 bg-white text-xl font-bold transition-colors active:scale-95 hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50 cursor-pointer"
                   >
                     {key === "delete" ? (
                       <Delete className="h-6 w-6 text-gray-500" />
@@ -259,7 +261,7 @@ export function WithdrawAmountEntryStep({
                             onClick={() =>
                               syncAmount(formatAssetAmount(assetBalance))
                             }
-                            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-primary-60 transition hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:hover:bg-white/5"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-primary-60 transition hover:border-primary-60/30 hover:bg-primary-70/5 dark:border-white/10 dark:hover:bg-white/5 cursor-pointer"
                           >
                             Max
                           </button>
@@ -288,6 +290,7 @@ export function WithdrawAmountEntryStep({
                               syncAmount(formatAssetAmount(quickAmount))
                             }
                             className={cn(
+                              "cursor-pointer",
                               "rounded-full border px-4 py-2 text-sm font-medium transition-all active:scale-95",
                               currentAmount === formatAssetAmount(quickAmount)
                                 ? "border-primary-60 bg-primary-70/10 text-primary-60"
@@ -308,16 +311,13 @@ export function WithdrawAmountEntryStep({
             </div>
 
             <div className="mt-6 w-full">
-              <button
+              <Button
                 type="button"
+                variant="flow"
+                size="flow"
                 onClick={form.handleSubmit(handleFormSubmit)}
                 disabled={!isAmountValid}
-                className={cn(
-                  "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-4 font-bold text-white shadow-lg transition-all",
-                  "hover:shadow-xl active:scale-[0.98]",
-                  "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-                  !isAmountValid && "from-gray-400 to-gray-500",
-                )}
+                className={cn(!isAmountValid && "from-gray-400 to-gray-500")}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2 text-base">
                   {isAmountValid ? "Select Provider" : "Enter Valid Amount"}
@@ -325,23 +325,20 @@ export function WithdrawAmountEntryStep({
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   ) : null}
                 </span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
 
         <div className="sticky bottom-0 left-0 right-0 border-t border-black/5 px-4 pb-4 pt-6 dark:border-white/5 lg:hidden">
           <div className="mx-auto max-w-md">
-            <button
+            <Button
               type="button"
+              variant="flow"
+              size="flow"
               onClick={form.handleSubmit(handleFormSubmit)}
               disabled={!isAmountValid}
-              className={cn(
-                "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all",
-                "hover:shadow-xl active:scale-[0.98]",
-                "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-                !isAmountValid && "from-gray-400 to-gray-500",
-              )}
+              className={cn(!isAmountValid && "from-gray-400 to-gray-500")}
             >
               <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
                 {isAmountValid ? "Select Provider" : "Enter Valid Amount"}
@@ -349,7 +346,7 @@ export function WithdrawAmountEntryStep({
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 ) : null}
               </span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>

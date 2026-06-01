@@ -1,30 +1,31 @@
-import { cn } from "@/lib/utils"
-import Image from "next/image"
-import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react"
-import ChainIcon from "@/components/wallet/ChainIcon"
-import { getSupportedChainsForToken } from "@/lib/chains"
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react";
+import ChainIcon from "@/components/wallet/ChainIcon";
+import { getSupportedChainsForToken } from "@/lib/chains";
+import { Button } from "@/components/ui/button";
 
 interface AssetSelectionStepProps {
-  asset: string | null
-  networkName: string | null
-  networkId: string | null
-  country: string | null
-  isDetectingCountry: boolean
-  onSelectAsset: (asset: string) => void
-  onSelectNetwork: (name: string, id: string) => void
-  onOpenCountryModal: () => void
-  onContinue: () => void
+  asset: string | null;
+  networkName: string | null;
+  networkId: string | null;
+  country: string | null;
+  isDetectingCountry: boolean;
+  onSelectAsset: (asset: string) => void;
+  onSelectNetwork: (name: string, id: string) => void;
+  onOpenCountryModal: () => void;
+  onContinue: () => void;
 }
 
 const assets = [
   { id: "usdc", name: "USD Coin", symbol: "USDC" },
   { id: "usdt", name: "Tether", symbol: "USDT" },
-]
+];
 
 export const getFlag = (code: string) =>
   code
     .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397))
+    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
 
 export function AssetSelectionStep({
   asset,
@@ -38,9 +39,9 @@ export function AssetSelectionStep({
 }: AssetSelectionStepProps) {
   const availableNetworks = asset
     ? getSupportedChainsForToken(asset as "USDC" | "USDT")
-    : []
+    : [];
 
-  const hasValidSelection = asset && networkName
+  const hasValidSelection = asset && networkName;
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100dvh-200px)] md:min-h-[500px]">
@@ -51,7 +52,7 @@ export function AssetSelectionStep({
             onClick={onOpenCountryModal}
             disabled={isDetectingCountry}
             className={cn(
-              "flex items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-1.5 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
+              "flex cursor-pointer items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-1.5 transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
               isDetectingCountry && "animate-pulse opacity-70",
             )}
           >
@@ -76,6 +77,7 @@ export function AssetSelectionStep({
                 key={a.id}
                 onClick={() => onSelectAsset(a.symbol)}
                 className={cn(
+                  "cursor-pointer",
                   "w-full rounded-2xl border p-4 text-left transition-all",
                   asset === a.symbol
                     ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
@@ -123,8 +125,8 @@ export function AssetSelectionStep({
             </h3>
             <div className="grid grid-cols-2 gap-3">
               {availableNetworks.map((chain) => {
-                const chainNameLower = chain.name.toLowerCase()
-                const isSelected = networkName === chainNameLower
+                const chainNameLower = chain.name.toLowerCase();
+                const isSelected = networkName === chainNameLower;
                 return (
                   <button
                     key={chain.id}
@@ -132,6 +134,7 @@ export function AssetSelectionStep({
                       onSelectNetwork(chainNameLower, chain.id.toString())
                     }
                     className={cn(
+                      "cursor-pointer",
                       "flex items-center gap-3 rounded-xl border p-4 text-sm font-bold transition-all",
                       isSelected
                         ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
@@ -141,7 +144,7 @@ export function AssetSelectionStep({
                     <ChainIcon name={chain.name} size={20} />
                     {chain.name}
                   </button>
-                )
+                );
               })}
             </div>
           </section>
@@ -151,15 +154,13 @@ export function AssetSelectionStep({
       {/* Sticky Footer with Continue Button - Matching other steps */}
       <div className="sticky bottom-0 left-0 right-0 border-t border-black/5 bg-gradient-to-t mt-6 pt-6 pb-4 px-4 dark:border-white/5  md:px-0">
         <div className="mx-auto max-w-md md:max-w-full">
-          <button
+          <Button
+            type="button"
+            variant="flow"
+            size="flow"
             onClick={onContinue}
             disabled={!hasValidSelection}
-            className={cn(
-              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
-              "hover:shadow-xl active:scale-[0.98]",
-              "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-              !hasValidSelection && "from-gray-400 to-gray-500",
-            )}
+            className={cn(!hasValidSelection && "from-gray-400 to-gray-500")}
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
               {!hasValidSelection ? (
@@ -174,7 +175,7 @@ export function AssetSelectionStep({
             {hasValidSelection && (
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
             )}
-          </button>
+          </Button>
 
           {/* Help text */}
           <p className="mt-3 text-center text-[10px] text-gray-400 md:text-xs">
@@ -183,5 +184,5 @@ export function AssetSelectionStep({
         </div>
       </div>
     </div>
-  )
+  );
 }

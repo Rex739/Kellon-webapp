@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowRight, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CountrySelectorButton from "@/components/wallet/shared/CountrySelectorButton";
+import { Button } from "@/components/ui/button";
 
 interface WithdrawableAsset {
   symbol: string;
@@ -59,6 +60,7 @@ export function WithdrawAssetSelectionStep({
                   type="button"
                   onClick={() => onSelectAsset(item.symbol)}
                   className={cn(
+                    "cursor-pointer",
                     "w-full rounded-2xl border p-4 text-left transition-all",
                     asset === item.symbol
                       ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
@@ -122,7 +124,7 @@ export function WithdrawAssetSelectionStep({
               <button
                 type="button"
                 onClick={onBackToWallet}
-                className="mt-5 rounded-xl border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60/50 dark:text-white dark:hover:bg-secondary-60"
+                className="mt-5 rounded-xl border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60/50 dark:text-white dark:hover:bg-secondary-60 cursor-pointer"
               >
                 Back to Wallet
               </button>
@@ -134,16 +136,13 @@ export function WithdrawAssetSelectionStep({
       {assets.length > 0 ? (
         <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
           <div className="mx-auto max-w-md md:max-w-full">
-            <button
+            <Button
               type="button"
+              variant="flow"
+              size="flow"
               onClick={onContinue}
               disabled={!hasValidSelection}
-              className={cn(
-                "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
-                "hover:shadow-xl active:scale-[0.98]",
-                "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-                !hasValidSelection && "from-gray-400 to-gray-500",
-              )}
+              className={cn(!hasValidSelection && "from-gray-400 to-gray-500")}
             >
               <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
                 {!hasValidSelection ? (
@@ -155,7 +154,7 @@ export function WithdrawAssetSelectionStep({
                   </>
                 )}
               </span>
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}

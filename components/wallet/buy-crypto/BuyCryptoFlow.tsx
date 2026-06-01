@@ -83,7 +83,6 @@ export default function BuyCryptoFlow({
     networkName,
     networkId,
     amount,
-    currency,
     country,
     countrySource,
     bankId,
@@ -155,7 +154,7 @@ export default function BuyCryptoFlow({
     selectedProviderId,
     setSelectedProviderId,
     isLoadingProviders,
-  } = useProviders(country, asset, networkName, currency);
+  } = useProviders(country, asset, networkName, fiatCurrency);
 
   // Derived amount values
   const cryptoAmountValue = useMemo(() => {
@@ -411,7 +410,7 @@ export default function BuyCryptoFlow({
       <div className="flex items-center justify-between mb-8 px-4 pt-4">
         <button
           onClick={goBack}
-          className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none"
+          className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -420,7 +419,7 @@ export default function BuyCryptoFlow({
         </h2>
         <button
           onClick={() => onAttemptClose(true)}
-          className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none"
+          className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none cursor-pointer"
         >
           <X className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>

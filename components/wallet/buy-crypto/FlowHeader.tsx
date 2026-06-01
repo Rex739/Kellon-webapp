@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ArrowLeft, X } from "lucide-react"
-import { Step, STEP_TITLES } from "@/types/buy-crypto"
+import { ArrowLeft, X } from "lucide-react";
+import { Step, STEP_TITLES } from "@/types/buy-crypto";
 
 interface FlowHeaderProps {
-  localStep: Step
-  onBack: () => void
-  onClose: (started: boolean) => void
+  localStep: Step;
+  onBack: () => void;
+  onClose: (started: boolean) => void;
 }
 
 export default function FlowHeader({
@@ -19,7 +19,7 @@ export default function FlowHeader({
       <button
         onClick={onBack}
         className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none
-          hover:bg-gray-200 dark:hover:bg-secondary-60 transition-colors"
+          hover:bg-gray-200 dark:hover:bg-secondary-60 transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
       </button>
@@ -33,10 +33,10 @@ export default function FlowHeader({
       <button
         onClick={() => onClose(true)}
         className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none
-          hover:bg-gray-200 dark:hover:bg-secondary-60 transition-colors"
+          hover:bg-gray-200 dark:hover:bg-secondary-60 transition-colors cursor-pointer"
       >
         <X className="w-5 h-5 text-slate-600 dark:text-white" />
       </button>
     </div>
-  )
+  );
 }

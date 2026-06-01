@@ -4,6 +4,7 @@ import { Loader2, ShieldCheck } from "lucide-react";
 import ChainIcon from "@/components/wallet/ChainIcon";
 import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
 import type { BankDetail } from "@/types/db";
+import { Button } from "@/components/ui/button";
 
 interface ReviewStepProps {
   amount: string;
@@ -96,11 +97,12 @@ export function WithdrawReviewStep({
         </div>
 
         <div className="mt-auto space-y-4 pb-6">
-          <button
+          <Button
             type="button"
+            variant="flow"
+            size="flow"
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="group relative w-full cursor-pointer overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:shadow-lg"
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
               {isSubmitting ? (
@@ -115,7 +117,7 @@ export function WithdrawReviewStep({
                 </>
               )}
             </span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

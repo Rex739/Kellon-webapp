@@ -1,5 +1,5 @@
 // hooks/use-provider-rates.ts
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { providerService } from "@/services/api/payment-providers";
 
 interface ProviderRateDetails {
@@ -9,6 +9,8 @@ interface ProviderRateDetails {
 }
 
 type ProviderRatesMap = Record<string, ProviderRateDetails | null>;
+
+const RATE_FETCH_DEBOUNCE_MS = 450;
 
 interface UseProviderRatesParams {
   providers: { id: string; name: string }[];
@@ -30,6 +32,10 @@ function parseNumber(value: unknown): number | null {
   return null;
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
 export function useProviderRates({
   providers,
   asset,
@@ -42,7 +48,7 @@ export function useProviderRates({
 }: UseProviderRatesParams) {
   const [rates, setRates] = useState<ProviderRatesMap>({});
   const [isLoadingRates, setIsLoadingRates] = useState(false);
-  const fetchingRef = useRef(false);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     if (
@@ -55,13 +61,16 @@ export function useProviderRates({
     ) {
       if (Object.keys(rates).length > 0) setRates({});
       setIsLoadingRates(false);
-      fetchingRef.current = false;
       return;
     }
 
-    if (fetchingRef.current) return;
-    fetchingRef.current = true;
+    let isCancelled = false;
+    const abortController = new AbortController();
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
     setIsLoadingRates(true);
+    setRates({});
 
     const fetchRates = async () => {
       const newRates: ProviderRatesMap = {};
@@ -74,13 +83,16 @@ export function useProviderRates({
             let rawRate: number | null = null;
 
             if (provider.name.toLowerCase() === "paycrest") {
-              const res = await providerService.getPaycrestRate({
-                token: asset,
-                amount,
-                currency: currency,
-                network: networkName,
-                side,
-              });
+              const res = await providerService.getPaycrestRate(
+                {
+                  token: asset,
+                  amount,
+                  currency: currency,
+                  network: networkName,
+                  side,
+                },
+                abortController.signal,
+              );
 
               const paycrestRate =
                 parseNumber(res.data?.rate) ??
@@ -105,11 +117,14 @@ export function useProviderRates({
                 }
               }
             } else if (provider.name.toLowerCase() === "centiiv") {
-              const res = await providerService.getCentiivQuote({
-                fromAsset: side === "sell" ? asset : currency,
-                toAsset: side === "sell" ? currency || "USD" : asset,
-                amount,
-              });
+              const res = await providerService.getCentiivQuote(
+                {
+                  fromAsset: side === "sell" ? asset : currency,
+                  toAsset: side === "sell" ? currency || "USD" : asset,
+                  amount,
+                },
+                abortController.signal,
+              );
 
               if (res.success) {
                 rawRate = res.data?.rate ? parseFloat(res.data.rate) : null;
@@ -132,22 +147,37 @@ export function useProviderRates({
                 ? { cryptoAmount, fiatAmount, rawRate }
                 : null;
           } catch (error) {
+            if (isAbortError(error)) return;
+
             console.error(`Failed to fetch rate for ${provider.name}:`, error);
             newRates[provider.id] = null;
           }
         });
 
         await Promise.all(ratePromises);
-        setRates(newRates);
+        if (!isCancelled && requestIdRef.current === requestId) {
+          setRates(newRates);
+        }
       } catch (error) {
+        if (isAbortError(error)) return;
+
         console.error("Error fetching provider rates:", error);
       } finally {
-        setIsLoadingRates(false);
-        fetchingRef.current = false;
+        if (!isCancelled && requestIdRef.current === requestId) {
+          setIsLoadingRates(false);
+        }
       }
     };
 
-    fetchRates();
+    const debounceTimer = window.setTimeout(() => {
+      fetchRates();
+    }, RATE_FETCH_DEBOUNCE_MS);
+
+    return () => {
+      isCancelled = true;
+      window.clearTimeout(debounceTimer);
+      abortController.abort();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     providers,

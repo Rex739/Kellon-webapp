@@ -10,6 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { BankDetail } from "@/types/db";
 import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
+import { Button } from "@/components/ui/button";
 
 interface BankSelectionStepProps {
   asset: string | null;
@@ -83,6 +84,7 @@ export function WithdrawBankSelectionStep({
                           type="button"
                           onClick={() => onSelectSavedBank(bank)}
                           className={cn(
+                            "cursor-pointer",
                             "flex w-full items-center justify-between rounded-[24px] border px-5 py-5 text-left transition-all",
                             isSelected
                               ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
@@ -122,7 +124,7 @@ export function WithdrawBankSelectionStep({
               <button
                 type="button"
                 onClick={onOpenBankModal}
-                className="flex w-full items-center gap-3 rounded-[24px] border border-dashed border-primary-60/70 bg-primary-70/5 px-5 py-5 text-left text-primary-60 transition hover:bg-primary-70/10"
+                className="flex w-full items-center gap-3 rounded-[24px] border border-dashed border-primary-60/70 bg-primary-70/5 px-5 py-5 text-left text-primary-60 transition hover:bg-primary-70/10 cursor-pointer"
               >
                 <div className="rounded-full border border-primary-60/60 p-1.5">
                   <Plus className="h-5 w-5" />
@@ -143,7 +145,7 @@ export function WithdrawBankSelectionStep({
               <button
                 type="button"
                 onClick={onOpenBankModal}
-                className="flex w-full items-center justify-between rounded-2xl border border-gray-80 bg-gray-95 px-4 py-4 text-left transition-colors hover:bg-gray-90 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/70"
+                className="flex w-full items-center justify-between rounded-2xl border border-gray-80 bg-gray-95 px-4 py-4 text-left transition-colors hover:bg-gray-90 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/70 cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   <div className="rounded-2xl border border-black/5 bg-white p-3 text-primary-70 dark:border-white/10 dark:bg-secondary-60/60">
@@ -220,6 +222,7 @@ export function WithdrawBankSelectionStep({
                         type="button"
                         onClick={() => onSelectSavedBank(bank)}
                         className={cn(
+                          "cursor-pointer",
                           "flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all",
                           isSelected
                             ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
@@ -269,16 +272,13 @@ export function WithdrawBankSelectionStep({
 
       <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
         <div className="mx-auto max-w-md md:max-w-full">
-          <button
+          <Button
             type="button"
+            variant="flow"
+            size="flow"
             onClick={onContinue}
             disabled={!selectedBank}
-            className={cn(
-              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
-              "hover:shadow-xl active:scale-[0.98]",
-              "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-              !selectedBank && "from-gray-400 to-gray-500",
-            )}
+            className={cn(!selectedBank && "from-gray-400 to-gray-500")}
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
               {!selectedBank ? (
@@ -294,7 +294,7 @@ export function WithdrawBankSelectionStep({
                 </>
               )}
             </span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

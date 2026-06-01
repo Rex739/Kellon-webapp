@@ -369,7 +369,7 @@ export default function WithdrawFlow({
           <button
             type="button"
             onClick={goBack}
-            className="rounded-full border border-slate-200 bg-gray-100 p-2 dark:border-none dark:bg-secondary-60/50"
+            className="rounded-full border border-slate-200 bg-gray-100 p-2 dark:border-none dark:bg-secondary-60/50 cursor-pointer"
           >
             <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-white" />
           </button>
@@ -391,7 +391,7 @@ export default function WithdrawFlow({
             onClick={() =>
               hasStarted ? setShowExitModal(true) : onAttemptClose(false)
             }
-            className="rounded-full border border-slate-200 bg-gray-100 p-2 dark:border-none dark:bg-secondary-60/50"
+            className="rounded-full border border-slate-200 bg-gray-100 p-2 dark:border-none dark:bg-secondary-60/50 cursor-pointer"
           >
             <X className="h-5 w-5 text-slate-600 dark:text-white" />
           </button>

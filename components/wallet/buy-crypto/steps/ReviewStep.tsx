@@ -12,7 +12,7 @@ import ChainIcon from "@/components/wallet/ChainIcon";
 import SummaryPill from "../SummaryPill";
 import type { BankDetail } from "@/types/db";
 import type { OnrampResponse } from "@/services/api/on-ramp";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ReviewStepProps {
   amount: string;
@@ -149,7 +149,7 @@ export function ReviewStep({
           type="button"
           disabled={!copyable}
           onClick={() => copyable && copyValue(fieldKey, label, value)}
-          className="flex min-w-0 items-center gap-2 text-right text-sm font-bold text-black transition hover:text-primary-60 disabled:cursor-default disabled:hover:text-black dark:text-white dark:disabled:hover:text-white"
+          className="flex min-w-0 items-center gap-2 text-right text-sm font-bold text-black transition hover:text-primary-60 disabled:cursor-default disabled:hover:text-black dark:text-white dark:disabled:hover:text-white cursor-copy"
         >
           <span className="truncate">{value}</span>
           {copyable ? (
@@ -165,8 +165,8 @@ export function ReviewStep({
   };
 
   return (
-    <div className="flex flex-col h-full min-h-[calc(100dvh-200px)] md:min-h-[500px]">
-      <div className="flex-1 animate-in fade-in slide-in-from-bottom-4">
+    <div className="flex h-full min-h-[calc(100dvh-200px)] flex-col md:min-h-[500px]">
+      <div className="flex-1 overflow-y-auto md:px-0 animate-in fade-in slide-in-from-bottom-4">
         {/* 1. Summary Chip - Same as Provider Step for consistency */}
         <SummaryPill
           asset={asset}
@@ -229,31 +229,6 @@ export function ReviewStep({
                   copyable={false}
                 />
               </div>
-            </div>
-
-            <div className="mt-auto space-y-4 pb-6">
-              <button
-                type="button"
-                onClick={onConfirmSent}
-                disabled={isCompleting}
-                className={cn(
-                  "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
-                  "hover:shadow-xl active:scale-[0.98]",
-                  "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-                )}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-                  <CheckCircle2 className="h-5 w-5" />
-                  {isCompleting
-                    ? "Completing Order..."
-                    : "I have Sent The Money"}
-                </span>
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-              </button>
-              <p className="px-4 text-center text-[11px] leading-relaxed text-gray-400">
-                We will complete your order and take you to the transaction
-                details once you confirm.
-              </p>
             </div>
           </>
         ) : (
@@ -327,28 +302,57 @@ export function ReviewStep({
                 ) : null}
               </div>
             </div>
+          </>
+        )}
+      </div>
 
-            {/* 3. Action Section */}
-            <div className="mt-auto pb-6 space-y-4">
-              <button
-                onClick={onConfirm}
-                disabled={isSubmitting}
-                className={cn(
-                  "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
-                  "hover:shadow-xl active:scale-[0.98]",
-                  "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-                )}
+      <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 bg-gradient-to-t px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
+        <div className="mx-auto max-w-md md:max-w-full">
+          {providerAccount ? (
+            <>
+              <Button
+                type="button"
+                variant="flow"
+                size="flow"
+                onClick={onConfirmSent}
+                disabled={isCompleting || !onConfirmSent}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-                  <ShieldCheck className="w-6 h-6" />
+                  <CheckCircle2 className="h-5 w-5" />
+                  {isCompleting
+                    ? "Completing Order..."
+                    : "I have Sent The Money"}
+                </span>
+                {!isCompleting && (
+                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+                )}
+              </Button>
+              <p className="mt-3 px-4 text-center text-[11px] leading-relaxed text-gray-400">
+                We will complete your order and take you to the transaction
+                details once you confirm.
+              </p>
+            </>
+          ) : (
+            <>
+              <Button
+                type="button"
+                variant="flow"
+                size="flow"
+                onClick={onConfirm}
+                disabled={isSubmitting}
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+                  <ShieldCheck className="h-5 w-5" />
                   {isSubmitting
                     ? "Initializing Payment..."
                     : "Initialize Secure Payment"}
                 </span>
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-              </button>
+                {!isSubmitting && (
+                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+                )}
+              </Button>
 
-              <p className="text-[11px] text-gray-400 text-center leading-relaxed px-4">
+              <p className="mt-3 px-4 text-center text-[11px] leading-relaxed text-gray-400">
                 You will be redirected to {selectedProvider?.name}&apos;s secure
                 portal to complete your transaction via{" "}
                 <span className="font-bold text-gray-500">
@@ -356,9 +360,9 @@ export function ReviewStep({
                 </span>
                 .
               </p>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

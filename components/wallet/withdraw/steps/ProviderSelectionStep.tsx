@@ -1,17 +1,11 @@
 "use client";
 
-import {
-  AlertCircle,
-  ArrowRight,
-  Check,
-  DollarSign,
-  Globe,
-  Loader2,
-} from "lucide-react";
+import { AlertCircle, ArrowRight, Check, Globe, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
+import { Button } from "@/components/ui/button";
 
 interface Provider {
   id: string;
@@ -44,6 +38,24 @@ interface ProviderSelectionStepProps {
   isRatesLoading: boolean;
 }
 
+function hasUsableProviderRate(
+  rateDetails:
+    | {
+        cryptoAmount: number | null;
+        fiatAmount: number | null;
+        rawRate: number | null;
+      }
+    | null
+    | undefined,
+) {
+  return Boolean(
+    rateDetails?.rawRate &&
+      rateDetails.rawRate > 0 &&
+      rateDetails.fiatAmount &&
+      rateDetails.fiatAmount > 0,
+  );
+}
+
 export function WithdrawProviderSelectionStep({
   asset,
   amount,
@@ -58,14 +70,19 @@ export function WithdrawProviderSelectionStep({
   isRatesLoading,
 }: ProviderSelectionStepProps) {
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  const visibleProviders = isRatesLoading
+    ? providers
+    : providers.filter((provider) =>
+        hasUsableProviderRate(providerRates[provider.id]),
+      );
+  const visibleProviderCount = visibleProviders.length;
   const selectedProvider =
-    providers.find((provider) => provider.id === selectedProviderId) || null;
+    visibleProviders.find((provider) => provider.id === selectedProviderId) ||
+    null;
   const selectedProviderRate = selectedProviderId
     ? providerRates[selectedProviderId]
     : null;
-  const hasSelectedProviderRate = Boolean(
-    selectedProviderRate?.rawRate && selectedProviderRate.rawRate > 0,
-  );
+  const hasSelectedProviderRate = hasUsableProviderRate(selectedProviderRate);
   const isSelectedRatePending =
     Boolean(selectedProvider) &&
     (isRatesLoading || selectedProviderRate === undefined);
@@ -93,20 +110,18 @@ export function WithdrawProviderSelectionStep({
               Available Providers
             </h3>
             <span className="text-[9px] text-gray-400 md:text-[10px]">
-              {providers.length} options
+              {isRatesLoading ? providers.length : visibleProviderCount} options
             </span>
           </div>
 
           <div className="space-y-3 md:space-y-4">
-            {providers.map((provider) => {
+            {visibleProviders.map((provider) => {
               const isSelected = provider.id === selectedProviderId;
               const showFallback = imageErrors[provider.id] || !provider.logo;
               const rateDetails = providerRates[provider.id];
               const rawRate = rateDetails?.rawRate;
               const estimatedFiat = rateDetails?.fiatAmount;
               const isLoadingRate = isRatesLoading && rateDetails === undefined;
-              const hasRateError =
-                !isLoadingRate && rateDetails === null && !isRatesLoading;
 
               return (
                 <button
@@ -114,6 +129,7 @@ export function WithdrawProviderSelectionStep({
                   type="button"
                   onClick={() => onSelectProvider(provider.id)}
                   className={cn(
+                    "cursor-pointer",
                     "relative w-full rounded-2xl border p-4 text-left transition-all hover:shadow-md active:scale-[0.99] md:p-5",
                     isSelected
                       ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
@@ -173,18 +189,6 @@ export function WithdrawProviderSelectionStep({
                             </span>
                           </div>
                         </div>
-                      ) : hasRateError ? (
-                        <div className="flex flex-col items-end gap-1">
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="h-3 w-3 text-amber-500" />
-                            <span className="text-xs text-amber-500">
-                              Rate unavailable
-                            </span>
-                          </div>
-                          <p className="text-[9px] text-gray-500 md:text-[10px]">
-                            Fee: {provider.fee || "--"}
-                          </p>
-                        </div>
                       ) : rawRate && estimatedFiat ? (
                         <>
                           <p className="text-sm font-bold text-primary-60 md:text-base">
@@ -227,13 +231,15 @@ export function WithdrawProviderSelectionStep({
             })}
           </div>
 
-          {providers.length === 0 ? (
+          {!isRatesLoading && visibleProviderCount === 0 ? (
             <div className="py-12 text-center">
               <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-secondary-60/40">
                 <AlertCircle className="h-8 w-8 text-gray-400" />
               </div>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                No sell providers available
+                {providers.length === 0
+                  ? "No sell providers available"
+                  : "No providers with live rates"}
               </p>
               <p className="mt-1 text-xs text-gray-500">
                 Try another asset, network, or country.
@@ -245,16 +251,13 @@ export function WithdrawProviderSelectionStep({
 
       <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 bg-gradient-to-t px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
         <div className="mx-auto max-w-md md:max-w-full">
-          <button
+          <Button
             type="button"
+            variant="flow"
+            size="flow"
             onClick={onContinue}
             disabled={!canContinue}
-            className={cn(
-              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
-              "hover:shadow-xl active:scale-[0.98]",
-              "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-              !canContinue && "from-gray-400 to-gray-500",
-            )}
+            className={cn(!canContinue && "from-gray-400 to-gray-500")}
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
               {!selectedProvider ? (
@@ -270,7 +273,7 @@ export function WithdrawProviderSelectionStep({
                 </>
               )}
             </span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -19,6 +19,7 @@ import { providerService } from "@/services/api/payment-providers";
 import type { BankDetail } from "@/types/db";
 import type { SelectableBank } from "@/components/modals/SelectBankModal";
 import SummaryPill from "../SummaryPill";
+import { Button } from "@/components/ui/button";
 
 interface BuyBankSelectionStepProps {
   asset: string | null;
@@ -259,6 +260,7 @@ export function BuyBankSelectionStep({
                       type="button"
                       onClick={() => onSelectSavedBank(bank)}
                       className={cn(
+                        "cursor-pointer",
                         "flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left transition-all",
                         isSelected
                           ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
@@ -298,7 +300,7 @@ export function BuyBankSelectionStep({
           <button
             type="button"
             onClick={onOpenBankModal}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-primary-60/60 bg-primary-70/5 px-4 py-3 text-left text-primary-60 transition hover:bg-primary-70/10"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-primary-60/60 bg-primary-70/5 px-4 py-3 text-left text-primary-60 transition hover:bg-primary-70/10 cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span className="text-sm font-semibold">Add New Bank Details</span>
@@ -362,7 +364,7 @@ export function BuyBankSelectionStep({
                 <button
                   type="button"
                   onClick={onOpenBankModal}
-                  className="text-xs font-semibold text-primary-60 transition hover:text-primary-50"
+                  className="text-xs font-semibold text-primary-60 transition hover:text-primary-50 cursor-pointer"
                 >
                   Change
                 </button>
@@ -447,11 +449,12 @@ export function BuyBankSelectionStep({
                 />
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant="flow"
+                size="flow"
                 onClick={handleUseVerifiedBank}
                 disabled={!verifiedAccount || isSaving}
-                className="w-full rounded-2xl bg-gradient-to-r from-primary-70 to-primary-60 py-3 text-sm font-bold text-white transition hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSaving ? (
                   <span className="inline-flex items-center gap-2">
@@ -461,7 +464,7 @@ export function BuyBankSelectionStep({
                 ) : (
                   "Use This Bank"
                 )}
-              </button>
+              </Button>
             </div>
           ) : null}
         </div>
@@ -469,16 +472,13 @@ export function BuyBankSelectionStep({
 
       <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
         <div className="mx-auto max-w-md md:max-w-full">
-          <button
+          <Button
             type="button"
+            variant="flow"
+            size="flow"
             onClick={onContinue}
             disabled={!selectedBank}
-            className={cn(
-              "group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3.5 font-bold text-white shadow-lg transition-all md:py-4",
-              "hover:shadow-xl active:scale-[0.98]",
-              "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
-              !selectedBank && "from-gray-400 to-gray-500",
-            )}
+            className={cn(!selectedBank && "from-gray-400 to-gray-500")}
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
               {!selectedBank ? (
@@ -491,7 +491,7 @@ export function BuyBankSelectionStep({
               )}
             </span>
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

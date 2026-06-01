@@ -24,6 +24,7 @@ export default function Keypad({
           type="button"
           onClick={() => onPress(key)}
           className={cn(
+            "cursor-pointer",
             "flex h-14 select-none items-center justify-center rounded-2xl border border-black/5 bg-white text-xl font-bold transition-colors active:scale-95 hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
             buttonClassName,
           )}

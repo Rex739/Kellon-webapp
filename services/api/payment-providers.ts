@@ -323,6 +323,7 @@ export const providerService = {
    */
   getPaycrestRate: async (
     params: PaycrestRateParams,
+    signal?: AbortSignal,
   ): Promise<ApiResponse<PaycrestRateResponse>> => {
     const query = buildQuery({
       token: params.token,
@@ -336,6 +337,7 @@ export const providerService = {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
+      signal,
     });
     return handleResponse(res);
   },
@@ -346,12 +348,14 @@ export const providerService = {
    */
   getCentiivQuote: async (
     body: CentiivQuoteRequest,
+    signal?: AbortSignal,
   ): Promise<ApiResponse<CentiivQuoteResponse>> => {
     const res = await fetch("/api/providers/centiiv/quote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(body),
+      signal,
     });
     return handleResponse(res);
   },
