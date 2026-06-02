@@ -96,7 +96,7 @@ export default function PortfolioBalanceCard({
               {isPortfolioLoading && isBalanceVisible ? (
                 <SkeletonLine className="h-10 w-44 md:h-16 md:w-72 lg:h-20 lg:w-80" />
               ) : (
-                <h2 className="text-3xl font-bold leading-none text-cryptoNight transition-opacity group-active:opacity-70 dark:text-white md:max-w-[11ch] md:text-5xl lg:text-7xl">
+                <h2 className="text-3xl font-bold leading-none text-cryptoNight transition-opacity group-active:opacity-70 dark:text-white md:max-w-[11ch] md:text-5xl">
                   {isBalanceVisible
                     ? activeBalanceLabel
                     : hiddenActiveBalanceLabel}

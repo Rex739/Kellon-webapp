@@ -1,15 +1,15 @@
-import { Coins } from "lucide-react";
-import AssetCard from "@/components/wallet/dashboard/AssetCard";
-import { getChainLabel } from "@/lib/chains";
-import type { GroupedAssetSummary } from "@/lib/dashboard-types";
-import { formatAssetAmount, formatCurrencyAmount } from "@/lib/dashboard-utils";
+import { Coins } from "lucide-react"
+import AssetCard from "@/components/wallet/dashboard/AssetCard"
+import { getChainLabel } from "@/lib/chains"
+import type { GroupedAssetSummary } from "@/lib/dashboard-types"
+import { formatAssetAmount, formatCurrencyAmount } from "@/lib/dashboard-utils"
 
 interface AssetsPanelProps {
-  activeCurrency: string;
-  displayCurrency: "LOCAL" | "USD";
-  groupedAssets: GroupedAssetSummary[];
-  isAssetValueLoading: boolean;
-  isBalanceVisible: boolean;
+  activeCurrency: string
+  displayCurrency: "LOCAL" | "USD"
+  groupedAssets: GroupedAssetSummary[]
+  isAssetValueLoading: boolean
+  isBalanceVisible: boolean
 }
 
 export default function AssetsPanel({
@@ -33,11 +33,11 @@ export default function AssetsPanel({
         <div className="grid min-h-0 content-start gap-3 md:max-h-full md:flex-1 md:overflow-y-auto md:overscroll-contain md:pr-1">
           {groupedAssets.map((asset) => {
             const cardValue =
-              displayCurrency === "LOCAL" ? asset.localValue : asset.usdValue;
+              displayCurrency === "LOCAL" ? asset.localValue : asset.usdValue
             const subtitle =
               asset.chainCount > 1
                 ? "Available on multiple networks"
-                : `Runs on ${getChainLabel(asset.primaryChain || "")}`;
+                : `Runs on ${getChainLabel(asset.primaryChain || "")}`
 
             return (
               <AssetCard
@@ -51,7 +51,7 @@ export default function AssetsPanel({
                 isValueLoading={isAssetValueLoading}
                 className="px-3 py-3 xs:px-4 md:px-4 md:py-3 lg:px-5 lg:py-4"
               />
-            );
+            )
           })}
         </div>
       ) : (
@@ -72,5 +72,5 @@ export default function AssetsPanel({
         </div>
       )}
     </div>
-  );
+  )
 }
