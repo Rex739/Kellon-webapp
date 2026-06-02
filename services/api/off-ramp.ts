@@ -7,8 +7,6 @@ import { ApiResponse, apiFetch, handleResponse } from "./index";
 export interface OfframpInitRequest {
   fiatAmount: number;
   fiatCurrency: string;
-  cryptoAmount?: number;
-  assetAmount?: number;
   cryptoCurrencyCode: string; // Map from your asset symbol
   cryptocurrency?: string;
   asset?: string;
@@ -19,7 +17,6 @@ export interface OfframpInitRequest {
 
   // Banking & Recipient Info
   bankId?: string; // database UUID for a saved bank
-  bankAccountId?: string; // alias for bankId used in some UI flows
   bankDetail?: {
     bankName?: string;
     accountNumber: string;
@@ -35,8 +32,6 @@ export interface OfframpInitRequest {
   verificationType?: "otp" | "totp";
   verificationCodes?: Record<string, string>;
 
-  providerId?: string;
-  source?: "web" | "mobile";
   paymentMethod?: string;
 }
 
@@ -78,31 +73,31 @@ export interface OfframpResponse {
  */
 export const offrampService = {
   initiatePaychant: (body: OfframpInitRequest) =>
-    post(["/api/offramp/paychant/initiate", "/api/offramp/paychant"], body),
+    post("/api/offramp/paychant", body),
 
   initiateTransak: (body: OfframpInitRequest) =>
-    post(["/api/offramp/transak/initiate", "/api/offramp/transak"], body),
+    post("/api/offramp/transak", body),
 
   initiateRamp: (body: OfframpInitRequest) =>
-    post(["/api/offramp/ramp/initiate", "/api/offramp/ramp"], body),
+    post("/api/offramp/ramp", body),
 
   initiatePaycrest: (body: OfframpInitRequest) =>
-    post(["/api/offramp/paycrest/initiate", "/api/offramp/paycrest"], body),
+    post("/api/offramp/paycrest", body),
 
   initiateCentiiv: (body: OfframpInitRequest) =>
-    post(["/api/offramp/centiiv/initiate", "/api/offramp/centiiv"], body),
+    post("/api/offramp/centiiv", body),
 
   initiateMoonpay: (body: OfframpInitRequest) =>
-    post(["/api/offramp/moonpay/initiate", "/api/offramp/moonpay"], body),
+    post("/api/offramp/moonpay", body),
 
   initiateQuidax: (body: OfframpInitRequest) =>
-    post(["/api/offramp/quidax/initiate", "/api/offramp/quidax"], body),
+    post("/api/offramp/quidax", body),
 
   /**
    * Specialized MoneyGram Offramp (Uses Stellar Network)
    */
   initiateMoneyGram: (body: OfframpInitRequest) =>
-    post(["/api/offramp/moneygram/initiate", "/api/offramp/moneygram"], body),
+    post("/api/offramp/moneygram", body),
 
   /**
    * Centiiv Fund Destination
@@ -128,6 +123,11 @@ async function post(
 ): Promise<ApiResponse<OfframpResponse>> {
   const candidates = Array.isArray(endpoints) ? endpoints : [endpoints];
   let lastResponse: Response | null = null;
+
+  console.log("[offramp] payload →");
+  Object.entries(body).forEach(([key, value]) => {
+    console.log(`  ${key}:`, value);
+  });
 
   for (const endpoint of candidates) {
     const res = await apiFetch(endpoint, {
