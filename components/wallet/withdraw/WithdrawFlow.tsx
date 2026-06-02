@@ -26,7 +26,9 @@ import { WithdrawAmountEntryStep } from "./steps/AmountEntryStep";
 import { WithdrawProviderSelectionStep } from "./steps/ProviderSelectionStep";
 import { WithdrawBankSelectionStep } from "./steps/BankSelectionStep";
 import { WithdrawReviewStep } from "./steps/ReviewStep";
-import SelectBankModal from "../../modals/SelectBankModal";
+import SelectBankModal, {
+  type SelectableBank,
+} from "../../modals/SelectBankModal";
 
 function parseAssetAmount(amount: Asset["amount"]): number {
   const parsed = typeof amount === "string" ? Number(amount) : amount;
@@ -91,6 +93,8 @@ export default function WithdrawFlow({
 
   const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
   const [isBankModalOpen, setIsBankModalOpen] = useState(false);
+  const [selectedProviderBank, setSelectedProviderBank] =
+    useState<SelectableBank | null>(null);
   const [showExitModal, setShowExitModal] = useState(false);
   const [savedBanks, setSavedBanks] = useState<BankDetail[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -280,23 +284,13 @@ export default function WithdrawFlow({
       const payload: OfframpInitRequest = {
         fiatAmount: estimatedFiatAmount,
         fiatCurrency,
-        cryptoAmount: amountValue,
-        assetAmount: amountValue,
         cryptoCurrencyCode: asset,
         cryptocurrency: asset,
         asset,
-        token: asset,
         chain: networkName,
         network: networkName,
         rate: selectedProviderRawRate,
         bankId: selectedBank.id,
-        bankAccountId: selectedBank.id,
-        recipient: {
-          bankName: selectedBank.bankName,
-          accountNumber: selectedBank.accountNumber,
-          accountName: selectedBank.accountName,
-          bankCode: selectedBank.bankCode,
-        },
         bankDetail: {
           bankName: selectedBank.bankName,
           accountNumber: selectedBank.accountNumber,
@@ -305,8 +299,6 @@ export default function WithdrawFlow({
           provider: selectedBank.provider,
           country: selectedBank.country,
         },
-        providerId: selectedProvider.id,
-        source: "web",
       };
 
       const providerName = normalizeProviderKey(selectedProvider.name);
@@ -444,7 +436,7 @@ export default function WithdrawFlow({
             <WithdrawProviderSelectionStep
               asset={asset}
               amount={amount}
-              amountUnit={asset}
+              amountUnit={fiatCurrency}
               fiatCurrency={fiatCurrency}
               selectedChain={selectedChain}
               providers={providers}
@@ -474,8 +466,19 @@ export default function WithdrawFlow({
               selectedBank={selectedBank}
               savedBanks={savedBanks}
               providerName={selectedProvider?.name || null}
+              selectedProviderBank={selectedProviderBank}
               onSelectSavedBank={(bank) => setBankId(bank.id)}
+              onSelectProviderBank={setSelectedProviderBank}
               onOpenBankModal={() => setIsBankModalOpen(true)}
+              onAddVerifiedBank={(bank) => {
+                setSavedBanks((currentBanks) => {
+                  const exists = currentBanks.some(
+                    (currentBank) => currentBank.id === bank.id,
+                  );
+                  return exists ? currentBanks : [bank, ...currentBanks];
+                });
+                setBankId(bank.id);
+              }}
               onContinue={() => selectedBank && setStep("review")}
             />
           ) : null}
@@ -510,10 +513,10 @@ export default function WithdrawFlow({
         onClose={() => setIsBankModalOpen(false)}
         currency={fiatCurrency}
         providerName={selectedProvider?.name || null}
-        selectedBankCode={selectedBank?.bankCode || null}
-        onSelectBank={() => {
-          toast.info("Bank account entry is handled on the withdrawal step.");
-        }}
+        selectedBankCode={
+          selectedProviderBank?.value || selectedBank?.bankCode || null
+        }
+        onSelectBank={setSelectedProviderBank}
       />
 
       <ExitConfirmation

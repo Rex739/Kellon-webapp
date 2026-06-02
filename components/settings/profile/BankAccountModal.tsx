@@ -13,6 +13,9 @@ import { BankDetail } from "@/types/db";
 import { bankService } from "@/services/api/bank";
 import BankList from "./BankList";
 import BankForm, { BankFormValues } from "./BankForm";
+import SelectBankModal, {
+  type SelectableBank,
+} from "@/components/modals/SelectBankModal";
 
 interface BankAccountModalProps {
   banks: BankDetail[];
@@ -28,6 +31,9 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<"list" | "add" | "edit">("list");
   const [selectedBank, setSelectedBank] = useState<BankDetail | null>(null);
+  const [selectedProviderBank, setSelectedProviderBank] =
+    useState<SelectableBank | null>(null);
+  const [isSelectBankOpen, setIsSelectBankOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFormSubmit = async (values: BankFormValues) => {
@@ -37,7 +43,9 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
         bankName: values.bankName,
         accountName: values.accountHolderName,
         accountNumber: values.accountNumber,
-        bankCode: "",
+        bankCode: values.bankCode,
+        provider: values.provider,
+        country: values.country,
       };
 
       const res =
@@ -54,6 +62,8 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
 
         await onRefresh();
         setView("list");
+        setSelectedBank(null);
+        setSelectedProviderBank(null);
       }
     } catch (err) {
       toast.error("Operation failed");
@@ -79,7 +89,12 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
       open={isOpen}
       onOpenChange={(val) => {
         setIsOpen(val);
-        if (!val) setView("list");
+        if (!val) {
+          setView("list");
+          setSelectedBank(null);
+          setSelectedProviderBank(null);
+          setIsSelectBankOpen(false);
+        }
       }}
     >
       <DialogTrigger asChild className="cursor-pointer">
@@ -127,6 +142,7 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
               <button
                 onClick={() => {
                   setSelectedBank(null);
+                  setSelectedProviderBank(null);
                   setView("add");
                 }}
                 className="p-2 bg-white dark:bg-secondary-60/50 rounded-full text-primary-70 cursor-pointer"
@@ -141,9 +157,14 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
                 key={banks.length}
                 banks={banks}
                 isLoading={isLoading}
-                onAddNew={() => setView("add")}
+                onAddNew={() => {
+                  setSelectedBank(null);
+                  setSelectedProviderBank(null);
+                  setView("add");
+                }}
                 onEdit={(b) => {
                   setSelectedBank(b);
+                  setSelectedProviderBank(null);
                   setView("edit");
                 }}
                 onDelete={handleDelete}
@@ -151,6 +172,8 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
             ) : (
               <BankForm
                 initialData={selectedBank}
+                selectedProviderBank={selectedProviderBank}
+                onOpenBankModal={() => setIsSelectBankOpen(true)}
                 onSubmit={handleFormSubmit}
                 isSubmitting={isSubmitting}
               />
@@ -158,6 +181,17 @@ const BankAccountModal: FC<BankAccountModalProps> = ({
           </div>
         </div>
       </DialogContent>
+      <SelectBankModal
+        isOpen={isSelectBankOpen}
+        onClose={() => setIsSelectBankOpen(false)}
+        currency="NGN"
+        providerName="centiiv"
+        selectedBankCode={selectedProviderBank?.value || selectedBank?.bankCode}
+        onSelectBank={(bank) => {
+          setSelectedProviderBank(bank);
+          setIsSelectBankOpen(false);
+        }}
+      />
     </Dialog>
   );
 };
