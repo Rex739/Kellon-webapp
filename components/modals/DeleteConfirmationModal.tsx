@@ -50,7 +50,7 @@ const DeleteConfirmationModal: FC<DeleteConfirmationModalProps> = ({
         )}
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="w-[92vw] max-w-[400px] rounded-[28px] border-none bg-white dark:bg-secondary-60">
+      <AlertDialogContent className="w-[92vw] max-w-[400px] rounded-[32px] border-none bg-gray-70 outline-none dark:bg-black2">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
             {title}

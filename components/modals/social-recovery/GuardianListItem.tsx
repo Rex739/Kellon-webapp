@@ -51,7 +51,7 @@ export const GuardianListItem: FC<GuardianListItemProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-transparent border border-gray-80 dark:border-secondary-60 rounded-[24px] transition-all">
+    <div className="flex items-center justify-between p-4 bg-white dark:bg-secondary-60 border border-black/5 dark:border-white/10 rounded-[24px] transition-all">
       <div className="flex items-center gap-4">
         {/* Avatar Circle */}
         <Avatar className="w-12 h-12 bg-primary-70 border-none">

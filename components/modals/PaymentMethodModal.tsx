@@ -120,7 +120,7 @@ export default function PaymentMethodModal({
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[400px] bg-gray-70 dark:bg-black2  order-none rounded-[32px] outline-none [&>button]:hidden">
+        <DialogContent className="sm:max-w-[400px] bg-gray-70 dark:bg-black2 border-none rounded-[32px] outline-none [&>button]:hidden">
           <DialogHeader className="sr-only">
             <DialogTitle>Select Payment Method</DialogTitle>
           </DialogHeader>

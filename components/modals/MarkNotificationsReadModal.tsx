@@ -23,7 +23,7 @@ export default function MarkNotificationsReadModal({
 }: MarkNotificationsReadModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-[360px] rounded-[28px] border border-gray-80 bg-white p-0 outline-none dark:border-white/10 dark:bg-black2 [&>button]:hidden">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-[360px] rounded-[32px] border-none bg-gray-70 p-0 outline-none dark:bg-black2 [&>button]:hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>Mark all notifications as read</DialogTitle>
         </DialogHeader>

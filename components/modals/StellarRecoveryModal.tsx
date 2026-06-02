@@ -88,7 +88,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
         </div>
       </div>
 
-      <div className="relative group overflow-hidden bg-gray-95 dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 rounded-2xl p-6 min-h-[140px] flex flex-col items-center justify-center">
+      <div className="relative group overflow-hidden bg-white dark:bg-secondary-60 border border-black/5 dark:border-white/10 rounded-[24px] p-6 min-h-[140px] flex flex-col items-center justify-center">
         {!isRevealed ? (
           <button
             onClick={() => setIsRevealed(true)}
@@ -157,7 +157,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 [&>button]:hidden">
+        <DrawerContent className="rounded-t-[32px] border-none bg-gray-70 outline-none dark:bg-black2 [&>button]:hidden">
           <DrawerHeader className="sr-only">
             <DrawerTitle>Stellar Key Recovery</DrawerTitle>
             <DrawerDescription>
@@ -172,7 +172,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 outline-none rounded-[24px] [&>button]:hidden">
+      <DialogContent className="rounded-[32px] border-none bg-gray-70 outline-none dark:bg-black2 sm:max-w-md [&>button]:hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>Stellar Key Recovery</DialogTitle>
           <DialogDescription>

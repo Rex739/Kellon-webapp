@@ -1,13 +1,13 @@
-import { FC } from "react"
-import { LucideIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { FC } from "react";
+import { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ActionButtonProps {
-  icon: LucideIcon
-  title: string
-  description: string
-  variant?: "pink" | "orange" | "dark"
-  onClick?: () => void
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  variant?: "pink" | "orange" | "dark";
+  onClick?: () => void;
 }
 
 export const ActionButton: FC<ActionButtonProps> = ({
@@ -21,7 +21,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
     pink: "bg-primary-20 hover:bg-primary-20/90 text-white border-none",
     orange: "bg-orange-10 hover:bg-orange-10/90 text-white border-none",
     dark: "bg-secondary-60 dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 text-white",
-  }
+  };
 
   return (
     <button
@@ -39,5 +39,5 @@ export const ActionButton: FC<ActionButtonProps> = ({
         </span>
       </div>
     </button>
-  )
-}
+  );
+};

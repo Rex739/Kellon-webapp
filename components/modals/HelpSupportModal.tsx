@@ -56,7 +56,7 @@ const SupportItem: FC<SupportItemProps> = ({
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="w-full flex items-center justify-between p-4 rounded-2xl bg-gray-95 dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 hover:opacity-80 transition-opacity group cursor-pointer"
+    className="w-full flex items-center justify-between p-4 rounded-[24px] bg-white dark:bg-secondary-60 border border-black/5 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-secondary-60/50 transition-all group cursor-pointer"
   >
     <div className="flex items-center gap-4">
       <div className="p-2 bg-pink-500/10 dark:bg-pink-500/20 rounded-lg text-[#D64692]">
@@ -150,7 +150,7 @@ const HelpSupportModal: FC<HelpSupportModalProps> = ({ isOpen, onClose }) => {
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 [&>button]:hidden">
+        <DrawerContent className="rounded-t-[32px] border-none bg-gray-70 outline-none dark:bg-black2 [&>button]:hidden">
           <DrawerHeader className="sr-only">
             <DrawerTitle>Help & Support</DrawerTitle>
             <DrawerDescription>
@@ -165,7 +165,7 @@ const HelpSupportModal: FC<HelpSupportModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 outline-none rounded-[24px] [&>button]:hidden">
+      <DialogContent className="rounded-[32px] border-none bg-gray-70 outline-none dark:bg-black2 sm:max-w-md [&>button]:hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>Help & Support</DialogTitle>
           <DialogDescription>

@@ -56,7 +56,7 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
       </div>
 
       {/* Tabs logic remains the same... */}
-      <div className="flex border-b border-gray-80 dark:border-secondary-40 mb-6">
+      <div className="flex border-b border-black/5 dark:border-white/10 mb-6">
         {(["my-guardians", "guardian-for"] as const).map((tab) => (
           <button
             key={tab}
@@ -82,7 +82,7 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
 
           <form
             onSubmit={handleSubmit(onAddGuardian)}
-            className="bg-white dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 rounded-[24px] p-5 mb-8"
+            className="bg-white dark:bg-secondary-60 border border-black/5 dark:border-white/10 rounded-[24px] p-5 mb-8"
           >
             <h4 className="text-sm font-bold mb-4 text-black dark:text-white">
               Add New Guardian

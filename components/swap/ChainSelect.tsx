@@ -131,7 +131,7 @@ const ChainSelect: FC<ChainSelectProps> = ({
 
         {/* All Chains Dialog */}
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="bg-white dark:bg-secondary-10 border border-input">
+          <DialogContent className="rounded-[32px] border-none bg-gray-70 outline-none dark:bg-black2">
             <DialogHeader>
               <DialogTitle className="text-black dark:text-white">
                 Select Chain

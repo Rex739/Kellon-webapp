@@ -133,8 +133,8 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
             className={cn(
               "flex items-center justify-between p-4 rounded-2xl border transition-all",
               device.isCurrent
-                ? "bg-primary-95/50 dark:bg-primary-70/5 border-primary-70/20"
-                : "bg-gray-95 dark:bg-secondary-60 border-gray-80 dark:border-secondary-40",
+                ? "border-primary-70/20 bg-primary-95/50 dark:bg-primary-70/5"
+                : "border-black/5 bg-white dark:border-white/10 dark:bg-secondary-60",
             )}
           >
             <div className="flex items-center gap-4">
@@ -202,7 +202,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 [&>button]:hidden">
+        <DrawerContent className="rounded-t-[32px] border-none bg-gray-70 outline-none dark:bg-black2 [&>button]:hidden">
           <DrawerHeader className="sr-only">
             <DrawerTitle>Trusted Devices</DrawerTitle>
             <DrawerDescription>
@@ -217,7 +217,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 outline-none rounded-[24px] [&>button]:hidden">
+      <DialogContent className="rounded-[32px] border-none bg-gray-70 outline-none dark:bg-black2 sm:max-w-md [&>button]:hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>Trusted Devices</DialogTitle>
           <DialogDescription>

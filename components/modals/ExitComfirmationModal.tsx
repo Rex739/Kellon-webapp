@@ -20,7 +20,7 @@ export function ExitConfirmation({
 }: ExitConfirmationProps) {
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogContent className="max-w-[300px] rounded-2xl bg-white dark:bg-secondary-20 border-none">
+      <AlertDialogContent className="max-w-[300px] rounded-[32px] border-none bg-gray-70 outline-none dark:bg-black2">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-xl font-bold">
             Cancel

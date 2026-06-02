@@ -243,7 +243,7 @@ export default function SelectBankModal({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent
           showCloseButton={false}
-          className="overflow-hidden rounded-[28px] border border-gray-90 bg-gray-95 p-0 shadow-xl dark:border-white/10 dark:bg-[#0b101a] sm:max-w-lg"
+          className="overflow-hidden rounded-[32px] border-none bg-gray-70 p-0 shadow-xl outline-none dark:bg-black2 sm:max-w-lg [&>button]:hidden"
         >
           {content}
         </DialogContent>
@@ -253,7 +253,7 @@ export default function SelectBankModal({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="max-h-[92vh] rounded-t-[32px] border-none bg-gray-95 outline-none dark:bg-[#0b101a] [&>div:first-child]:bg-gray-80 dark:[&>div:first-child]:bg-white/20">
+      <DrawerContent className="max-h-[92vh] rounded-t-[32px] border-none bg-gray-70 outline-none dark:bg-black2 [&>button]:hidden [&>div:first-child]:bg-gray-80 dark:[&>div:first-child]:bg-white/20">
         <DrawerTitle className="sr-only">Select Bank</DrawerTitle>
         {content}
       </DrawerContent>

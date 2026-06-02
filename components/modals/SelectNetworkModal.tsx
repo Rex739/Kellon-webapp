@@ -1,35 +1,35 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import * as React from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { ArrowLeft, CheckCircle2 } from "lucide-react"
-import { FC } from "react"
-import ChainIcon from "@/components/wallet/ChainIcon"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/drawer";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { FC } from "react";
+import ChainIcon from "@/components/wallet/ChainIcon";
+import { cn } from "@/lib/utils";
 
 interface Chain {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface SelectNetworkModalProps {
-  isOpen: boolean
-  onClose: (open: boolean) => void
-  chains: Chain[]
-  selectedChainId: string | null
-  onSelectChain: (chainId: string, chainName: string) => void
+  isOpen: boolean;
+  onClose: (open: boolean) => void;
+  chains: Chain[];
+  selectedChainId: string | null;
+  onSelectChain: (chainId: string, chainName: string) => void;
 }
 
 const SelectNetworkModal: FC<SelectNetworkModalProps> = ({
@@ -39,12 +39,12 @@ const SelectNetworkModal: FC<SelectNetworkModalProps> = ({
   selectedChainId,
   onSelectChain,
 }) => {
-  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const handleSelectChain = (chainId: string, chainName: string) => {
-    onSelectChain(chainId, chainName)
-    onClose(false)
-  }
+    onSelectChain(chainId, chainName);
+    onClose(false);
+  };
 
   const content = (
     <div className="px-4 pb-8 md:px-0 md:pb-0">
@@ -68,9 +68,9 @@ const SelectNetworkModal: FC<SelectNetworkModalProps> = ({
 
       <div className="space-y-3">
         {chains.map((chain) => {
-          const isSelected = selectedChainId === chain.id
-          const chainName = chain.name
-          const chainId = chain.id
+          const isSelected = selectedChainId === chain.id;
+          const chainName = chain.name;
+          const chainId = chain.id;
 
           return (
             <button
@@ -106,7 +106,7 @@ const SelectNetworkModal: FC<SelectNetworkModalProps> = ({
                 )}
               </div>
             </button>
-          )
+          );
         })}
       </div>
 
@@ -118,7 +118,7 @@ const SelectNetworkModal: FC<SelectNetworkModalProps> = ({
         </div>
       )}
     </div>
-  )
+  );
 
   if (isDesktop) {
     return (
@@ -130,7 +130,7 @@ const SelectNetworkModal: FC<SelectNetworkModalProps> = ({
           {content}
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
@@ -142,7 +142,7 @@ const SelectNetworkModal: FC<SelectNetworkModalProps> = ({
         {content}
       </DrawerContent>
     </Drawer>
-  )
-}
+  );
+};
 
-export default SelectNetworkModal
+export default SelectNetworkModal;

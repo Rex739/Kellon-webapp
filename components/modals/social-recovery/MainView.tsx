@@ -54,7 +54,7 @@ export const MainView: FC<MainViewProps> = ({
       </div>
 
       {/* Account Status Card */}
-      <div className="bg-white dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 rounded-[24px] p-5 mb-8 flex items-center gap-4">
+      <div className="bg-white dark:bg-secondary-60 border border-black/5 dark:border-white/10 rounded-[24px] p-5 mb-8 flex items-center gap-4">
         <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
           <ShieldCheck className="w-7 h-7 text-green-500" />
         </div>
@@ -109,7 +109,7 @@ export const MainView: FC<MainViewProps> = ({
         </h3>
         <form
           onSubmit={handleSubmit(onApprove)}
-          className="bg-white dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 rounded-[24px] p-5 space-y-4"
+          className="bg-white dark:bg-secondary-60 border border-black/5 dark:border-white/10 rounded-[24px] p-5 space-y-4"
         >
           <label className="text-sm font-bold block ml-1 text-black dark:text-white">
             Approve by Request ID
@@ -120,7 +120,7 @@ export const MainView: FC<MainViewProps> = ({
                 {...register("requestId")}
                 placeholder="Enter Request ID"
                 className={cn(
-                  "bg-gray-95 dark:bg-secondary-40 border-gray-80 dark:border-secondary-40 rounded-xl py-6",
+                  "bg-white dark:bg-secondary-40 border-black/5 dark:border-white/10 rounded-xl py-6",
                   errors.requestId &&
                     "border-red-500 focus-visible:ring-red-500",
                 )}

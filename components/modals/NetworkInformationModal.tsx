@@ -90,7 +90,7 @@ const NetworkInformationModal: FC<NetworkInformationModalProps> = ({
           {NETWORKS.map((network) => (
             <div
               key={network.name}
-              className="flex items-center gap-4 p-4 rounded-2xl bg-gray-95 dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40"
+              className="flex items-center gap-4 rounded-[24px] border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-secondary-60"
             >
               <div className="relative">
                 <div
@@ -130,7 +130,7 @@ const NetworkInformationModal: FC<NetworkInformationModalProps> = ({
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 [&>button]:hidden">
+        <DrawerContent className="rounded-t-[32px] border-none bg-gray-70 outline-none dark:bg-black2 [&>button]:hidden">
           <DrawerHeader className="sr-only">
             <DrawerTitle>Network Information</DrawerTitle>
             <DrawerDescription>
@@ -145,7 +145,7 @@ const NetworkInformationModal: FC<NetworkInformationModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 outline-none rounded-[24px] [&>button]:hidden">
+      <DialogContent className="rounded-[32px] border-none bg-gray-70 outline-none dark:bg-black2 sm:max-w-md [&>button]:hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>Network Information</DialogTitle>
           <DialogDescription>

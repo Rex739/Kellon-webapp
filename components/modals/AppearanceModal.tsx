@@ -140,7 +140,7 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
         {/* IMP START - Drawer padding/max-h update matching SocialRecovery */}
-        <DrawerContent className="bg-white dark:bg-secondary-50 border-gray-80 dark:border-secondary-40 max-h-[92vh] [&>button]:hidden">
+        <DrawerContent className="max-h-[92vh] rounded-t-[32px] border-none bg-gray-70 outline-none dark:bg-black2 [&>button]:hidden">
           {/* IMP END - Drawer update */}
           <DrawerHeader className="sr-only">
             <DrawerTitle>Appearance</DrawerTitle>
@@ -154,7 +154,7 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       {/* IMP START - Dialog structure update removing top-right X and matching SocialRecovery */}
-      <DialogContent className="sm:max-w-md bg-white dark:bg-secondary-50 border-gray-80 dark:border-secondary-40 outline-none rounded-[24px] p-0 overflow-hidden [&>button]:hidden">
+      <DialogContent className="overflow-hidden rounded-[32px] border-none bg-gray-70 p-0 outline-none dark:bg-black2 sm:max-w-md [&>button]:hidden">
         <DialogHeader className="sr-only">
           <DrawerTitle>Appearance</DrawerTitle>
         </DialogHeader>

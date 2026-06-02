@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import { FC, useEffect } from "react"
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { useSocialRecovery } from "@/hooks/use-social-recovery"
+import { FC, useEffect } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { useSocialRecovery } from "@/hooks/use-social-recovery";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Drawer, DrawerContent } from "@/components/ui/drawer"
-import { MainView } from "./MainView"
-import { ManageGuardiansView } from "./ManageGuardianView"
+} from "@/components/ui/dialog";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { MainView } from "./MainView";
+import { ManageGuardiansView } from "./ManageGuardianView";
 
 // Modular Components
 
 interface SocialRecoveryModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const SocialRecoveryModal: FC<SocialRecoveryModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)")
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // All logic (state, forms, API calls) is encapsulated here
   const {
@@ -41,15 +41,15 @@ const SocialRecoveryModal: FC<SocialRecoveryModalProps> = ({
     handleAddGuardian,
     handleApproveRequest,
     handleAcceptInvite,
-  } = useSocialRecovery(isOpen)
+  } = useSocialRecovery(isOpen);
 
   // Reset view when modal closes
   useEffect(() => {
     if (!isOpen) {
-      const timer = setTimeout(() => setCurrentView("main"), 200)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(() => setCurrentView("main"), 200);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen, setCurrentView])
+  }, [isOpen, setCurrentView]);
 
   const renderContent = () =>
     currentView === "main" ? (
@@ -71,7 +71,7 @@ const SocialRecoveryModal: FC<SocialRecoveryModalProps> = ({
         onAddGuardian={handleAddGuardian}
         onAcceptInvite={handleAcceptInvite}
       />
-    )
+    );
 
   // Shared Accessibility Props
   const srContent = (
@@ -86,25 +86,25 @@ const SocialRecoveryModal: FC<SocialRecoveryModalProps> = ({
         {renderContent()}
       </div>
     </>
-  )
+  );
 
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 [&>button]:hidden">
+        <DrawerContent className="rounded-t-[32px] border-none bg-gray-70 outline-none dark:bg-black2 [&>button]:hidden">
           {srContent}
         </DrawerContent>
       </Drawer>
-    )
+    );
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white dark:bg-secondary-20 border-gray-80 dark:border-secondary-40 outline-none rounded-[24px] p-0 overflow-hidden [&>button]:hidden">
+      <DialogContent className="overflow-hidden rounded-[32px] border-none bg-gray-70 p-0 outline-none dark:bg-black2 sm:max-w-md [&>button]:hidden">
         {srContent}
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default SocialRecoveryModal
+export default SocialRecoveryModal;
