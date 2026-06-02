@@ -39,6 +39,11 @@ import { ReviewStep } from "./steps/ReviewStep";
 const MIN_CRYPTO_THRESHOLD = 0.01;
 const DEFAULT_FLOW_STEPS = ["asset", "amount", "provider", "review"] as const;
 type VisibleFlowStep = (typeof DEFAULT_FLOW_STEPS)[number] | Step;
+type ProviderRateSnapshot = {
+  cryptoAmount: number | null;
+  fiatAmount: number | null;
+  rawRate: number | null;
+};
 
 const methodLabels: Record<string, string> = {
   card: "Debit/Credit Card",
@@ -108,6 +113,9 @@ export default function BuyCryptoFlow({
   const [initializedOrder, setInitializedOrder] =
     useState<OnrampResponse | null>(null);
   const [isCompletingOrder, setIsCompletingOrder] = useState(false);
+  const [providerRateSnapshots, setProviderRateSnapshots] = useState<
+    Record<string, ProviderRateSnapshot>
+  >({});
 
   // Track if amount was set via input (desktop) or keypad (mobile)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -184,7 +192,9 @@ export default function BuyCryptoFlow({
   const selectedProvider =
     providers.find((provider) => provider.id === selectedProviderId) || null;
   const selectedProviderRate = selectedProviderId
-    ? providerRates[selectedProviderId]
+    ? providerRates[selectedProviderId] ||
+      providerRateSnapshots[selectedProviderId] ||
+      null
     : null;
   const selectedProviderRawRate =
     selectedProviderRate?.rawRate && selectedProviderRate.rawRate > 0
@@ -192,6 +202,40 @@ export default function BuyCryptoFlow({
       : undefined;
   const hasSelectedProviderRate = Boolean(selectedProviderRawRate);
   const selectedBank = savedBanks.find((bank) => bank.id === bankId) || null;
+
+  useEffect(() => {
+    setProviderRateSnapshots({});
+  }, [asset, fiatAmountNum, fiatCurrency, networkName]);
+
+  useEffect(() => {
+    setProviderRateSnapshots((currentSnapshots) => {
+      let hasChanges = false;
+      const nextSnapshots = { ...currentSnapshots };
+
+      Object.entries(providerRates).forEach(([providerId, rateDetails]) => {
+        if (!rateDetails?.rawRate || rateDetails.rawRate <= 0) return;
+
+        const currentRate = currentSnapshots[providerId];
+        if (
+          currentRate?.rawRate === rateDetails.rawRate &&
+          currentRate?.cryptoAmount === rateDetails.cryptoAmount &&
+          currentRate?.fiatAmount === rateDetails.fiatAmount
+        ) {
+          return;
+        }
+
+        nextSnapshots[providerId] = {
+          cryptoAmount: rateDetails.cryptoAmount,
+          fiatAmount: rateDetails.fiatAmount,
+          rawRate: rateDetails.rawRate,
+        };
+        hasChanges = true;
+      });
+
+      return hasChanges ? nextSnapshots : currentSnapshots;
+    });
+  }, [providerRates]);
+
   const requiresRefundBank =
     selectedProvider?.name?.toLowerCase() === "paycrest";
   const flowSteps = useMemo(
@@ -539,12 +583,7 @@ export default function BuyCryptoFlow({
             selectedChain={selectedChain}
             selectedProvider={selectedProvider}
             estimatedCrypto={
-              providerRates[selectedProviderId] &&
-              typeof providerRates[selectedProviderId] === "object"
-                ? providerRates[selectedProviderId]?.cryptoAmount || 0
-                : typeof providerRates[selectedProviderId] === "number"
-                  ? providerRates[selectedProviderId]
-                  : cryptoAmountValue
+              selectedProviderRate?.cryptoAmount || cryptoAmountValue
             }
             selectedBank={selectedBank}
             paymentMethodLabel={methodLabels[paymentMethod]}
