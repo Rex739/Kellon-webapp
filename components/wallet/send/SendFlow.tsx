@@ -57,7 +57,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
   } = useSendFlow(profile);
 
   return (
-    <div className="container mx-auto flex min-h-[90dvh] max-w-5xl flex-col px-4 pb-32 pt-4 md:px-6 md:pt-12">
+    <div className="container mx-auto flex min-h-[90dvh] max-w-5xl flex-col px-4 pb-32 pt-4 md:px-6 md:pt-20">
       <div className="mb-8 flex items-center justify-between">
         <button
           type="button"

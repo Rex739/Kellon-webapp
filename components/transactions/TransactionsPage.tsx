@@ -323,7 +323,7 @@ export default function TransactionsPage() {
   };
 
   return (
-    <section className="container mx-auto flex h-[100dvh] max-w-4xl flex-col overflow-hidden px-4 pb-28 pt-4 md:px-6 md:pb-12 md:pt-28">
+    <section className="container mx-auto flex h-[100dvh] max-w-4xl flex-col overflow-hidden px-4 pb-28 pt-4 md:px-6 md:pb-12 md:pt-20">
       <div className="flex items-center justify-between">
         <button
           type="button"

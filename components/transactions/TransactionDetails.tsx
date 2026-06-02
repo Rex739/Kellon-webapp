@@ -594,7 +594,7 @@ export default function TransactionDetails({ id }: TransactionDetailsProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-12">
+      <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-20">
         <div className="flex items-center justify-between mb-8 px-4 pt-4">
           <button className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none cursor-pointer">
             <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
@@ -614,8 +614,8 @@ export default function TransactionDetails({ id }: TransactionDetailsProps) {
 
   if (error || !transaction) {
     return (
-      <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-12">
-        <div className="flex items-center justify-between mb-8 px-4 pt-4">
+      <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-20">
+        <div className="flex items-center justify-between mb-8 px-4">
           <button
             onClick={() => router.back()}
             className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none cursor-pointer"
@@ -642,9 +642,9 @@ export default function TransactionDetails({ id }: TransactionDetailsProps) {
     transaction.status === "COMPLETED" || transaction.status === "PAID";
 
   return (
-    <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-12">
+    <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-20">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 px-4 pt-4">
+      <div className="flex items-center justify-between mb-8 px-4">
         <button
           onClick={() => router.back()}
           className="p-2 bg-gray-100 dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none cursor-pointer"

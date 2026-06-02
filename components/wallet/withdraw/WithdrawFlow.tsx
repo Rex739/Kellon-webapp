@@ -364,7 +364,7 @@ export default function WithdrawFlow({
 
   return (
     <>
-      <div className="container mx-auto flex min-h-[90dvh] max-w-2xl flex-col pb-32 md:pt-12">
+      <div className="container mx-auto flex min-h-[90dvh] max-w-2xl flex-col pb-32 md:pt-20">
         <div className="mb-8 flex items-center justify-between px-4 pt-4">
           <button
             type="button"

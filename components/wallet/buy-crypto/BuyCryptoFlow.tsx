@@ -405,7 +405,7 @@ export default function BuyCryptoFlow({
   }, [amount, cryptoAmountValue, step]);
 
   return (
-    <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-12">
+    <div className="flex flex-col container max-w-2xl mx-auto min-h-[90dvh] pb-32 md:pt-20">
       {/* Header */}
       <div className="flex items-center justify-between mb-8 px-4 pt-4">
         <button
