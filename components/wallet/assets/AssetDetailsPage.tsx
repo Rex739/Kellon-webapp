@@ -8,6 +8,8 @@ import {
   Check,
   ChevronRight,
   Copy,
+  Eye,
+  EyeOff,
   Info,
   Plus,
 } from "lucide-react";
@@ -166,6 +168,7 @@ export default function AssetDetailsPage({
   const [tokenPrice, setTokenPrice] = useState(DEFAULT_TOKEN_PRICE);
   const [isPriceLoading, setIsPriceLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
+  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const [copiedAddressChain, setCopiedAddressChain] = useState<string | null>(
     null,
   );
@@ -351,7 +354,12 @@ export default function AssetDetailsPage({
   };
 
   return (
-    <div className="container mx-auto flex min-h-[90dvh] w-full max-w-5xl flex-col px-4 pb-28 pt-4 md:px-6 md:pb-16 md:pt-12 ">
+    <div
+      className={cn(
+        "container mx-auto flex min-h-[90dvh] w-full flex-col px-4 pb-28 pt-4 md:px-6 md:pb-16 md:pt-20",
+        activeChainBalance ? "max-w-2xl" : "max-w-5xl",
+      )}
+    >
       {/* ── Header — matches buy page pattern ── */}
       <div className="flex items-center justify-between mb-8 px-0 pt-0">
         <button
@@ -377,17 +385,32 @@ export default function AssetDetailsPage({
           </h2>
         </div>
 
-        <ActionToolTip
-          label={`${normalizedSymbol} balance is grouped across every supported network.`}
-          side="left"
-        >
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            className="p-2 rounded-full border border-primary-60/30 bg-primary-70/10 text-primary-60 hover:bg-primary-70/15 dark:border-primary-70/50 dark:text-primary-80 cursor-pointer"
+            onClick={() => setIsBalanceVisible((v) => !v)}
+            aria-label={isBalanceVisible ? "Hide balances" : "Show balances"}
+            className="p-2 rounded-full border border-black/5 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:border-none dark:bg-secondary-60/50 dark:text-gray-300 cursor-pointer"
           >
-            <Info className="h-5 w-5" />
+            {isBalanceVisible ? (
+              <Eye className="h-5 w-5" />
+            ) : (
+              <EyeOff className="h-5 w-5" />
+            )}
           </button>
-        </ActionToolTip>
+
+          <ActionToolTip
+            label={`${normalizedSymbol} balance is grouped across every supported network.`}
+            side="left"
+          >
+            <button
+              type="button"
+              className="p-2 rounded-full border border-primary-60/30 bg-primary-70/10 text-primary-60 hover:bg-primary-70/15 dark:border-primary-70/50 dark:text-primary-80 cursor-pointer"
+            >
+              <Info className="h-5 w-5" />
+            </button>
+          </ActionToolTip>
+        </div>
       </div>
 
       {/* ── Tab nav ── */}
@@ -425,15 +448,15 @@ export default function AssetDetailsPage({
           CHAIN TAB VIEW
       ══════════════════════════════════════════ */}
       {activeChainBalance ? (
-        <main className="flex flex-1 flex-col gap-6 pt-8 mx-auto w-full max-w-2xl">
+        <main className="mx-auto flex w-full flex-1 flex-col gap-6 pt-8">
           {/* Balance hero */}
           <section className="flex flex-col items-center text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
               {activeChainBalance.label} balance
             </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-black dark:text-white">
-              {formatTokenAmount(displayAmount)}{" "}
-              <span className="text-gray-400 dark:text-gray-500">
+            <h2 className="mt-3 text-3xl font-bold leading-none text-black dark:text-white md:text-5xl">
+              {isBalanceVisible ? formatTokenAmount(displayAmount) : "••••••"}{" "}
+              <span className="text-gray-400 dark:text-gray-500 text-xl md:text-3xl">
                 {normalizedSymbol}
               </span>
             </h2>
@@ -441,7 +464,9 @@ export default function AssetDetailsPage({
               <div className="mt-2 h-5 w-24 animate-pulse rounded-full bg-gray-100 dark:bg-secondary-60" />
             ) : (
               <p className="mt-2 text-base font-semibold text-primary-60 dark:text-primary-80">
-                {formatCurrencyAmount(displayValue, localCurrency)}
+                {isBalanceVisible
+                  ? formatCurrencyAmount(displayValue, localCurrency)
+                  : "••••••"}
               </p>
             )}
           </section>
@@ -593,14 +618,18 @@ export default function AssetDetailsPage({
                       <div className="flex shrink-0 items-center gap-2">
                         <div className="text-right">
                           <p className="text-sm font-bold text-black dark:text-white">
-                            {getTransactionAmountLabel(transaction)}
+                            {isBalanceVisible
+                              ? getTransactionAmountLabel(transaction)
+                              : "••••"}
                           </p>
                           {transactionValue !== null ? (
                             <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
-                              {formatCurrencyAmount(
-                                transactionValue,
-                                localCurrency,
-                              )}
+                              {isBalanceVisible
+                                ? formatCurrencyAmount(
+                                    transactionValue,
+                                    localCurrency,
+                                  )
+                                : "••••"}
                             </p>
                           ) : null}
                         </div>
@@ -639,9 +668,9 @@ export default function AssetDetailsPage({
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
                 Total multi-chain balance
               </p>
-              <h2 className="mt-3 text-2xl font-bold tracking-tight text-black dark:text-white">
-                {formatTokenAmount(displayAmount)}{" "}
-                <span className="text-gray-400 dark:text-gray-500">
+              <h2 className="mt-3 text-3xl font-bold leading-none text-black dark:text-white md:text-4xl">
+                {isBalanceVisible ? formatTokenAmount(displayAmount) : "••••••"}{" "}
+                <span className="text-gray-400 dark:text-gray-500 text-xl md:text-2xl">
                   {normalizedSymbol}
                 </span>
               </h2>
@@ -658,7 +687,9 @@ export default function AssetDetailsPage({
                     <div className="mx-auto h-5 w-20 animate-pulse rounded-full bg-gray-100 dark:bg-secondary-60" />
                   ) : (
                     <p className="text-base font-bold text-black dark:text-white">
-                      {formatCurrencyAmount(displayValue, localCurrency)}
+                      {isBalanceVisible
+                        ? formatCurrencyAmount(displayValue, localCurrency)
+                        : "••••••"}
                     </p>
                   )}
                   <p className="mt-0.5 text-[10px] font-semibold text-gray-500 dark:text-gray-400">
@@ -669,7 +700,7 @@ export default function AssetDetailsPage({
             </section>
 
             {/* Right — distribution */}
-            <section className="rounded-2xl border hover:bg-gray-50  bg-white/30 p-4 shadow-sm dark:border-white/10 md:dark:bg-secondary-50/10 ">
+            <section className="rounded-2xl border hover:bg-gray-50  bg-white/55 border-white/70 p-4 shadow-sm dark:border-white/10  dark:bg-secondary-50/20 ">
               <div className="mb-3">
                 <h3 className="text-[15px] font-semibold leading-tight text-black dark:text-white md:text-base">
                   Balance Distribution
@@ -702,14 +733,18 @@ export default function AssetDetailsPage({
                           {item.label}
                         </p>
                         <p className="text-[10px] text-gray-500 dark:text-gray-400">
-                          {formatCurrencyAmount(item.value, localCurrency)}
+                          {isBalanceVisible
+                            ? formatCurrencyAmount(item.value, localCurrency)
+                            : "••••"}
                         </p>
                       </div>
                     </div>
 
                     <div className="shrink-0 text-right">
                       <p className="text-xs font-bold text-black dark:text-white">
-                        {formatTokenAmount(item.amount)}{" "}
+                        {isBalanceVisible
+                          ? formatTokenAmount(item.amount)
+                          : "••••"}{" "}
                         <span className="font-medium text-gray-400">
                           {normalizedSymbol}
                         </span>
