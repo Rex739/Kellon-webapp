@@ -24,7 +24,7 @@ const BuyCryptoFlowManager = () => {
       <ExitConfirmation
         isOpen={showExitModal}
         onStay={() => setShowExitModal(false)}
-        onLeave={() => router.push("/dashboard")}
+        onLeave={() => router.push("/")}
       />
     </>
   )
