@@ -1,32 +1,32 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import AddFundsModal from "@/components/modals/AddFundsModal";
-import WalletServicesModal from "@/components/modals/WalletServicesModal";
-import { cn, getGreeting } from "@/lib/utils";
-import type { User } from "@/types/db";
-import ActivityPanel from "./ActivityPanel";
-import AssetsPanel from "./AssetsPanel";
-import DashboardHeader from "./DashboardHeader";
-import PortfolioBalanceCard from "./PortfolioBalanceCard";
-import QuickActionsPanel from "./QuickActionsPanel";
-import { useDashboardData } from "@/lib/use-dashboard-data";
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import AddFundsModal from "@/components/modals/AddFundsModal"
+import WalletServicesModal from "@/components/modals/WalletServicesModal"
+import { cn, getGreeting } from "@/lib/utils"
+import type { User } from "@/types/db"
+import ActivityPanel from "./ActivityPanel"
+import AssetsPanel from "./AssetsPanel"
+import DashboardHeader from "./DashboardHeader"
+import PortfolioBalanceCard from "./PortfolioBalanceCard"
+import QuickActionsPanel from "./QuickActionsPanel"
+import { useDashboardData } from "@/lib/use-dashboard-data"
 
 interface DashboardClientProps {
-  profile: User;
+  profile: User
 }
 
 export default function DashboardClient({ profile }: DashboardClientProps) {
-  const router = useRouter();
-  const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
-  const [isWalletServicesOpen, setIsWalletServicesOpen] = useState(false);
-  const [greeting, setGreeting] = useState("Welcome back");
-  const dashboard = useDashboardData(profile);
+  const router = useRouter()
+  const [isAddFundsOpen, setIsAddFundsOpen] = useState(false)
+  const [isWalletServicesOpen, setIsWalletServicesOpen] = useState(false)
+  const [greeting, setGreeting] = useState("Welcome back")
+  const dashboard = useDashboardData(profile)
 
   useEffect(() => {
-    setGreeting(getGreeting());
-  }, []);
+    setGreeting(getGreeting())
+  }, [])
 
   return (
     <div className="container mx-auto w-full max-w-7xl space-y-6 px-4 pb-32 pt-4 md:space-y-8 md:px-6 md:pb-12 md:pt-28">
@@ -98,5 +98,5 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
         onClose={setIsWalletServicesOpen}
       />
     </div>
-  );
+  )
 }
