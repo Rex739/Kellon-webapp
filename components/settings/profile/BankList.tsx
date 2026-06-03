@@ -1,20 +1,19 @@
-"use client"
+"use client";
 
-import { Landmark } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { BankDetail } from "@/types/db"
-import { Loader2 } from "lucide-react"
-import BankItem from "./BankItem"
+import { Landmark } from "lucide-react";
+import { BankDetail } from "@/types/db";
+import { Loader2 } from "lucide-react";
+import BankItem from "./BankItem";
 
 interface BankListProps {
-  banks: BankDetail[]
-  isLoading: boolean
-  onEdit: (bank: BankDetail) => void
-  onDelete: (id: string) => Promise<void>
-  onAddNew: () => void
+  banks: BankDetail[];
+  isLoading: boolean;
+  onEdit: (bank: BankDetail) => void;
+  onDelete: (id: string) => Promise<void>;
+  onAddNew: () => void;
 }
 
- const BankList = ({
+const BankList = ({
   banks,
   isLoading,
   onEdit,
@@ -26,7 +25,7 @@ interface BankListProps {
       <div className="flex flex-col items-center justify-center h-full">
         <Loader2 className="w-8 h-8 animate-spin text-primary-70" />
       </div>
-    )
+    );
   }
 
   if (banks.length === 0) {
@@ -38,14 +37,18 @@ interface BankListProps {
         <p className="text-slate-500 dark:text-gray-400 font-medium">
           No bank accounts saved yet
         </p>
-        <Button
+        <button
+          type="button"
           onClick={onAddNew}
-          className="w-full bg-primary-70 h-14 rounded-2xl text-white font-bold"
+          className="group relative h-14 w-full cursor-pointer overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 font-bold text-white shadow-lg transition-all hover:shadow-xl active:scale-95"
         >
-          Add Bank Account
-        </Button>
+          <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+            Add Bank Account
+          </span>
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+        </button>
       </div>
-    )
+    );
   }
 
   return (
@@ -59,8 +62,7 @@ interface BankListProps {
         />
       ))}
     </div>
-  )
-}
+  );
+};
 
-
-export default BankList
+export default BankList;

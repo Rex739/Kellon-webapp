@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CheckCircle2, Landmark, Loader2, ShieldCheck } from "lucide-react";
+import { Landmark, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { SelectableBank } from "@/components/modals/SelectBankModal";
@@ -53,8 +52,11 @@ const BankForm = ({
       : null,
   );
   const [verificationError, setVerificationError] = useState("");
+  const [bankError, setBankError] = useState("");
+  const [accountNumberError, setAccountNumberError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const lastVerificationKeyRef = useRef("");
+  const selectedProviderBankValue = selectedProviderBank?.value;
 
   const activeBank = useMemo<SelectableBank | null>(() => {
     if (selectedProviderBank) return selectedProviderBank;
@@ -67,13 +69,15 @@ const BankForm = ({
   }, [initialData, selectedProviderBank]);
 
   useEffect(() => {
-    if (!selectedProviderBank) return;
+    if (!selectedProviderBankValue) return;
 
     setAccountNumber("");
     setVerifiedAccount(null);
     setVerificationError("");
+    setBankError("");
+    setAccountNumberError("");
     lastVerificationKeyRef.current = "";
-  }, [selectedProviderBank?.value]);
+  }, [selectedProviderBankValue]);
 
   useEffect(() => {
     const hasValidAccountNumber = /^\d{10}$/.test(accountNumber);
@@ -147,6 +151,11 @@ const BankForm = ({
     if (!/^\d{0,10}$/.test(value)) return;
 
     setAccountNumber(value);
+    setAccountNumberError(
+      value.length === 0 || value.length === 10
+        ? ""
+        : "Account number must be exactly 10 digits.",
+    );
 
     if (value.length !== 10) {
       setVerifiedAccount(null);
@@ -155,7 +164,25 @@ const BankForm = ({
   };
 
   const handleSubmit = () => {
-    if (!verifiedAccount) return;
+    if (!activeBank) {
+      setBankError("Select a bank to continue.");
+      return;
+    }
+
+    if (!/^\d{10}$/.test(accountNumber)) {
+      setAccountNumberError("Enter a valid 10-digit account number.");
+      return;
+    }
+
+    if (!verifiedAccount) {
+      setVerificationError(
+        isVerifying
+          ? "Wait while we verify this account."
+          : "Verify this bank account before saving.",
+      );
+      return;
+    }
+
     onSubmit(verifiedAccount);
   };
 
@@ -168,7 +195,9 @@ const BankForm = ({
           "flex w-full cursor-pointer items-center justify-between rounded-2xl border px-4 py-4 text-left transition",
           activeBank
             ? "border-primary-80 bg-primary-95/70 dark:border-primary-70/20 dark:bg-primary-70/10"
-            : "border-dashed border-primary-60/60 bg-primary-70/5 text-primary-60 hover:bg-primary-70/10",
+            : bankError
+              ? "border-red-400 bg-red-50 text-red-500 dark:border-red-500/40 dark:bg-red-500/10"
+              : "border-dashed border-primary-60/60 bg-primary-70/5 text-primary-60 hover:bg-primary-70/10",
         )}
       >
         <span className="flex min-w-0 items-center gap-3">
@@ -188,44 +217,57 @@ const BankForm = ({
             <span className="block truncate text-sm font-semibold text-cryptoNight dark:text-white">
               {activeBank?.label || "Select bank"}
             </span>
-            <span className="mt-1 block text-xs text-gray-30 dark:text-gray-40">
-              Bank code is added automatically
-            </span>
           </span>
         </span>
         {activeBank ? (
           <span className="text-xs font-semibold text-primary-60">Change</span>
         ) : null}
       </button>
+      {bankError ? (
+        <p className="-mt-2 text-xs font-medium text-red-500">{bankError}</p>
+      ) : null}
 
-      <div className="space-y-2">
-        <label className="text-[10px] font-bold uppercase tracking-mid text-gray-30 dark:text-gray-40">
-          Account Number
-        </label>
-        <div className="relative">
-          <Input
-            value={accountNumber}
-            onChange={(event) => handleAccountNumberChange(event.target.value)}
-            inputMode="numeric"
-            maxLength={10}
-            placeholder="Enter 10-digit account number"
-            className="h-12 rounded-2xl border-black/5 bg-gray-95 text-sm text-cryptoNight placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white dark:placeholder:text-gray-40"
-          />
-          {isVerifying ? (
-            <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-primary-60" />
+      {activeBank ? (
+        <div className="space-y-2">
+          <label className="text-[10px] font-bold uppercase tracking-mid text-gray-30 dark:text-gray-40">
+            Account Number
+          </label>
+          <div className="relative">
+            <Input
+              value={accountNumber}
+              onChange={(event) =>
+                handleAccountNumberChange(event.target.value)
+              }
+              inputMode="numeric"
+              maxLength={10}
+              placeholder="Enter 10-digit account number"
+              aria-invalid={Boolean(accountNumberError || verificationError)}
+              className={cn(
+                "h-12 rounded-2xl border-black/5 bg-gray-95 text-sm text-cryptoNight placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white dark:placeholder:text-gray-40",
+                (accountNumberError || verificationError) &&
+                  "border-red-400 focus-visible:ring-red-400/20 dark:border-red-500/50",
+              )}
+            />
+            {isVerifying ? (
+              <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-primary-60" />
+            ) : null}
+          </div>
+          {accountNumberError ? (
+            <p className="text-xs font-medium text-red-500">
+              {accountNumberError}
+            </p>
+          ) : accountNumber.length > 0 && accountNumber.length < 10 ? (
+            <p className="text-xs text-gray-30 dark:text-gray-40">
+              Account number must be exactly 10 digits.
+            </p>
+          ) : null}
+          {verificationError ? (
+            <p className="text-xs font-medium text-red-500">
+              {verificationError}
+            </p>
           ) : null}
         </div>
-        {accountNumber.length > 0 && accountNumber.length < 10 ? (
-          <p className="text-xs text-gray-30 dark:text-gray-40">
-            Account number must be exactly 10 digits.
-          </p>
-        ) : null}
-        {verificationError ? (
-          <p className="text-xs font-medium text-red-500">
-            {verificationError}
-          </p>
-        ) : null}
-      </div>
+      ) : null}
 
       {verifiedAccount ? (
         <div className="rounded-2xl border border-primary-80 bg-primary-95/70 p-3 dark:border-primary-70/20 dark:bg-primary-70/10">
@@ -260,31 +302,26 @@ const BankForm = ({
         </div>
       ) : null}
 
-      <Button
+      <button
         type="button"
-        variant="flow"
-        size="flow"
         onClick={handleSubmit}
-        disabled={!verifiedAccount || isSubmitting}
+        disabled={isSubmitting || isVerifying}
+        className="group relative w-full cursor-pointer overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3 font-bold text-white shadow-lg transition-all hover:shadow-xl active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
       >
-        {isSubmitting ? (
-          <span className="inline-flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Saving...
-          </span>
-        ) : initialData ? (
-          "Update Bank Account"
-        ) : (
-          "Save Bank Account"
-        )}
-      </Button>
-
-      {verifiedAccount ? (
-        <div className="flex items-center gap-2 text-xs text-gray-30 dark:text-gray-40">
-          <CheckCircle2 className="h-4 w-4 text-primary-60" />
-          Bank code will be saved securely and hidden from this screen.
-        </div>
-      ) : null}
+        <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Saving...
+            </>
+          ) : initialData ? (
+            "Update Bank Account"
+          ) : (
+            "Save Bank Account"
+          )}
+        </span>
+        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+      </button>
     </div>
   );
 };
