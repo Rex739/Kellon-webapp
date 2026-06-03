@@ -30,6 +30,8 @@ interface RecipientStepProps {
   isRecipientValid: boolean;
   selfRecipientError: string | null;
   verifiedRecipient: VerifiedRecipient | null;
+  isVerifyingRecipient: boolean;
+  recipientLookupMessage: string;
   onVerifyRecipient: (values: RecipientFormValues) => void | Promise<void>;
   onRecipientChange: (value: string) => void;
 }
@@ -41,6 +43,8 @@ export default function RecipientStep({
   isRecipientValid,
   selfRecipientError,
   verifiedRecipient,
+  isVerifyingRecipient,
+  recipientLookupMessage,
   onVerifyRecipient,
   onRecipientChange,
 }: RecipientStepProps) {
@@ -57,7 +61,7 @@ export default function RecipientStep({
               <FormItem>
                 <label
                   htmlFor="send-recipient"
-                  className="mb-2 block text-[11px] font-bold uppercase tracking-tight text-gray-30 dark:text-gray-40"
+                  className="mb-2 block text-[11px] font-bold uppercase tracking-tight text-gray-30 dark:text-gray-40 md:text-xs"
                 >
                   Email, tag, or wallet address
                 </label>
@@ -67,7 +71,7 @@ export default function RecipientStep({
                     <Input
                       id="send-recipient"
                       placeholder="email address, @kellonTag, or wallet address"
-                      className="h-14 rounded-xl border-gray-80 bg-gray-95 pl-11 text-sm font-medium shadow-none dark:border-white/10 dark:bg-secondary-60/45 dark:text-white md:rounded-lg"
+                      className="h-12 rounded-2xl border-black/5 bg-gray-95 pl-11 text-sm font-medium shadow-none placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white md:h-[52px] md:rounded-2xl"
                       {...field}
                       onChange={(event) => {
                         field.onChange(event);
@@ -86,10 +90,12 @@ export default function RecipientStep({
       {recipientInput.trim() ? (
         <div
           className={cn(
-            "rounded-2xl border p-4 md:rounded-lg",
+            "rounded-2xl border p-4",
             selfRecipientError
               ? "border-red-200 bg-red-50 dark:border-red-500/25 dark:bg-red-500/10"
-              : isRecipientValid
+              : verifiedRecipient
+                ? "border-emerald-200 bg-emerald-50 dark:border-emerald-500/25 dark:bg-emerald-500/10"
+                : isRecipientValid
                 ? "border-primary-90 bg-primary-99 dark:border-primary-70/30 dark:bg-primary-70/10"
                 : "border-gray-80 bg-gray-95 dark:border-white/10 dark:bg-secondary-60/35",
           )}
@@ -100,7 +106,9 @@ export default function RecipientStep({
                 "flex h-12 w-12 shrink-0 items-center justify-center rounded-full",
                 selfRecipientError
                   ? "bg-red-100 text-red-500 dark:bg-red-500/15 dark:text-red-400"
-                  : isRecipientValid
+                  : verifiedRecipient
+                    ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400"
+                    : isRecipientValid
                     ? "bg-primary-95 text-primary-50 dark:bg-primary-70/20 dark:text-primary-80"
                     : "bg-gray-90 text-gray-30 dark:bg-secondary-60 dark:text-gray-40",
               )}
@@ -115,15 +123,19 @@ export default function RecipientStep({
               <p className="text-sm font-semibold text-black dark:text-white">
                 {selfRecipientError
                   ? "You can't send to yourself"
+                  : isVerifyingRecipient
+                    ? "Checking Kellon user"
                   : isRecipientValid
                     ? verifiedRecipient
                       ? "Recipient verified"
                       : getRecipientPendingLabel(recipientKind)
                     : "Check recipient"}
               </p>
-              <p className="mt-1 break-all text-xs text-gray-20 dark:text-gray-40">
+              <p className="mt-1 break-all text-xs text-gray-20 dark:text-gray-40 md:text-sm">
                 {selfRecipientError
                   ? selfRecipientError
+                  : recipientLookupMessage
+                    ? recipientLookupMessage
                   : isRecipientValid
                     ? truncateMiddle(recipientInput.trim(), 12)
                     : "Enter a valid email, username, @tag, EVM address, or Stellar address."}
@@ -139,7 +151,7 @@ export default function RecipientStep({
                     {verifiedRecipient
                       ? verifiedRecipient.name || "Verified recipient"
                       : recipientKind === "email" || recipientKind === "tag"
-                        ? "Tap Continue to verify this Kellon user"
+                        ? "We will verify this Kellon user automatically"
                         : "Wallet address will be used as entered"}
                   </div>
                   <div className="flex items-center gap-2 rounded-xl bg-white/80 px-3 py-2 text-xs font-medium text-gray-20 dark:bg-white/5 dark:text-white/80">
@@ -152,7 +164,7 @@ export default function RecipientStep({
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-gray-80 bg-gray-95 p-8 text-center dark:border-white/10 dark:bg-secondary-60/20 md:rounded-lg">
+        <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-gray-80 bg-gray-95 p-8 text-center dark:border-white/10 dark:bg-secondary-60/20 md:min-h-[300px]">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-95 text-primary-50 dark:bg-primary-70/15 dark:text-primary-80">
             <Send className="h-6 w-6" />
           </div>

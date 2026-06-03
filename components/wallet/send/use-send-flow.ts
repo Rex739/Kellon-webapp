@@ -37,6 +37,7 @@ export function useSendFlow(profile: User) {
   const [verifiedRecipient, setVerifiedRecipient] =
     useState<VerifiedRecipient | null>(null);
   const [isVerifyingRecipient, setIsVerifyingRecipient] = useState(false);
+  const [recipientLookupMessage, setRecipientLookupMessage] = useState("");
   const [selectedAssetId, setSelectedAssetId] = useState<string>("");
   const [amount, setAmount] = useState("");
   const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
@@ -170,16 +171,96 @@ export function useSendFlow(profile: User) {
       ? "You can't send to yourself. Choose another recipient."
       : null;
 
-  const verifyRecipient = async (values: RecipientFormValues) => {
-    const recipient = values.recipient.trim();
+  useEffect(() => {
+    const recipient = normalizedRecipient;
     const kind = getRecipientKind(recipient);
 
     setVerifiedRecipient(null);
+
+    if (!recipient) {
+      setRecipientLookupMessage("");
+      return;
+    }
+
+    if (isSelfRecipient(recipient)) {
+      const message = "You can't send to yourself. Choose another recipient.";
+      setRecipientLookupMessage(message);
+      recipientForm.setError("recipient", { message });
+      return;
+    }
+
+    if (!isSupportedRecipient(kind)) {
+      setRecipientLookupMessage(
+        "Enter a valid email, username, @tag, EVM address, or Stellar address.",
+      );
+      return;
+    }
+
+    if (kind === "evm" || kind === "stellar") {
+      setVerifiedRecipient({ id: recipient, identifier: recipient });
+      setRecipientLookupMessage("Wallet address will be used as entered.");
+      recipientForm.clearErrors("recipient");
+      return;
+    }
+
+    setRecipientLookupMessage("Checking Kellon user...");
+    setIsVerifyingRecipient(true);
+
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        const lookupValue =
+          kind === "tag" ? recipient.replace(/^@/, "") : recipient.toLowerCase();
+        const response = await transferService.verifyRecipient(lookupValue);
+        const recipientUser = response.data;
+
+        if (!recipientUser?.found) {
+          const message = "No Kellon user found for this recipient.";
+          setRecipientLookupMessage(message);
+          recipientForm.setError("recipient", { message });
+          return;
+        }
+
+        setVerifiedRecipient({
+          id: lookupValue,
+          name: recipientUser.name,
+          addresses: recipientUser.addresses,
+          identifier: recipient,
+        });
+        setRecipientLookupMessage(
+          recipientUser.name
+            ? `Verified as ${recipientUser.name}`
+            : "Kellon recipient verified",
+        );
+        recipientForm.clearErrors("recipient");
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unable to verify recipient.";
+        setRecipientLookupMessage(message);
+        recipientForm.setError("recipient", { message });
+      } finally {
+        setIsVerifyingRecipient(false);
+      }
+    }, 450);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      setIsVerifyingRecipient(false);
+    };
+  }, [normalizedRecipient, recipientForm, selfIdentifiers]);
+
+  const verifyRecipient = async (values: RecipientFormValues) => {
+    const recipient = values.recipient.trim();
+    const kind = getRecipientKind(recipient);
 
     if (isSelfRecipient(recipient)) {
       recipientForm.setError("recipient", {
         message: "You can't send to yourself. Choose another recipient.",
       });
+      return;
+    }
+
+    if (verifiedRecipient) {
+      setStep("asset");
       return;
     }
 
@@ -228,7 +309,6 @@ export function useSendFlow(profile: User) {
 
   const handleRecipientChange = (nextRecipient: string) => {
     setRecipientInput(nextRecipient);
-    setVerifiedRecipient(null);
 
     if (isSelfRecipient(nextRecipient)) {
       recipientForm.setError("recipient", {
@@ -382,7 +462,8 @@ export function useSendFlow(profile: User) {
     (step === "recipient" &&
       (!isRecipientValid ||
         isVerifyingRecipient ||
-        Boolean(selfRecipientError))) ||
+        Boolean(selfRecipientError) ||
+        !verifiedRecipient)) ||
     (step === "asset" && !selectedAsset) ||
     (step === "amount" && !isAmountValid) ||
     (step === "review" && isSubmitting);
@@ -408,6 +489,7 @@ export function useSendFlow(profile: User) {
     recipientForm,
     recipientInput,
     recipientKind,
+    recipientLookupMessage,
     verificationRequest,
     selectedAsset,
     sendableAssets,

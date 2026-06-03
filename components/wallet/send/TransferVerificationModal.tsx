@@ -60,7 +60,7 @@ export default function TransferVerificationModal({
             inputMode="numeric"
             autoComplete="one-time-code"
             placeholder="Enter code"
-            className="mt-5 h-12 rounded-xl border-gray-80 bg-gray-95 text-center text-base font-semibold tracking-[0.35em] text-cryptoNight placeholder:tracking-normal dark:border-white/10 dark:bg-secondary-50 dark:text-white"
+            className="mt-5 h-12 rounded-2xl border-black/5 bg-gray-95 text-center text-base font-semibold tracking-[0.35em] text-cryptoNight placeholder:tracking-normal placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white"
             disabled={isSubmitting}
           />
 

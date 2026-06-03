@@ -30,7 +30,7 @@ export default function RecentsPanel({
   setStep,
 }: RecentsPanelProps) {
   return (
-    <aside className="rounded-2xl border border-black/5 bg-white/60 p-4 backdrop-blur dark:border-white/10 dark:bg-secondary-50/30 md:rounded-lg md:p-5">
+    <aside className="rounded-[24px] border border-black/5 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-secondary-50/80 dark:shadow-none md:p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-black dark:text-white">
           Recents
@@ -60,7 +60,7 @@ export default function RecentsPanel({
                   setVerifiedRecipient(null);
                   setStep("recipient");
                 }}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-gray-80 bg-white p-3 text-left transition hover:border-primary-90 hover:bg-primary-99 dark:border-white/10 dark:bg-secondary-60/25 dark:hover:border-primary-70/30 dark:hover:bg-primary-70/10 md:rounded-lg cursor-pointer"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-gray-80 bg-white p-3 text-left transition hover:border-primary-90 hover:bg-primary-99 dark:border-white/10 dark:bg-secondary-60/25 dark:hover:border-primary-70/30 dark:hover:bg-primary-70/10 cursor-pointer"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-95 text-primary-50 dark:bg-primary-70/15 dark:text-primary-80">
@@ -80,7 +80,7 @@ export default function RecentsPanel({
             );
           })
         ) : (
-          <div className="rounded-2xl border border-dashed border-gray-80 bg-gray-95 p-5 text-center dark:border-white/10 dark:bg-secondary-60/20 md:rounded-lg">
+          <div className="rounded-2xl border border-dashed border-gray-80 bg-gray-95 p-5 text-center dark:border-white/10 dark:bg-secondary-60/20">
             <p className="text-sm font-medium text-black dark:text-white">
               No recent recipients
             </p>

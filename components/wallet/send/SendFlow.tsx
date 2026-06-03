@@ -39,6 +39,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
     recipientForm,
     recipientInput,
     recipientKind,
+    recipientLookupMessage,
     selectedAsset,
     sendableAssets,
     setAmount,
@@ -57,7 +58,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
   } = useSendFlow(profile);
 
   return (
-    <div className="container mx-auto flex min-h-[90dvh] max-w-5xl flex-col px-4 pb-32 pt-4 md:px-6 md:pt-20">
+    <div className="container mx-auto flex min-h-[90dvh] max-w-5xl flex-col px-4 pb-32 pt-4 md:px-6 md:pt-28">
       <div className="mb-8 flex items-center justify-between">
         <button
           type="button"
@@ -85,8 +86,8 @@ export default function SendFlow({ profile }: SendFlowProps) {
         totalSteps={SEND_STEPS.length}
       />
 
-      <div className="mx-auto grid w-full max-w-4xl gap-5 md:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)] md:items-start">
-        <section className="min-h-[420px] rounded-2xl border border-black/5 bg-white/75 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-secondary-50/45 md:rounded-lg md:p-5">
+      <div className="mx-auto grid w-full max-w-5xl gap-5 md:grid-cols-2 md:items-start">
+        <section className="rounded-[24px] border border-black/5 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-secondary-50/80 dark:shadow-none md:min-h-[460px] md:p-6 lg:min-h-[500px]">
           {step === "recipient" ? (
             <RecipientStep
               recipientForm={recipientForm}
@@ -95,6 +96,8 @@ export default function SendFlow({ profile }: SendFlowProps) {
               isRecipientValid={isRecipientValid}
               selfRecipientError={selfRecipientError}
               verifiedRecipient={verifiedRecipient}
+              isVerifyingRecipient={isVerifyingRecipient}
+              recipientLookupMessage={recipientLookupMessage}
               onVerifyRecipient={verifyRecipient}
               onRecipientChange={handleRecipientChange}
             />
@@ -129,40 +132,41 @@ export default function SendFlow({ profile }: SendFlowProps) {
               recipientKind={recipientKind}
             />
           ) : null}
+
         </section>
 
-        <RecentsPanel
-          recentRecipients={recentRecipients}
-          recipientForm={recipientForm}
-          setRecipientInput={setRecipientInput}
-          setVerifiedRecipient={setVerifiedRecipient}
-          setStep={setStep}
-        />
-      </div>
+        <div className="flex flex-col gap-5">
+          <RecentsPanel
+            recentRecipients={recentRecipients}
+            recipientForm={recipientForm}
+            setRecipientInput={setRecipientInput}
+            setVerifiedRecipient={setVerifiedRecipient}
+            setStep={setStep}
+          />
 
-      <div className="mx-auto mt-6 w-full max-w-4xl">
-        <Button
-          variant="flow"
-          size="flow"
-          onClick={step === "review" ? submitTransfer : goNext}
-          disabled={primaryButtonDisabled}
-        >
-          <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
-            {step === "review"
-              ? isSubmitting
-                ? "Sending..."
-                : "Send Now"
-              : step === "recipient" && isVerifyingRecipient
-                ? "Verifying..."
-                : "Continue"}
-            {step === "review" ? (
-              <Send className="h-5 w-5" />
-            ) : (
-              <ArrowRight className="h-5 w-5" />
-            )}
-          </span>
-          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-        </Button>
+          <Button
+            variant="flow"
+            size="flow"
+            onClick={step === "review" ? submitTransfer : goNext}
+            disabled={primaryButtonDisabled}
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
+              {step === "review"
+                ? isSubmitting
+                  ? "Sending..."
+                  : "Send Now"
+                : step === "recipient" && isVerifyingRecipient
+                  ? "Verifying..."
+                  : "Continue"}
+              {step === "review" ? (
+                <Send className="h-5 w-5" />
+              ) : (
+                <ArrowRight className="h-5 w-5" />
+              )}
+            </span>
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+          </Button>
+        </div>
       </div>
 
       <AddFundsModal isOpen={isAddFundsOpen} onClose={setIsAddFundsOpen} />

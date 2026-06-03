@@ -34,7 +34,7 @@ export default function AssetStep({
               onClick={() => onSelectAsset(asset.key)}
               className={cn(
                 "cursor-pointer",
-                "flex items-center justify-between gap-4 rounded-2xl border p-4 text-left transition md:rounded-lg",
+                "flex items-center justify-between gap-4 rounded-2xl border p-4 text-left transition",
                 isSelected
                   ? "border-primary-70 bg-primary-99 dark:border-primary-70/50 dark:bg-primary-70/10"
                   : "border-gray-80 bg-gray-95 hover:border-gray-60 dark:border-white/10 dark:bg-secondary-60/25 dark:hover:border-white/20",
@@ -72,7 +72,7 @@ export default function AssetStep({
           );
         })
       ) : (
-        <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-dashed border-gray-80 bg-gray-95 p-8 text-center dark:border-white/10 dark:bg-secondary-60/20 md:rounded-lg">
+        <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-dashed border-gray-80 bg-gray-95 p-8 text-center dark:border-white/10 dark:bg-secondary-60/20 md:min-h-[300px]">
           <Wallet className="mb-4 h-8 w-8 text-gray-30" />
           <h2 className="text-base font-semibold text-black dark:text-white">
             No sendable assets
