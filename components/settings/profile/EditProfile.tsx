@@ -17,7 +17,6 @@ import {
   Loader2,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -223,7 +222,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                         <FormControl>
                           <Input
                             {...field}
-                            className="bg-slate-50 dark:bg-black1 border-slate-200 dark:border-white/10 h-12 pl-12 rounded-xl"
+                            className="bg-gray-95 dark:bg-secondary-60 border-black/5 dark:border-white/10 h-12 pl-12 rounded-2xl text-black dark:text-white placeholder:text-gray-400 focus-visible:ring-primary-70/20"
                           />
                         </FormControl>
                       </div>
@@ -244,7 +243,7 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                         <FormControl>
                           <Input
                             {...field}
-                            className="bg-slate-50 dark:bg-black1 border-slate-200 dark:border-white/10 h-12 pl-12 rounded-xl"
+                            className="bg-gray-95 dark:bg-secondary-60 border-black/5 dark:border-white/10 h-12 pl-12 rounded-2xl text-black dark:text-white placeholder:text-gray-400 focus-visible:ring-primary-70/20"
                           />
                         </FormControl>
                       </div>
@@ -253,28 +252,33 @@ const ProfilePage: FC<ProfilePageProps> = ({ initialProfile }) => {
                   )}
                 />
                 <div className="flex gap-4 pt-4">
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    className="flex-1 rounded-xl h-12"
+                    className="group relative flex-1 overflow-hidden rounded-xl border border-black/5 bg-white py-3 font-bold transition-all hover:bg-gray-50 active:scale-95 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50 cursor-pointer"
                     onClick={() => setIsEditing(false)}
                   >
-                    Cancel
-                  </Button>
-                  <Button
+                    <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+                      Cancel
+                    </span>
+                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-gray-900/5 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+                  </button>
+                  <button
                     type="submit"
-                    disabled={isSubmitting} // Prevent double-clicks
-                    className="flex-1 bg-primary-70 text-white rounded-xl h-12 font-bold flex items-center justify-center gap-2"
+                    disabled={isSubmitting}
+                    className="group relative flex-1 overflow-hidden rounded-xl bg-gradient-to-r from-primary-70 to-primary-60 py-3 font-bold text-white shadow-lg transition-all hover:shadow-xl active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 cursor-pointer"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Saving...</span>
-                      </>
-                    ) : (
-                      "Save Changes"
-                    )}
-                  </Button>
+                    <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Save Changes"
+                      )}
+                    </span>
+                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+                  </button>
                 </div>
               </form>
             </Form>
