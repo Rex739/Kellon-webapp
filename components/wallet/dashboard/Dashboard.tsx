@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AddFundsModal from "@/components/modals/AddFundsModal";
+import WalletServicesModal from "@/components/modals/WalletServicesModal";
 import { cn, getGreeting } from "@/lib/utils";
 import type { User } from "@/types/db";
 import ActivityPanel from "./ActivityPanel";
@@ -19,6 +20,7 @@ interface DashboardClientProps {
 export default function DashboardClient({ profile }: DashboardClientProps) {
   const router = useRouter();
   const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
+  const [isWalletServicesOpen, setIsWalletServicesOpen] = useState(false);
   const [greeting, setGreeting] = useState("Welcome back");
   const dashboard = useDashboardData(profile);
 
@@ -77,6 +79,7 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
               onAddFunds={() => setIsAddFundsOpen(true)}
               onSend={() => router.push("/send")}
               onWithdraw={() => router.push("/withdraw")}
+              onMore={() => setIsWalletServicesOpen(true)}
             />
 
             <ActivityPanel
@@ -90,6 +93,10 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
       </div>
 
       <AddFundsModal isOpen={isAddFundsOpen} onClose={setIsAddFundsOpen} />
+      <WalletServicesModal
+        isOpen={isWalletServicesOpen}
+        onClose={setIsWalletServicesOpen}
+      />
     </div>
   );
 }
