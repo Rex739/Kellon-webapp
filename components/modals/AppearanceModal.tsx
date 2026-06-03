@@ -50,11 +50,10 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
       <button
         onClick={() => setTheme(id)}
         className={cn(
-          "cursor-pointer",
-          "w-full flex items-center justify-between p-4 rounded-[20px] transition-all border-2 text-left mb-3",
+          "w-full flex cursor-pointer items-center justify-between rounded-[24px] border p-5 text-left mb-3 outline-none transition-all group",
           isActive
             ? "border-primary-70 bg-primary-70/5 dark:bg-primary-70/10"
-            : "border-gray-80 dark:border-secondary-40 bg-white dark:bg-secondary-60",
+            : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:hover:bg-secondary-60/50",
         )}
       >
         <div className="flex items-center gap-4">
@@ -93,7 +92,7 @@ const AppearanceModal: FC<AppearanceModalProps> = ({ isOpen, onClose }) => {
       <div className="w-full flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>

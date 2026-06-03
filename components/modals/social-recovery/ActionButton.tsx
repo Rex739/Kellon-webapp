@@ -20,14 +20,14 @@ export const ActionButton: FC<ActionButtonProps> = ({
   const variants = {
     pink: "bg-primary-20 hover:bg-primary-20/90 text-white border-none",
     orange: "bg-orange-10 hover:bg-orange-10/90 text-white border-none",
-    dark: "bg-secondary-60 dark:bg-secondary-60 border border-gray-80 dark:border-secondary-40 text-white",
+    dark: "border border-black/5 bg-white text-black hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:text-white dark:hover:bg-secondary-60/50",
   };
 
   return (
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-4 p-4 rounded-[20px] transition-all text-left cursor-pointer",
+        "w-full flex items-center gap-4 p-5 rounded-[24px] transition-all text-left outline-none cursor-pointer",
         variants[variant],
       )}
     >

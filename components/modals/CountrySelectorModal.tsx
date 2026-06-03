@@ -91,7 +91,7 @@ export const CountrySelectorModal: React.FC<CountrySelectorModalProps> = ({
           placeholder="Search country..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-12 rounded-xl border-black/5 bg-white pl-11 pr-10 text-sm text-black shadow-none placeholder:text-gray-400 focus-visible:border-primary-70 focus-visible:ring-primary-70/15 dark:border-white/10 dark:bg-secondary-60/50 dark:text-white dark:placeholder:text-gray-500"
+          className="h-12 rounded-2xl border-black/5 bg-gray-95 pl-11 pr-10 text-sm text-black placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white dark:placeholder:text-gray-500"
         />
         {searchQuery && (
           <button

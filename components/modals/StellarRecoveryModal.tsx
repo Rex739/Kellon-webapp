@@ -67,7 +67,7 @@ const StellarKeyRecoveryModal: FC<StellarKeyRecoveryModalProps> = ({
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>

@@ -32,13 +32,13 @@ export function ExitConfirmation({
         <AlertDialogFooter className="flex-row justify-end gap-4 sm:justify-end">
           <button
             onClick={onStay}
-            className="text-sm font-bold text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+            className="rounded-full px-3 py-2 text-sm font-bold text-gray-400 transition-colors hover:bg-gray-50 hover:text-black dark:hover:bg-secondary-60/50 dark:hover:text-white cursor-pointer"
           >
             STAY
           </button>
           <button
             onClick={onLeave}
-            className="text-sm font-bold text-primary-70 hover:opacity-80 transition-opacity cursor-pointer"
+            className="rounded-full px-3 py-2 text-sm font-bold text-primary-70 transition-opacity hover:opacity-80 cursor-pointer"
           >
             LEAVE
           </button>

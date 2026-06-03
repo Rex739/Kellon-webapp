@@ -41,7 +41,7 @@ export const MainView: FC<MainViewProps> = ({
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none shadow-sm cursor-pointer"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -120,7 +120,7 @@ export const MainView: FC<MainViewProps> = ({
                 {...register("requestId")}
                 placeholder="Enter Request ID"
                 className={cn(
-                  "bg-white dark:bg-secondary-40 border-black/5 dark:border-white/10 rounded-xl py-6",
+                  "h-12 rounded-2xl border-black/5 bg-gray-95 text-black placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white",
                   errors.requestId &&
                     "border-red-500 focus-visible:ring-red-500",
                 )}
@@ -128,7 +128,7 @@ export const MainView: FC<MainViewProps> = ({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-primary-20 hover:bg-primary-20/90 text-white rounded-xl px-6 py-6 font-bold"
+                className="bg-primary-20 hover:bg-primary-20/90 text-white rounded-xl px-6 py-6 font-bold cursor-pointer disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <Loader2 className="animate-spin w-4 h-4" />

@@ -162,7 +162,7 @@ export default function SelectBankModal({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-gray-80 bg-white p-2 text-gray-20 transition hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-60/50 dark:text-white cursor-pointer"
+          className="rounded-full border border-black/5 bg-white p-2 text-gray-20 outline-none transition-opacity hover:opacity-80 dark:border-none dark:bg-secondary-60/50 dark:text-white cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
@@ -175,7 +175,7 @@ export default function SelectBankModal({
             value={bankSearch}
             onChange={(event) => setBankSearch(event.target.value)}
             placeholder="Search banks..."
-            className="h-12 rounded-2xl border-gray-80 bg-white pl-11 text-sm text-cryptoNight placeholder:text-gray-30 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-50 dark:text-white dark:placeholder:text-gray-40"
+            className="h-12 rounded-2xl border-black/5 bg-gray-95 pl-11 text-sm text-black placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white dark:placeholder:text-gray-40"
           />
         </div>
 
@@ -198,11 +198,10 @@ export default function SelectBankModal({
                     onClose();
                   }}
                   className={cn(
-                    "cursor-pointer",
-                    "flex w-full items-center gap-3 border-b border-gray-90 px-4 py-4 text-left transition last:border-b-0 dark:border-white/10",
+                    "flex w-full cursor-pointer items-center gap-3 border-b border-gray-90 px-4 py-4 text-left outline-none transition-all last:border-b-0 dark:border-white/10",
                     isSelected
                       ? "bg-primary-95/80 dark:bg-primary-70/10"
-                      : "hover:bg-gray-95 dark:hover:bg-white/5",
+                      : "hover:bg-gray-50 dark:hover:bg-secondary-60/50",
                   )}
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-95 text-primary-60 dark:bg-primary-70/10 dark:text-primary-80">

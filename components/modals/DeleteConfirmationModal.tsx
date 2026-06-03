@@ -68,7 +68,7 @@ const DeleteConfirmationModal: FC<DeleteConfirmationModalProps> = ({
 
         <AlertDialogFooter className="mt-6 gap-3">
           <AlertDialogCancel
-            className="flex-1 h-12 rounded-2xl border-slate-200 dark:border-gray-700 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5"
+            className="flex-1 h-12 rounded-2xl border-black/5 bg-white transition-all hover:bg-gray-50 disabled:cursor-not-allowed dark:border-white/10 dark:bg-secondary-50 dark:text-white dark:hover:bg-secondary-60/50 cursor-pointer"
             disabled={isDeleting}
           >
             Cancel
@@ -76,7 +76,7 @@ const DeleteConfirmationModal: FC<DeleteConfirmationModalProps> = ({
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isDeleting}
-            className="flex-1 h-12 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-bold border-none"
+            className="flex-1 h-12 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-bold border-none transition-all disabled:cursor-not-allowed cursor-pointer"
           >
             {isDeleting ? (
               <Loader2 className="w-5 h-5 animate-spin" />

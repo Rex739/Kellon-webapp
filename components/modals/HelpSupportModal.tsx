@@ -56,7 +56,7 @@ const SupportItem: FC<SupportItemProps> = ({
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="w-full flex items-center justify-between p-4 rounded-[24px] bg-white dark:bg-secondary-60 border border-black/5 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-secondary-60/50 transition-all group cursor-pointer"
+    className="w-full flex items-center justify-between p-5 rounded-[24px] bg-white dark:bg-secondary-60 border border-black/5 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-secondary-60/50 transition-all group outline-none cursor-pointer"
   >
     <div className="flex items-center gap-4">
       <div className="p-2 bg-pink-500/10 dark:bg-pink-500/20 rounded-lg text-[#D64692]">
@@ -76,7 +76,7 @@ const SupportItem: FC<SupportItemProps> = ({
         </span>
       </div>
     </div>
-    <ChevronRight className="w-4 h-4 text-gray-30 group-hover:translate-x-0.5 transition-transform" />
+    <ChevronRight className="w-4 h-4 text-gray-30 transition-colors group-hover:text-black dark:group-hover:text-white" />
   </a>
 );
 
@@ -102,7 +102,7 @@ const HelpSupportModal: FC<HelpSupportModalProps> = ({ isOpen, onClose }) => {
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>

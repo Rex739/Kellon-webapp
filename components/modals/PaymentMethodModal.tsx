@@ -63,7 +63,7 @@ export default function PaymentMethodModal({
       <div className="flex justify-start mb-6">
         <button
           onClick={() => onClose(false)}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -86,10 +86,10 @@ export default function PaymentMethodModal({
                 onClose(false);
               }}
               className={cn(
-                "w-full flex items-center justify-between p-5 rounded-[24px] border transition-all outline-none",
+                "w-full flex items-center justify-between p-5 rounded-[24px] border transition-all group outline-none cursor-pointer",
                 isSelected
                   ? "border-primary-70 bg-primary-70/5 dark:bg-primary-70/10"
-                  : "bg-white dark:bg-secondary-60 hover:bg-gray-50 dark:hover:bg-secondary-60/50 border border-black/5 dark:border-white/10 cursor-pointer",
+                  : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:hover:bg-secondary-60/50",
               )}
             >
               <div className="flex items-center gap-4">

@@ -45,7 +45,7 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={onBack}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none shadow-sm cursor-pointer"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -92,8 +92,7 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
                 {/* Visual Prefix Container */}
                 <div
                   className={cn(
-                    // Wrapper: Handles background and border for BOTH modes
-                    "flex flex-1 items-center bg-gray-95 dark:bg-secondary-40/50 rounded-xl px-3 border border-transparent focus-within:border-primary-20/50 focus-within:bg-white dark:focus-within:bg-secondary-40 transition-all",
+                    "flex flex-1 items-center bg-gray-95 dark:bg-secondary-60 rounded-2xl px-3 border border-black/5 dark:border-white/10 focus-within:ring-[3px] focus-within:ring-primary-70/20 transition-all",
                     errors.guardianId && "border-red-500",
                   )}
                 >
@@ -106,11 +105,9 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
                     {...register("guardianId")}
                     placeholder="enter guardian tag (eg @alice)"
                     className={cn(
-                      // Input: Explicitly transparent in both modes to prevent "white box" issues
                       "bg-transparent dark:bg-transparent",
                       "border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0",
                       "p-0 h-10 text-sm w-full",
-                      // Text colors for both modes
                       "text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-secondary-90/50",
                     )}
                   />
@@ -119,7 +116,7 @@ export const ManageGuardiansView: FC<ManageGuardiansViewProps> = ({
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-primary-20 h-10 w-10 p-0 rounded-xl shrink-0"
+                  className="bg-primary-20 hover:bg-primary-20/90 h-10 w-10 p-0 rounded-xl shrink-0 cursor-pointer disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <Loader2 className="animate-spin w-4 h-4" />

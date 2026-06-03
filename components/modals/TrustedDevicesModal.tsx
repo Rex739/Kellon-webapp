@@ -104,7 +104,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
       <div className="flex justify-start mb-4">
         <button
           onClick={onClose}
-          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-slate-200 dark:border-none hover:opacity-80 transition-opacity cursor-pointer"
+          className="p-2 bg-white dark:bg-secondary-60/50 rounded-full border border-black/5 dark:border-none hover:opacity-80 transition-opacity outline-none cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-white" />
         </button>
@@ -131,10 +131,10 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
           <div
             key={device.id}
             className={cn(
-              "flex items-center justify-between p-4 rounded-2xl border transition-all",
+              "flex items-center justify-between p-5 rounded-[24px] border transition-all",
               device.isCurrent
                 ? "border-primary-70/20 bg-primary-95/50 dark:bg-primary-70/5"
-                : "border-black/5 bg-white dark:border-white/10 dark:bg-secondary-60",
+                : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:hover:bg-secondary-60/50",
             )}
           >
             <div className="flex items-center gap-4">
@@ -169,7 +169,7 @@ const TrustedDevicesModal: FC<TrustedDevicesModalProps> = ({
 
             {!device.isCurrent && (
               <button
-                className="p-2 text-gray-20 hover:text-red-500 transition-colors cursor-pointer"
+                className="rounded-full p-2 text-gray-20 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 cursor-pointer"
                 onClick={() => console.log("Revoke", device.id)}
               >
                 <Trash2 className="w-4 h-4" />
