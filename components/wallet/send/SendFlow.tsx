@@ -87,7 +87,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
       />
 
       <div className="mx-auto grid w-full max-w-5xl gap-5 md:grid-cols-2 md:items-start">
-        <section className="rounded-[24px] border border-black/5 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-secondary-50/80 dark:shadow-none md:min-h-[460px] md:p-6 lg:min-h-[500px]">
+        <section className="h-full rounded-[24px] border border-black/5 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-secondary-50/80 dark:shadow-none md:p-6">
           {step === "recipient" ? (
             <RecipientStep
               recipientForm={recipientForm}

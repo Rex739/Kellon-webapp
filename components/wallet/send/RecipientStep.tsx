@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Search, Send, ShieldCheck } from "lucide-react";
+import { Check, Search, Send } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -101,24 +101,6 @@ export default function RecipientStep({
           )}
         >
           <div className="flex items-start gap-4">
-            <div
-              className={cn(
-                "flex h-12 w-12 shrink-0 items-center justify-center rounded-full",
-                selfRecipientError
-                  ? "bg-red-100 text-red-500 dark:bg-red-500/15 dark:text-red-400"
-                  : verifiedRecipient
-                    ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400"
-                    : isRecipientValid
-                    ? "bg-primary-95 text-primary-50 dark:bg-primary-70/20 dark:text-primary-80"
-                    : "bg-gray-90 text-gray-30 dark:bg-secondary-60 dark:text-gray-40",
-              )}
-            >
-              {verifiedRecipient ? (
-                <ShieldCheck className="h-6 w-6" />
-              ) : (
-                <RecipientIcon className="h-6 w-6" />
-              )}
-            </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-black dark:text-white">
                 {selfRecipientError
