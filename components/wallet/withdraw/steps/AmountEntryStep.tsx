@@ -249,7 +249,7 @@ export function WithdrawAmountEntryStep({
                               type="text"
                               inputMode="decimal"
                               placeholder="0.00"
-                              className="h-12 rounded-xl border-slate-200 bg-slate-50 pl-16 pr-16 text-center dark:border-white/10 dark:bg-black1"
+                              className="h-12 rounded-2xl border-black/5 bg-gray-95 pl-16 pr-16 text-center placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white"
                               {...field}
                               onChange={(event) =>
                                 syncAmount(event.target.value.trim())

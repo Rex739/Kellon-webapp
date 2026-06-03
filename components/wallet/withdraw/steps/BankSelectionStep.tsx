@@ -363,7 +363,7 @@ export function WithdrawBankSelectionStep({
                         inputMode="numeric"
                         maxLength={10}
                         placeholder="Enter 10-digit account number"
-                        className="h-11 rounded-2xl border-gray-80 bg-gray-95 text-sm text-cryptoNight placeholder:text-gray-30 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white dark:placeholder:text-gray-40"
+                        className="h-12 rounded-2xl border-black/5 bg-gray-95 text-sm text-cryptoNight placeholder:text-gray-400 focus-visible:ring-primary-70/20 dark:border-white/10 dark:bg-secondary-60 dark:text-white dark:placeholder:text-gray-40"
                       />
                       {isVerifying ? (
                         <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-primary-60" />
