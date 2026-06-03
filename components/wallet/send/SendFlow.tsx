@@ -58,7 +58,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
   } = useSendFlow(profile);
 
   return (
-    <div className="container mx-auto flex min-h-[90dvh] max-w-5xl flex-col px-4 pb-32 pt-4 md:px-6 md:pt-28">
+    <div className="mx-auto flex min-h-[90dvh] w-full max-w-full flex-col overflow-x-hidden px-4 pb-32 pt-4 md:container md:max-w-5xl md:px-6 md:pt-28">
       <div className="mb-8 flex items-center justify-between">
         <button
           type="button"
@@ -86,8 +86,8 @@ export default function SendFlow({ profile }: SendFlowProps) {
         totalSteps={SEND_STEPS.length}
       />
 
-      <div className="mx-auto grid w-full max-w-5xl gap-5 md:grid-cols-2 md:items-start">
-        <section className="h-full rounded-[24px] border border-black/5 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-secondary-50/80 dark:shadow-none md:p-6">
+      <div className="mx-auto grid w-full min-w-0 max-w-full gap-5 md:max-w-5xl md:grid-cols-2 md:items-start">
+        <section className="h-full min-w-0 overflow-hidden rounded-[24px] border border-black/5 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-secondary-50/80 dark:shadow-none md:p-6">
           {step === "recipient" ? (
             <RecipientStep
               recipientForm={recipientForm}
@@ -135,7 +135,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
 
         </section>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex min-w-0 flex-col gap-5">
           <RecentsPanel
             recentRecipients={recentRecipients}
             recipientForm={recipientForm}
@@ -147,6 +147,7 @@ export default function SendFlow({ profile }: SendFlowProps) {
           <Button
             variant="flow"
             size="flow"
+            className="max-w-full"
             onClick={step === "review" ? submitTransfer : goNext}
             disabled={primaryButtonDisabled}
           >

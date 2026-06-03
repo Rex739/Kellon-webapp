@@ -1,8 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { ArrowRight, Wallet } from "lucide-react";
+import AssetNetworkIcon from "@/components/wallet/AssetNetworkIcon";
 import { cn } from "@/lib/utils";
+import { getChainLabel } from "@/lib/chains";
 import CountrySelectorButton from "@/components/wallet/shared/CountrySelectorButton";
 import { Button } from "@/components/ui/button";
 
@@ -67,20 +68,16 @@ export function WithdrawAssetSelectionStep({
                       : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
                   )}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="relative h-8 w-8">
-                        <Image
-                          src={`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${item.symbol.toLowerCase()}.png`}
-                          alt={item.symbol}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
-                      <div className="text-left">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+                      <AssetNetworkIcon
+                        symbol={item.symbol}
+                        network={item.network?.name}
+                      />
+                      <div className="min-w-0 text-left">
                         <p
                           className={cn(
-                            "text-sm font-bold",
+                            "truncate text-sm font-bold",
                             asset === item.symbol
                               ? "text-primary-60"
                               : "text-black dark:text-white",
@@ -88,17 +85,14 @@ export function WithdrawAssetSelectionStep({
                         >
                           {item.symbol}
                         </p>
-                        <p className="text-xs text-gray-500">
-                          {item.network?.name
-                            ? item.network.name.charAt(0).toUpperCase() +
-                              item.network.name.slice(1)
-                            : "Available"}
+                        <p className="truncate text-xs text-gray-500">
+                          {item.name} • {getChainLabel(item.network?.name)}
                         </p>
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-black dark:text-white">
+                    <div className="max-w-[76px] shrink-0 text-right sm:max-w-none">
+                      <p className="truncate text-xs font-bold text-black dark:text-white sm:text-sm">
                         {item.balance.toFixed(4)}
                       </p>
                       <p className="text-xs text-gray-500">

@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { Wallet } from "lucide-react";
-import ChainIcon from "@/components/wallet/ChainIcon";
+import AssetNetworkIcon from "@/components/wallet/AssetNetworkIcon";
 import { Button } from "@/components/ui/button";
 import { getChainLabel } from "@/lib/chains";
 import { cn } from "@/lib/utils";
 import type { SendableAsset } from "./send-types";
-import { formatAssetAmount, getTokenIconUrl } from "./send-utils";
+import { formatAssetAmount } from "./send-utils";
 
 interface AssetStepProps {
   sendableAssets: SendableAsset[];
@@ -23,7 +22,7 @@ export default function AssetStep({
   onOpenAddFunds,
 }: AssetStepProps) {
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className="flex h-full min-w-0 flex-col gap-3">
       {sendableAssets.length > 0 ? (
         sendableAssets.map((asset) => {
           const isSelected = asset.key === selectedAsset?.key;
@@ -34,34 +33,25 @@ export default function AssetStep({
               onClick={() => onSelectAsset(asset.key)}
               className={cn(
                 "cursor-pointer",
-                "flex items-center justify-between gap-4 rounded-2xl border p-4 text-left transition",
+                "flex w-full min-w-0 items-center justify-between gap-3 rounded-2xl border p-4 text-left transition sm:gap-4",
                 isSelected
                   ? "border-primary-70 bg-primary-99 dark:border-primary-70/50 dark:bg-primary-70/10"
                   : "border-gray-80 bg-gray-95 hover:border-gray-60 dark:border-white/10 dark:bg-secondary-60/25 dark:hover:border-white/20",
               )}
             >
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white dark:bg-secondary-50">
-                  <Image
-                    src={getTokenIconUrl(asset.symbol)}
-                    alt={asset.symbol}
-                    fill
-                    sizes="44px"
-                    className="object-contain p-2"
-                  />
-                </div>
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <AssetNetworkIcon symbol={asset.symbol} network={asset.chain} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-black dark:text-white">
-                    {asset.name}
+                    {asset.symbol}
                   </p>
-                  <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-20 dark:text-gray-40">
-                    <ChainIcon name={asset.chain} size={14} />
-                    <span>{getChainLabel(asset.chain)}</span>
-                  </div>
+                  <p className="mt-1 truncate text-xs text-gray-20 dark:text-gray-40">
+                    {asset.name} • {getChainLabel(asset.chain)}
+                  </p>
                 </div>
               </div>
-              <div className="shrink-0 text-right">
-                <p className="text-sm font-semibold text-black dark:text-white">
+              <div className="max-w-[72px] shrink-0 text-right sm:max-w-none">
+                <p className="truncate text-xs font-semibold text-black dark:text-white sm:text-sm">
                   {formatAssetAmount(asset.amount)}
                 </p>
                 <p className="text-xs text-gray-20 dark:text-gray-40">

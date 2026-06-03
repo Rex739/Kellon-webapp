@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react";
 import ChainIcon from "@/components/wallet/ChainIcon";
-import { getSupportedChainsForToken } from "@/lib/chains";
+import { getChainLabel, getSupportedChainsForToken } from "@/lib/chains";
 import { Button } from "@/components/ui/button";
 
 interface AssetSelectionStepProps {
@@ -142,7 +142,7 @@ export function AssetSelectionStep({
                     )}
                   >
                     <ChainIcon name={chain.name} size={20} />
-                    {chain.name}
+                    {getChainLabel(chain.name)}
                   </button>
                 );
               })}

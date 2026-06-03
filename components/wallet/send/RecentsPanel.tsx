@@ -30,7 +30,7 @@ export default function RecentsPanel({
   setStep,
 }: RecentsPanelProps) {
   return (
-    <aside className="rounded-[24px] border border-black/5 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-secondary-50/80 dark:shadow-none md:p-5">
+    <aside className="w-full min-w-0 overflow-hidden rounded-[24px] border border-black/5 bg-white/80 p-4 shadow-sm dark:border-white/10 dark:bg-secondary-50/80 dark:shadow-none md:p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-black dark:text-white">
           Recents

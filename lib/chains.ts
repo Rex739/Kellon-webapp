@@ -181,7 +181,7 @@ export const TESTNET_CHAINS: Record<SupportedChainKeys, ChainConfig> = {
 const CHAIN_LABELS: Record<string, string> = {
   stellar: "Stellar Network",
   base: "Base Network",
-  bnb: "BNB Smart Chain",
+  bnb: "BNB Smart Chain Network",
   celo: "Celo Network",
   polygon: "Polygon Network",
 }
