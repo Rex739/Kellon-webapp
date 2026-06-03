@@ -362,24 +362,22 @@ export default function TransactionsPage() {
       />
 
       {/* Quick Tabs */}
-      <div className="mt-5 overflow-x-auto">
-        <div className="flex min-w-max gap-2 rounded-full border border-black/5 bg-white p-1 dark:border-white/10 dark:bg-secondary-50">
-          {QUICK_TABS.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveQuickTab(tab)}
-              className={cn(
-                "rounded-full px-4 py-2 text-sm font-medium capitalize transition md:px-5 cursor-pointer",
-                activeQuickTab === tab
-                  ? "bg-primary-60 text-white shadow-lg"
-                  : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white",
-              )}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+      <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
+        {QUICK_TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveQuickTab(tab)}
+            className={cn(
+              "cursor-pointer shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold capitalize transition-colors",
+              activeQuickTab === tab
+                ? "border-primary-90 bg-primary-95 text-primary-50 dark:border-primary-70/20 dark:bg-primary-70/15 dark:text-primary-80"
+                : "border-gray-80 bg-white/80 text-gray-20 hover:text-cryptoNight dark:border-white/10 dark:bg-secondary-50/70 dark:text-gray-40 dark:hover:text-white",
+            )}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
       {/* Transaction List */}
