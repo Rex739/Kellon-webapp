@@ -2,6 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
+import FlowEmptyState from "@/components/wallet/shared/FlowEmptyState";
 import type {
   RecentRecipient,
   RecipientFormValues,
@@ -80,14 +81,13 @@ export default function RecentsPanel({
             );
           })
         ) : (
-          <div className="rounded-2xl border border-dashed border-gray-80 bg-gray-95 p-5 text-center dark:border-white/10 dark:bg-secondary-60/20">
-            <p className="text-sm font-medium text-black dark:text-white">
-              No recent recipients
-            </p>
-            <p className="mt-1 text-xs text-gray-20 dark:text-gray-40">
-              People you send to will appear here.
-            </p>
-          </div>
+          <FlowEmptyState
+            className="p-5"
+            title="No recent recipients"
+            titleClassName="mb-0 text-sm text-black dark:text-white"
+            text="People you send to will appear here."
+            textClassName="mt-1 text-xs text-gray-20 dark:text-gray-40 md:text-xs"
+          />
         )}
       </div>
     </aside>

@@ -3,6 +3,7 @@
 import { Check, Search, Send } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import FlowEmptyState from "@/components/wallet/shared/FlowEmptyState";
 import {
   Form,
   FormControl,
@@ -96,8 +97,8 @@ export default function RecipientStep({
               : verifiedRecipient
                 ? "border-emerald-200 bg-emerald-50 dark:border-emerald-500/25 dark:bg-emerald-500/10"
                 : isRecipientValid
-                ? "border-primary-90 bg-primary-99 dark:border-primary-70/30 dark:bg-primary-70/10"
-                : "border-gray-80 bg-gray-95 dark:border-white/10 dark:bg-secondary-60/35",
+                  ? "border-primary-90 bg-primary-99 dark:border-primary-70/30 dark:bg-primary-70/10"
+                  : "border-gray-80 bg-gray-95 dark:border-white/10 dark:bg-secondary-60/35",
           )}
         >
           <div className="flex items-start gap-4">
@@ -107,20 +108,20 @@ export default function RecipientStep({
                   ? "You can't send to yourself"
                   : isVerifyingRecipient
                     ? "Checking Kellon user"
-                  : isRecipientValid
-                    ? verifiedRecipient
-                      ? "Recipient verified"
-                      : getRecipientPendingLabel(recipientKind)
-                    : "Check recipient"}
+                    : isRecipientValid
+                      ? verifiedRecipient
+                        ? "Recipient verified"
+                        : getRecipientPendingLabel(recipientKind)
+                      : "Check recipient"}
               </p>
               <p className="mt-1 break-all text-xs text-gray-20 dark:text-gray-40 md:text-sm">
                 {selfRecipientError
                   ? selfRecipientError
                   : recipientLookupMessage
                     ? recipientLookupMessage
-                  : isRecipientValid
-                    ? truncateMiddle(recipientInput.trim(), 12)
-                    : "Enter a valid email, username, @tag, EVM address, or Stellar address."}
+                    : isRecipientValid
+                      ? truncateMiddle(recipientInput.trim(), 12)
+                      : "Enter a valid email, username, @tag, EVM address, or Stellar address."}
               </p>
               {isRecipientValid && !selfRecipientError ? (
                 <div className="mt-4 grid gap-2">
@@ -146,17 +147,15 @@ export default function RecipientStep({
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-gray-80 bg-gray-95 p-8 text-center dark:border-white/10 dark:bg-secondary-60/20 md:min-h-[300px]">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-95 text-primary-50 dark:bg-primary-70/15 dark:text-primary-80">
-            <Send className="h-6 w-6" />
-          </div>
-          <h2 className="text-base font-semibold text-black dark:text-white">
-            Start with a recipient
-          </h2>
-          <p className="mt-2 max-w-xs text-sm text-gray-20 dark:text-gray-40">
-            Send by email, Kellon tag, or a supported wallet address.
-          </p>
-        </div>
+        <FlowEmptyState
+          className="flex-1 md:min-h-[300px]"
+          icon={<Send className="h-6 w-6" />}
+          iconClassName="h-14 w-14 border-0 bg-primary-95 dark:bg-primary-70/15"
+          title="Start with a recipient"
+          titleClassName="text-base font-semibold text-black dark:text-white"
+          text="Send by email, Kellon tag, or a supported wallet address."
+          textClassName="mt-1 max-w-xs text-sm text-gray-20 dark:text-gray-40"
+        />
       )}
     </div>
   );

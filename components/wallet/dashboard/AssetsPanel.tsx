@@ -1,15 +1,16 @@
-import { Coins } from "lucide-react"
-import AssetCard from "@/components/wallet/dashboard/AssetCard"
-import { getChainLabel } from "@/lib/chains"
-import type { GroupedAssetSummary } from "@/lib/dashboard-types"
-import { formatAssetAmount, formatCurrencyAmount } from "@/lib/dashboard-utils"
+import { Coins } from "lucide-react";
+import AssetCard from "@/components/wallet/dashboard/AssetCard";
+import FlowEmptyState from "@/components/wallet/shared/FlowEmptyState";
+import { getChainLabel } from "@/lib/chains";
+import type { GroupedAssetSummary } from "@/lib/dashboard-types";
+import { formatAssetAmount, formatCurrencyAmount } from "@/lib/dashboard-utils";
 
 interface AssetsPanelProps {
-  activeCurrency: string
-  displayCurrency: "LOCAL" | "USD"
-  groupedAssets: GroupedAssetSummary[]
-  isAssetValueLoading: boolean
-  isBalanceVisible: boolean
+  activeCurrency: string;
+  displayCurrency: "LOCAL" | "USD";
+  groupedAssets: GroupedAssetSummary[];
+  isAssetValueLoading: boolean;
+  isBalanceVisible: boolean;
 }
 
 export default function AssetsPanel({
@@ -33,11 +34,11 @@ export default function AssetsPanel({
         <div className="grid min-h-0 content-start gap-3 md:max-h-full md:flex-1 md:overflow-y-auto md:overscroll-contain md:pr-1">
           {groupedAssets.map((asset) => {
             const cardValue =
-              displayCurrency === "LOCAL" ? asset.localValue : asset.usdValue
+              displayCurrency === "LOCAL" ? asset.localValue : asset.usdValue;
             const subtitle =
               asset.chainCount > 1
                 ? "Available on multiple networks"
-                : `Runs on ${getChainLabel(asset.primaryChain || "")}`
+                : `Runs on ${getChainLabel(asset.primaryChain || "")}`;
 
             return (
               <AssetCard
@@ -51,26 +52,23 @@ export default function AssetsPanel({
                 isValueLoading={isAssetValueLoading}
                 className="px-3 py-3 xs:px-4 md:px-4 md:py-3 lg:px-5 lg:py-4"
               />
-            )
+            );
           })}
         </div>
       ) : (
-        <div className="flex min-h-[220px] flex-1 flex-col items-center justify-center rounded-xl border border-primary-90/50 bg-white/70 p-8 text-center shadow-sm shadow-primary-90/10 dark:border-white/10 dark:bg-secondary-50 dark:shadow-none md:min-h-0 md:rounded-lg lg:items-start lg:text-left">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-primary-90/50 bg-primary-99 dark:border-white/5 dark:bg-white/5 md:mb-5 md:h-14 md:w-14">
+        <FlowEmptyState
+          className="min-h-[220px] flex-1 rounded-xl border-primary-90/50 bg-white/70 shadow-sm shadow-primary-90/10 dark:bg-secondary-50 dark:shadow-none md:min-h-0 md:rounded-lg lg:items-start lg:text-left"
+          icon={
             <Coins
               size={24}
               className="text-primary-50 dark:text-gray-600 md:h-7 md:w-7"
             />
-          </div>
-          <h4 className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300 md:text-base">
-            No assets yet
-          </h4>
-          <p className="max-w-[220px] text-xs text-gray-400 dark:text-gray-500 md:text-sm">
-            Your holdings will appear here after your first deposit or crypto
-            purchase.
-          </p>
-        </div>
+          }
+          title="No assets yet"
+          text="Your holdings will appear here after your first deposit or crypto purchase."
+          textClassName="max-w-[220px]"
+        />
       )}
     </div>
-  )
+  );
 }

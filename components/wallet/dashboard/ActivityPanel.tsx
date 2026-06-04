@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowDownLeft, ArrowUpRight, Clock } from "lucide-react";
 import HydrationSafeRelativeTime from "@/components/HydrationSafeRelativeTime";
+import FlowEmptyState from "@/components/wallet/shared/FlowEmptyState";
 import { cn } from "@/lib/utils";
 import type { Transaction } from "@/types/db";
 import { ActivityListSkeleton } from "./DashboardSkeletons";
@@ -118,19 +119,17 @@ export default function ActivityPanel({
 
 function ActivityEmptyState({ title, text }: { title: string; text: string }) {
   return (
-    <div className="flex min-h-[250px] flex-1 flex-col items-center justify-center rounded-xl border border-primary-90/50 bg-white/70 p-8 text-center shadow-sm shadow-primary-90/10 dark:border-white/10 dark:bg-secondary-50 dark:shadow-none md:rounded-lg">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-primary-90/50 bg-primary-99 dark:border-white/5 dark:bg-white/5 md:mb-5 md:h-14 md:w-14">
+    <FlowEmptyState
+      className="min-h-[250px] flex-1 rounded-xl border-primary-90/50 bg-white/70 shadow-sm shadow-primary-90/10 dark:bg-secondary-50 dark:shadow-none md:rounded-lg"
+      icon={
         <Clock
           size={24}
           className="text-primary-50 dark:text-gray-600 md:h-7 md:w-7"
         />
-      </div>
-      <h4 className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300 md:text-base">
-        {title}
-      </h4>
-      <p className="max-w-[220px] text-xs text-gray-400 dark:text-gray-500 md:text-sm">
-        {text}
-      </p>
-    </div>
+      }
+      title={title}
+      text={text}
+      textClassName="max-w-[220px]"
+    />
   );
 }
