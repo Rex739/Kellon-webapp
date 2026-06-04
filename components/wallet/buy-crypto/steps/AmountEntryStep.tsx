@@ -20,9 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { formatNumberWithCommas } from "@/lib/format-number-with-comma";
-import SummaryPill from "../SummaryPill";
+import SummaryPill from "@/components/wallet/shared/FlowSummaryPill";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 import Keypad from "@/components/Keypad";
-import { Button } from "@/components/ui/button";
 
 interface AmountEntryStepProps {
   asset: string | null;
@@ -262,65 +262,45 @@ export function AmountEntryStep({
           </div>
 
           {/* Desktop Continue Button - Below payment method */}
-          <div className="mt-6 w-full">
-            <Button
-              type="button"
-              variant="flow"
-              size="flow"
-              onClick={onContinue}
-              disabled={!isAmountValid || isRateLoading}
-              className={cn(!isAmountValid && "from-gray-400 to-gray-500")}
-            >
-              <span className="relative z-10 flex items-center justify-center gap-2 text-base">
-                {isRateLoading
-                  ? "Fetching Rate..."
-                  : isAmountValid
-                    ? "Select Provider"
-                    : "Enter Amount"}
-                {isAmountValid && !isRateLoading && (
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                )}
-              </span>
-              {isAmountValid && !isRateLoading && (
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-              )}
-            </Button>
-          </div>
+          <FlowActionFooter
+            sticky={false}
+            className="mt-6 w-full"
+            onClick={onContinue}
+            disabled={!isAmountValid || isRateLoading}
+            buttonClassName={cn(!isAmountValid && "from-gray-400 to-gray-500")}
+            showShimmer={isAmountValid && !isRateLoading}
+          >
+            {isRateLoading
+              ? "Fetching Rate..."
+              : isAmountValid
+                ? "Select Provider"
+                : "Enter Amount"}
+            {isAmountValid && !isRateLoading && (
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            )}
+          </FlowActionFooter>
         </div>
       </div>
 
       {/* Mobile Sticky Footer */}
-      <div className="sticky bottom-0 left-0 right-0 border-t border-black/5 pt-6 pb-4 px-4 dark:border-white/5  lg:hidden">
-        <div className="mx-auto max-w-md">
-          <Button
-            type="button"
-            variant="flow"
-            size="flow"
-            onClick={onContinue}
-            disabled={!isAmountValid || isRateLoading}
-            className={cn(!isAmountValid && "from-gray-400 to-gray-500")}
-          >
-            <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
-              {isRateLoading
-                ? "Fetching Rate..."
-                : isAmountValid
-                  ? "Select Provider"
-                  : "Enter Amount"}
-              {isAmountValid && !isRateLoading && (
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              )}
-            </span>
-            {isAmountValid && !isRateLoading && (
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-            )}
-          </Button>
-
-          <p className="mt-3 text-center text-[10px] text-gray-400">
-            Enter the amount you want to spend • Providers will show you their
-            best rates
-          </p>
-        </div>
-      </div>
+      <FlowActionFooter
+        className="lg:hidden"
+        onClick={onContinue}
+        disabled={!isAmountValid || isRateLoading}
+        buttonClassName={cn(!isAmountValid && "from-gray-400 to-gray-500")}
+        textClassName="text-sm"
+        showShimmer={isAmountValid && !isRateLoading}
+        helperText="Enter the amount you want to spend • Providers will show you their best rates"
+      >
+        {isRateLoading
+          ? "Fetching Rate..."
+          : isAmountValid
+            ? "Select Provider"
+            : "Enter Amount"}
+        {isAmountValid && !isRateLoading && (
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        )}
+      </FlowActionFooter>
     </div>
   );
 }

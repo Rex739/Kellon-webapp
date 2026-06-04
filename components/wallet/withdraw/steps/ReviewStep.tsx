@@ -2,9 +2,9 @@
 
 import { Loader2, ShieldCheck } from "lucide-react";
 import ChainIcon from "@/components/wallet/ChainIcon";
-import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
+import SummaryPill from "@/components/wallet/shared/FlowSummaryPill";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 import type { BankDetail } from "@/types/db";
-import { Button } from "@/components/ui/button";
 
 interface ReviewStepProps {
   amount: string;
@@ -96,29 +96,25 @@ export function WithdrawReviewStep({
           </div>
         </div>
 
-        <div className="mt-auto space-y-4 pb-6">
-          <Button
-            type="button"
-            variant="flow"
-            size="flow"
-            onClick={onConfirm}
-            disabled={isSubmitting}
-          >
-            <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Initializing withdrawal
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="h-6 w-6" />
-                  Initialize Withdrawal
-                </>
-              )}
-            </span>
-          </Button>
-        </div>
+        <FlowActionFooter
+          sticky={false}
+          className="mt-auto space-y-4 pb-6"
+          onClick={onConfirm}
+          disabled={isSubmitting}
+          showShimmer={!isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Initializing withdrawal
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="h-6 w-6" />
+              Initialize Withdrawal
+            </>
+          )}
+        </FlowActionFooter>
       </div>
     </div>
   );

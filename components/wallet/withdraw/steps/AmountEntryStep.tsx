@@ -7,7 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { cn } from "@/lib/utils";
 import { formatNumberWithCommas } from "@/lib/format-number-with-comma";
-import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
+import SummaryPill from "@/components/wallet/shared/FlowSummaryPill";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -16,7 +17,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 
 interface AmountEntryStepProps {
   asset: string | null;
@@ -310,45 +310,38 @@ export function WithdrawAmountEntryStep({
               </form>
             </div>
 
-            <div className="mt-6 w-full">
-              <Button
-                type="button"
-                variant="flow"
-                size="flow"
-                onClick={form.handleSubmit(handleFormSubmit)}
-                disabled={!isAmountValid}
-                className={cn(!isAmountValid && "from-gray-400 to-gray-500")}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2 text-base">
-                  {isAmountValid ? "Select Provider" : "Enter Valid Amount"}
-                  {isAmountValid ? (
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  ) : null}
-                </span>
-              </Button>
-            </div>
+            <FlowActionFooter
+              sticky={false}
+              className="mt-6 w-full"
+              onClick={form.handleSubmit(handleFormSubmit)}
+              disabled={!isAmountValid}
+              buttonClassName={cn(
+                !isAmountValid && "from-gray-400 to-gray-500",
+              )}
+              textClassName="text-base"
+              showShimmer={isAmountValid}
+            >
+              {isAmountValid ? "Select Provider" : "Enter Valid Amount"}
+              {isAmountValid ? (
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              ) : null}
+            </FlowActionFooter>
           </div>
         </div>
 
-        <div className="sticky bottom-0 left-0 right-0 border-t border-black/5 px-4 pb-4 pt-6 dark:border-white/5 lg:hidden">
-          <div className="mx-auto max-w-md">
-            <Button
-              type="button"
-              variant="flow"
-              size="flow"
-              onClick={form.handleSubmit(handleFormSubmit)}
-              disabled={!isAmountValid}
-              className={cn(!isAmountValid && "from-gray-400 to-gray-500")}
-            >
-              <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
-                {isAmountValid ? "Select Provider" : "Enter Valid Amount"}
-                {isAmountValid ? (
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                ) : null}
-              </span>
-            </Button>
-          </div>
-        </div>
+        <FlowActionFooter
+          className="lg:hidden"
+          onClick={form.handleSubmit(handleFormSubmit)}
+          disabled={!isAmountValid}
+          buttonClassName={cn(!isAmountValid && "from-gray-400 to-gray-500")}
+          textClassName="text-sm"
+          showShimmer={isAmountValid}
+        >
+          {isAmountValid ? "Select Provider" : "Enter Valid Amount"}
+          {isAmountValid ? (
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          ) : null}
+        </FlowActionFooter>
       </div>
     </Form>
   );

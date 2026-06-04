@@ -20,7 +20,7 @@ import {
   type OfframpInitRequest,
   type OfframpResponse,
 } from "@/services/api/off-ramp";
-import StepIndicator from "@/components/wallet/buy-crypto/BuyCryptoStepIndicator";
+import StepIndicator from "@/components/wallet/shared/FlowStepIndicator";
 import { WithdrawAssetSelectionStep } from "./steps/AssetSelectionStep";
 import { WithdrawAmountEntryStep } from "./steps/AmountEntryStep";
 import { WithdrawProviderSelectionStep } from "./steps/ProviderSelectionStep";

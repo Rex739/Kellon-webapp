@@ -9,10 +9,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import ChainIcon from "@/components/wallet/ChainIcon";
-import SummaryPill from "../SummaryPill";
+import SummaryPill from "@/components/wallet/shared/FlowSummaryPill";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 import type { BankDetail } from "@/types/db";
 import type { OnrampResponse } from "@/services/api/on-ramp";
-import { Button } from "@/components/ui/button";
 
 interface ReviewStepProps {
   amount: string;
@@ -309,58 +309,38 @@ export function ReviewStep({
       <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 bg-gradient-to-t px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
         <div className="mx-auto max-w-md md:max-w-full">
           {providerAccount ? (
-            <>
-              <Button
-                type="button"
-                variant="flow"
-                size="flow"
-                onClick={onConfirmSent}
-                disabled={isCompleting || !onConfirmSent}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-                  <CheckCircle2 className="h-5 w-5" />
-                  {isCompleting
-                    ? "Completing Order..."
-                    : "I have Sent The Money"}
-                </span>
-                {!isCompleting && (
-                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-                )}
-              </Button>
-              <p className="mt-3 px-4 text-center text-[11px] leading-relaxed text-gray-400">
-                We will complete your order and take you to the transaction
-                details once you confirm.
-              </p>
-            </>
+            <FlowActionFooter
+              sticky={false}
+              onClick={onConfirmSent}
+              disabled={isCompleting || !onConfirmSent}
+              showShimmer={!isCompleting}
+              helperText="We will complete your order and take you to the transaction details once you confirm."
+            >
+              <CheckCircle2 className="h-5 w-5" />
+              {isCompleting ? "Completing Order..." : "I have Sent The Money"}
+            </FlowActionFooter>
           ) : (
-            <>
-              <Button
-                type="button"
-                variant="flow"
-                size="flow"
-                onClick={onConfirm}
-                disabled={isSubmitting}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-                  <ShieldCheck className="h-5 w-5" />
-                  {isSubmitting
-                    ? "Initializing Payment..."
-                    : "Initialize Secure Payment"}
-                </span>
-                {!isSubmitting && (
-                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-                )}
-              </Button>
-
-              <p className="mt-3 px-4 text-center text-[11px] leading-relaxed text-gray-400">
-                You will be redirected to {selectedProvider?.name}&apos;s secure
-                portal to complete your transaction via{" "}
-                <span className="font-bold text-gray-500">
-                  {paymentMethodLabel.toLowerCase()}
-                </span>
-                .
-              </p>
-            </>
+            <FlowActionFooter
+              sticky={false}
+              onClick={onConfirm}
+              disabled={isSubmitting}
+              showShimmer={!isSubmitting}
+              helperText={
+                <>
+                  You will be redirected to {selectedProvider?.name}&apos;s
+                  secure portal to complete your transaction via{" "}
+                  <span className="font-bold text-gray-500">
+                    {paymentMethodLabel.toLowerCase()}
+                  </span>
+                  .
+                </>
+              }
+            >
+              <ShieldCheck className="h-5 w-5" />
+              {isSubmitting
+                ? "Initializing Payment..."
+                : "Initialize Secure Payment"}
+            </FlowActionFooter>
           )}
         </div>
       </div>

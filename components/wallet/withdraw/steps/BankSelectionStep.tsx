@@ -3,12 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
-  CheckCircle2,
   ChevronRight,
   Landmark,
   Loader2,
   Plus,
-  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -16,7 +14,12 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import type { BankDetail } from "@/types/db";
 import type { SelectableBank } from "@/components/modals/SelectBankModal";
-import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
+import SummaryPill from "@/components/wallet/shared/FlowSummaryPill";
+import {
+  BankAccountDetailsCard,
+  SavedBankAccountButton,
+} from "@/components/wallet/shared/BankAccountCards";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 import { Button } from "@/components/ui/button";
 import { bankService } from "@/services/api/bank";
 import { providerService } from "@/services/api/payment-providers";
@@ -235,33 +238,12 @@ export function WithdrawBankSelectionStep({
                       const isSelected = bank.id === selectedBank?.id;
 
                       return (
-                        <button
+                        <SavedBankAccountButton
                           key={bank.id}
-                          type="button"
+                          account={bank}
+                          isSelected={isSelected}
                           onClick={() => onSelectSavedBank(bank)}
-                          className={cn(
-                            "cursor-pointer",
-                            "flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left transition-all",
-                            isSelected
-                              ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
-                              : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
-                          )}
-                        >
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold text-black dark:text-white">
-                              {bank.bankName}
-                            </p>
-                            <p className="mt-1 truncate text-xs text-gray-500 dark:text-gray-400">
-                              {bank.accountNumber} • {bank.accountName}
-                            </p>
-                          </div>
-
-                          {isSelected ? (
-                            <CheckCircle2 className="h-5 w-5 shrink-0 text-primary-70" />
-                          ) : (
-                            <ChevronRight className="h-5 w-5 shrink-0 text-gray-400" />
-                          )}
-                        </button>
+                        />
                       );
                     })}
                   </div>
@@ -277,47 +259,23 @@ export function WithdrawBankSelectionStep({
                 )}
               </div>
 
-          <button
-            type="button"
-            onClick={onOpenBankModal}
+              <button
+                type="button"
+                onClick={onOpenBankModal}
                 className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-primary-60/60 bg-primary-70/5 px-4 py-3 text-left text-primary-60 transition hover:bg-primary-70/10"
-          >
+              >
                 <Plus className="h-4 w-4" />
-                <span className="text-sm font-semibold">Add New Bank Details</span>
+                <span className="text-sm font-semibold">
+                  Add New Bank Details
+                </span>
               </button>
 
               {selectedBank ? (
-                <div className="mt-4 rounded-2xl border border-primary-80 bg-primary-95/70 p-3 dark:border-primary-70/20 dark:bg-primary-70/10">
-                  <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary-50 dark:text-primary-80">
-                    <ShieldCheck className="h-4 w-4" />
-                    Selected payout account
-                  </div>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-gray-30 dark:text-gray-40">
-                        Bank name
-                      </span>
-                      <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                        {selectedBank.bankName}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-gray-30 dark:text-gray-40">
-                        Account number
-                      </span>
-                      <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                        {selectedBank.accountNumber}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-gray-30 dark:text-gray-40">
-                        Account name
-                      </span>
-                      <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                        {selectedBank.accountName}
-                      </span>
-                    </div>
-                  </div>
+                <div className="mt-4">
+                  <BankAccountDetailsCard
+                    title="Selected payout account"
+                    account={selectedBank}
+                  />
                 </div>
               ) : null}
 
@@ -382,38 +340,10 @@ export function WithdrawBankSelectionStep({
                   </div>
 
                   {verifiedAccount ? (
-                    <div className="rounded-2xl border border-primary-80 bg-primary-95/70 p-3 dark:border-primary-70/20 dark:bg-primary-70/10">
-                      <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary-50 dark:text-primary-80">
-                        <ShieldCheck className="h-4 w-4" />
-                        Bank account verified
-                      </div>
-                      <div className="space-y-2 text-xs">
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-gray-30 dark:text-gray-40">
-                            Bank name
-                          </span>
-                          <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                            {verifiedAccount.bankName}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-gray-30 dark:text-gray-40">
-                            Account number
-                          </span>
-                          <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                            {verifiedAccount.accountNumber}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-gray-30 dark:text-gray-40">
-                            Account name
-                          </span>
-                          <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                            {verifiedAccount.accountName}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <BankAccountDetailsCard
+                      title="Bank account verified"
+                      account={verifiedAccount}
+                    />
                   ) : null}
 
                   <div className="flex items-center justify-between rounded-2xl bg-gray-95 px-3 py-2 dark:bg-secondary-60/50">
@@ -529,41 +459,12 @@ export function WithdrawBankSelectionStep({
                     const isSelected = bank.id === selectedBank?.id;
 
                     return (
-                      <button
+                      <SavedBankAccountButton
                         key={bank.id}
-                        type="button"
+                        account={bank}
+                        isSelected={isSelected}
                         onClick={() => onSelectSavedBank(bank)}
-                        className={cn(
-                          "cursor-pointer",
-                          "flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all",
-                          isSelected
-                            ? "border-primary-60 bg-primary-70/5 ring-2 ring-primary-60/20"
-                            : "border-black/5 bg-white hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-50 dark:hover:bg-secondary-60/50",
-                        )}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="rounded-2xl border border-black/5 bg-gray-95 p-3 text-primary-70 dark:border-white/10 dark:bg-secondary-40">
-                            <Landmark className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-black dark:text-white">
-                              {bank.bankName}
-                            </p>
-                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                              {bank.accountName}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {bank.accountNumber}
-                            </p>
-                          </div>
-                        </div>
-
-                        {isSelected ? (
-                          <CheckCircle2 className="h-5 w-5 text-primary-70" />
-                        ) : (
-                          <ChevronRight className="h-5 w-5 text-gray-400" />
-                        )}
-                      </button>
+                      />
                     );
                   })}
                 </div>
@@ -582,33 +483,25 @@ export function WithdrawBankSelectionStep({
         </div>
       </div>
 
-      <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
-        <div className="mx-auto max-w-md md:max-w-full">
-          <Button
-            type="button"
-            variant="flow"
-            size="flow"
-            onClick={onContinue}
-            disabled={!selectedBank}
-            className={cn(!selectedBank && "from-gray-400 to-gray-500")}
-          >
-            <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-              {!selectedBank ? (
-                isPaycrest ? (
-                  "Select Payout Account"
-                ) : (
-                  "Select Bank to Continue"
-                )
-              ) : (
-                <>
-                  {isPaycrest ? "Review Order" : "Review Withdrawal"}
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </>
-              )}
-            </span>
-          </Button>
-        </div>
-      </div>
+      <FlowActionFooter
+        onClick={onContinue}
+        disabled={!selectedBank}
+        buttonClassName={cn(!selectedBank && "from-gray-400 to-gray-500")}
+        showShimmer={Boolean(selectedBank)}
+      >
+        {!selectedBank ? (
+          isPaycrest ? (
+            "Select Payout Account"
+          ) : (
+            "Select Bank to Continue"
+          )
+        ) : (
+          <>
+            {isPaycrest ? "Review Order" : "Review Withdrawal"}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </>
+        )}
+      </FlowActionFooter>
     </div>
   );
 }

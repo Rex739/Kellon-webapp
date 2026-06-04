@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { Send } from "lucide-react";
+import FlowSummaryPill from "@/components/wallet/shared/FlowSummaryPill";
+import { FlowReviewRow } from "@/components/wallet/shared/FlowReviewRow";
 import { getChainLabel } from "@/lib/chains";
 import type { RecipientKind, SendableAsset } from "./send-types";
 import {
@@ -26,6 +28,16 @@ export default function ReviewStep({
 }: ReviewStepProps) {
   return (
     <div className="flex h-full flex-col justify-between gap-6">
+      <FlowSummaryPill
+        asset={selectedAsset?.symbol || null}
+        assetIconUrl={
+          selectedAsset ? getTokenIconUrl(selectedAsset.symbol) : null
+        }
+        networkName={getChainLabel(selectedAsset?.chain)}
+        amount={formatAssetAmount(amountValue)}
+        amountCurrency={selectedAsset?.symbol}
+      />
+
       <div className="text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-95 text-primary-50 dark:bg-primary-70/15 dark:text-primary-80">
           {selectedAsset ? (
@@ -51,30 +63,27 @@ export default function ReviewStep({
       </div>
 
       <div className="grid gap-3">
-        <ReviewRow
+        <FlowReviewRow
           label="Recipient"
           value={truncateMiddle(recipientInput.trim(), 14)}
+          variant="card"
         />
-        <ReviewRow label="Method" value={getRecipientLabel(recipientKind)} />
-        <ReviewRow label="Asset" value={selectedAsset?.symbol || "--"} />
-        <ReviewRow
+        <FlowReviewRow
+          label="Method"
+          value={getRecipientLabel(recipientKind)}
+          variant="card"
+        />
+        <FlowReviewRow
+          label="Asset"
+          value={selectedAsset?.symbol || "--"}
+          variant="card"
+        />
+        <FlowReviewRow
           label="Network"
           value={getChainLabel(selectedAsset?.chain)}
+          variant="card"
         />
       </div>
-    </div>
-  );
-}
-
-function ReviewRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-gray-80 bg-gray-95 px-4 py-3 dark:border-white/10 dark:bg-secondary-60/25">
-      <span className="text-xs font-medium text-gray-20 dark:text-gray-40">
-        {label}
-      </span>
-      <span className="min-w-0 truncate text-right text-sm font-semibold text-black dark:text-white">
-        {value}
-      </span>
     </div>
   );
 }

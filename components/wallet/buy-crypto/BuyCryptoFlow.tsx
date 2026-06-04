@@ -29,7 +29,7 @@ import {
 import SelectBankModal, {
   type SelectableBank,
 } from "@/components/modals/SelectBankModal";
-import StepIndicator from "./BuyCryptoStepIndicator";
+import StepIndicator from "@/components/wallet/shared/FlowStepIndicator";
 import { AssetSelectionStep } from "./steps/AssetSelectionStep";
 import { AmountEntryStep } from "./steps/AmountEntryStep";
 import { ProviderSelectionStep } from "./steps/ProviderSelectionStep";

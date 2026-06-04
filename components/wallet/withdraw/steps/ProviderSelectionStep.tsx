@@ -4,8 +4,8 @@ import { AlertCircle, ArrowRight, Check, Globe, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import SummaryPill from "@/components/wallet/buy-crypto/SummaryPill";
-import { Button } from "@/components/ui/button";
+import SummaryPill from "@/components/wallet/shared/FlowSummaryPill";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 
 interface Provider {
   id: string;
@@ -249,33 +249,25 @@ export function WithdrawProviderSelectionStep({
         </div>
       </div>
 
-      <div className="sticky bottom-0 left-0 right-0 mt-6 border-t border-black/5 bg-gradient-to-t px-4 pb-4 pt-6 dark:border-white/5 md:px-0">
-        <div className="mx-auto max-w-md md:max-w-full">
-          <Button
-            type="button"
-            variant="flow"
-            size="flow"
-            onClick={onContinue}
-            disabled={!canContinue}
-            className={cn(!canContinue && "from-gray-400 to-gray-500")}
-          >
-            <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-              {!selectedProvider ? (
-                "Select a Provider to Continue"
-              ) : isSelectedRatePending ? (
-                "Fetching Rate..."
-              ) : !hasSelectedProviderRate ? (
-                "Rate Unavailable"
-              ) : (
-                <>
-                  Select Bank
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </>
-              )}
-            </span>
-          </Button>
-        </div>
-      </div>
+      <FlowActionFooter
+        onClick={onContinue}
+        disabled={!canContinue}
+        buttonClassName={cn(!canContinue && "from-gray-400 to-gray-500")}
+        showShimmer={canContinue}
+      >
+        {!selectedProvider ? (
+          "Select a Provider to Continue"
+        ) : isSelectedRatePending ? (
+          "Fetching Rate..."
+        ) : !hasSelectedProviderRate ? (
+          "Rate Unavailable"
+        ) : (
+          <>
+            Select Bank
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </>
+        )}
+      </FlowActionFooter>
     </div>
   );
 }

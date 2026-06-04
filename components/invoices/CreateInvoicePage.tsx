@@ -8,7 +8,8 @@ import { ArrowLeft, ArrowRight, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import StepIndicator from "@/components/wallet/buy-crypto/BuyCryptoStepIndicator";
+import StepIndicator from "@/components/wallet/shared/FlowStepIndicator";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 import { invoiceService } from "@/services/api/invoices";
 import {
   transferService,
@@ -350,65 +351,45 @@ export default function CreateInvoicePage({ profile }: CreateInvoicePageProps) {
 
             <div className="sticky bottom-0 -mx-4 px-4 pb-4 pt-5">
               {mobileStep === "amount" ? (
-                <>
-                  <Button
-                    type="button"
-                    variant="flow"
-                    size="flow"
-                    onClick={goToMobileDetails}
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
-                      Continue
-                      <ArrowRight className="h-4 w-4" />
-                    </span>
-                  </Button>
-                  <p className="mt-3 text-center text-[10px] leading-relaxed text-gray-400">
-                    Choose the asset and amount you want this customer to pay.
-                  </p>
-                </>
+                <FlowActionFooter
+                  sticky={false}
+                  onClick={goToMobileDetails}
+                  textClassName="text-sm"
+                  helperText="Choose the asset and amount you want this customer to pay."
+                >
+                  Continue
+                  <ArrowRight className="h-4 w-4" />
+                </FlowActionFooter>
               ) : null}
 
               {mobileStep === "details" ? (
-                <>
-                  <Button
-                    type="button"
-                    variant="flow"
-                    size="flow"
-                    onClick={goToMobileReview}
-                    disabled={isBusy || !verifiedCustomer?.found}
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
-                      Continue
-                      <ArrowRight className="h-4 w-4" />
-                    </span>
-                  </Button>
-                  <p className="mt-3 text-center text-[10px] leading-relaxed text-gray-400">
-                    We verify the customer before you create the invoice.
-                  </p>
-                </>
+                <FlowActionFooter
+                  sticky={false}
+                  onClick={goToMobileReview}
+                  disabled={isBusy || !verifiedCustomer?.found}
+                  textClassName="text-sm"
+                  helperText="We verify the customer before you create the invoice."
+                >
+                  Continue
+                  <ArrowRight className="h-4 w-4" />
+                </FlowActionFooter>
               ) : null}
 
               {mobileStep === "review" ? (
-                <>
-                  <Button
-                    type="submit"
-                    variant="flow"
-                    size="flow"
-                    disabled={isBusy || !verifiedCustomer?.found}
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
-                      {form.formState.isSubmitting ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <FileText className="h-4 w-4" />
-                      )}
-                      Create Invoice
-                    </span>
-                  </Button>
-                  <p className="mt-3 text-center text-[10px] leading-relaxed text-gray-400">
-                    Confirm the details before generating this payment request.
-                  </p>
-                </>
+                <FlowActionFooter
+                  sticky={false}
+                  type="submit"
+                  disabled={isBusy || !verifiedCustomer?.found}
+                  textClassName="text-sm"
+                  helperText="Confirm the details before generating this payment request."
+                >
+                  {form.formState.isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <FileText className="h-4 w-4" />
+                  )}
+                  Create Invoice
+                </FlowActionFooter>
               ) : null}
             </div>
           </div>
@@ -426,22 +407,19 @@ export default function CreateInvoicePage({ profile }: CreateInvoicePageProps) {
                   >
                     Edit Details
                   </Button>
-                  <Button
+                  <FlowActionFooter
+                    sticky={false}
                     type="submit"
-                    variant="flow"
-                    size="flow"
                     className="flex-1"
                     disabled={isBusy || !verifiedCustomer?.found}
                   >
-                    <span className="relative z-10 flex items-center justify-center gap-2 text-base">
-                      {form.formState.isSubmitting ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <FileText className="h-4 w-4" />
-                      )}
-                      Create Invoice
-                    </span>
-                  </Button>
+                    {form.formState.isSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <FileText className="h-4 w-4" />
+                    )}
+                    Create Invoice
+                  </FlowActionFooter>
                 </div>
                 <p className="mx-auto max-w-xl px-4 text-center text-xs leading-relaxed text-gray-400">
                   Confirm the invoice details before generating the payment
@@ -457,22 +435,15 @@ export default function CreateInvoicePage({ profile }: CreateInvoicePageProps) {
                 <div className="flex flex-col gap-5">
                   {customerSection}
                   {expirySection}
-                  <Button
-                    type="button"
-                    variant="flow"
-                    size="flow"
+                  <FlowActionFooter
+                    sticky={false}
                     onClick={goToDesktopReview}
                     disabled={isBusy || !verifiedCustomer?.found}
+                    helperText="Add the invoice details and verify the Kellon customer before review."
                   >
-                    <span className="relative z-10 flex items-center justify-center gap-2 text-base">
-                      Continue
-                      <ArrowRight className="h-4 w-4" />
-                    </span>
-                  </Button>
-                  <p className="px-4 text-center text-xs leading-relaxed text-gray-400">
-                    Add the invoice details and verify the Kellon customer
-                    before review.
-                  </p>
+                    Continue
+                    <ArrowRight className="h-4 w-4" />
+                  </FlowActionFooter>
                 </div>
               </div>
             )}

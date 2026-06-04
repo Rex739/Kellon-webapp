@@ -1,31 +1,31 @@
-import { cn } from "@/lib/utils"
-import Image from "next/image"
-import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react"
-import ChainIcon from "@/components/wallet/ChainIcon"
-import { getSupportedChainsForToken } from "@/lib/chains"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { CheckCircle2, ChevronDown, Globe, ArrowRight } from "lucide-react";
+import ChainIcon from "@/components/wallet/ChainIcon";
+import { getSupportedChainsForToken } from "@/lib/chains";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 
 interface AssetSelectionStepProps {
-  asset: string | null
-  networkName: string | null
-  networkId: string | null
-  country: string | null
-  isDetectingCountry: boolean
-  onSelectAsset: (asset: string) => void
-  onSelectNetwork: (name: string, id: string) => void
-  onOpenCountryModal: () => void
-  onContinue: () => void
+  asset: string | null;
+  networkName: string | null;
+  networkId: string | null;
+  country: string | null;
+  isDetectingCountry: boolean;
+  onSelectAsset: (asset: string) => void;
+  onSelectNetwork: (name: string, id: string) => void;
+  onOpenCountryModal: () => void;
+  onContinue: () => void;
 }
 
 const assets = [
   { id: "usdc", name: "USD Coin", symbol: "USDC" },
   { id: "usdt", name: "Tether", symbol: "USDT" },
-]
+];
 
 export const getFlag = (code: string) =>
   code
     .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397))
+    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
 
 export function AssetSelectionStep({
   asset,
@@ -39,9 +39,9 @@ export function AssetSelectionStep({
 }: AssetSelectionStepProps) {
   const availableNetworks = asset
     ? getSupportedChainsForToken(asset as "USDC" | "USDT")
-    : []
+    : [];
 
-  const hasValidSelection = asset && networkName
+  const hasValidSelection = asset && networkName;
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100dvh-200px)] md:min-h-[500px]">
@@ -125,8 +125,8 @@ export function AssetSelectionStep({
             </h3>
             <div className="grid grid-cols-2 gap-3">
               {availableNetworks.map((chain) => {
-                const chainNameLower = chain.name.toLowerCase()
-                const isSelected = networkName === chainNameLower
+                const chainNameLower = chain.name.toLowerCase();
+                const isSelected = networkName === chainNameLower;
                 return (
                   <button
                     key={chain.id}
@@ -144,45 +144,30 @@ export function AssetSelectionStep({
                     <ChainIcon name={chain.name} size={20} />
                     {chain.name}
                   </button>
-                )
+                );
               })}
             </div>
           </section>
         )}
       </div>
 
-      {/* Sticky Footer with Continue Button - Matching other steps */}
-      <div className="sticky bottom-0 left-0 right-0 border-t border-black/5 bg-gradient-to-t mt-6 pt-6 pb-4 px-4 dark:border-white/5  md:px-0">
-        <div className="mx-auto max-w-md md:max-w-full">
-          <Button
-            type="button"
-            variant="flow"
-            size="flow"
-            onClick={onContinue}
-            disabled={!hasValidSelection}
-            className={cn(!hasValidSelection && "from-gray-400 to-gray-500")}
-          >
-            <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-              {!hasValidSelection ? (
-                "Select Asset & Network to Continue"
-              ) : (
-                <>
-                  Continue
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </>
-              )}
-            </span>
-            {hasValidSelection && (
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-            )}
-          </Button>
-
-          {/* Help text */}
-          <p className="mt-3 text-center text-[10px] text-gray-400 md:text-xs">
-            Select the asset and network you want to purchase
-          </p>
-        </div>
-      </div>
+      <FlowActionFooter
+        className="bg-gradient-to-t"
+        onClick={onContinue}
+        disabled={!hasValidSelection}
+        buttonClassName={cn(!hasValidSelection && "from-gray-400 to-gray-500")}
+        showShimmer={Boolean(hasValidSelection)}
+        helperText="Select the asset and network you want to purchase"
+      >
+        {!hasValidSelection ? (
+          "Select Asset & Network to Continue"
+        ) : (
+          <>
+            Continue
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </>
+        )}
+      </FlowActionFooter>
     </div>
-  )
+  );
 }

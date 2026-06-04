@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Landmark, Loader2, ShieldCheck } from "lucide-react";
+import { Landmark, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { SelectableBank } from "@/components/modals/SelectBankModal";
 import { providerService } from "@/services/api/payment-providers";
 import type { BankDetail } from "@/types/db";
+import { BankAccountDetailsCard } from "@/components/wallet/shared/BankAccountCards";
 
 export type BankFormValues = {
   bankName: string;
@@ -270,36 +271,14 @@ const BankForm = ({
       ) : null}
 
       {verifiedAccount ? (
-        <div className="rounded-2xl border border-primary-80 bg-primary-95/70 p-3 dark:border-primary-70/20 dark:bg-primary-70/10">
-          <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary-50 dark:text-primary-80">
-            <ShieldCheck className="h-4 w-4" />
-            Bank account verified
-          </div>
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-gray-30 dark:text-gray-40">Bank name</span>
-              <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                {verifiedAccount.bankName}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-gray-30 dark:text-gray-40">
-                Account number
-              </span>
-              <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                {verifiedAccount.accountNumber}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-gray-30 dark:text-gray-40">
-                Account name
-              </span>
-              <span className="text-right text-sm font-semibold text-cryptoNight dark:text-white">
-                {verifiedAccount.accountHolderName}
-              </span>
-            </div>
-          </div>
-        </div>
+        <BankAccountDetailsCard
+          title="Bank account verified"
+          account={{
+            bankName: verifiedAccount.bankName,
+            accountNumber: verifiedAccount.accountNumber,
+            accountName: verifiedAccount.accountHolderName,
+          }}
+        />
       ) : null}
 
       <button

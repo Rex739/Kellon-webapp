@@ -2,8 +2,8 @@
 
 import { ArrowLeft, ArrowRight, Send, X } from "lucide-react";
 import AddFundsModal from "@/components/modals/AddFundsModal";
-import StepIndicator from "@/components/wallet/buy-crypto/BuyCryptoStepIndicator";
-import { Button } from "@/components/ui/button";
+import StepIndicator from "@/components/wallet/shared/FlowStepIndicator";
+import FlowActionFooter from "@/components/wallet/shared/FlowActionFooter";
 import type { User } from "@/types/db";
 import AmountStep from "./AmountStep";
 import AssetStep from "./AssetStep";
@@ -132,7 +132,6 @@ export default function SendFlow({ profile }: SendFlowProps) {
               recipientKind={recipientKind}
             />
           ) : null}
-
         </section>
 
         <div className="flex min-w-0 flex-col gap-5">
@@ -144,29 +143,27 @@ export default function SendFlow({ profile }: SendFlowProps) {
             setStep={setStep}
           />
 
-          <Button
-            variant="flow"
-            size="flow"
-            className="max-w-full"
+          <FlowActionFooter
+            sticky={false}
+            className="w-full min-w-0 max-w-full"
+            innerClassName="w-full min-w-0"
+            buttonClassName="min-w-0"
             onClick={step === "review" ? submitTransfer : goNext}
             disabled={primaryButtonDisabled}
           >
-            <span className="relative z-10 flex items-center justify-center gap-2 text-sm">
-              {step === "review"
-                ? isSubmitting
-                  ? "Sending..."
-                  : "Send Now"
-                : step === "recipient" && isVerifyingRecipient
-                  ? "Verifying..."
-                  : "Continue"}
-              {step === "review" ? (
-                <Send className="h-5 w-5" />
-              ) : (
-                <ArrowRight className="h-5 w-5" />
-              )}
-            </span>
-            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-          </Button>
+            {step === "review"
+              ? isSubmitting
+                ? "Sending..."
+                : "Send Now"
+              : step === "recipient" && isVerifyingRecipient
+                ? "Verifying..."
+                : "Continue"}
+            {step === "review" ? (
+              <Send className="h-5 w-5" />
+            ) : (
+              <ArrowRight className="h-5 w-5" />
+            )}
+          </FlowActionFooter>
         </div>
       </div>
 
