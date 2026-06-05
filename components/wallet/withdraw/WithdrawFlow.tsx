@@ -116,6 +116,7 @@ export default function WithdrawFlow({
     () => currency || getCurrencyForCountry(country || "NG"),
     [country, currency],
   );
+  const payoutCountry = country || "NG";
 
   const selectedChain = useMemo(
     () => (networkId ? getChainById(networkId) : null),
@@ -253,6 +254,10 @@ export default function WithdrawFlow({
     selectedProviderRate?.fiatAmount && selectedProviderRate.fiatAmount > 0
       ? selectedProviderRate.fiatAmount
       : amountValue;
+  const withdrawalCryptoAmount =
+    selectedProviderRate?.cryptoAmount && selectedProviderRate.cryptoAmount > 0
+      ? selectedProviderRate.cryptoAmount
+      : amountValue;
 
   const goBack = () => {
     if (step === "amount") setStep("asset");
@@ -284,12 +289,17 @@ export default function WithdrawFlow({
       const payload: OfframpInitRequest = {
         fiatAmount: estimatedFiatAmount,
         fiatCurrency,
+        cryptoAmount: withdrawalCryptoAmount,
         cryptoCurrencyCode: asset,
         cryptocurrency: asset,
         asset,
         chain: networkName,
         network: networkName,
         rate: selectedProviderRawRate,
+        receiveAmount: estimatedFiatAmount,
+        receiveCurrency: fiatCurrency,
+        estimatedFiatAmount,
+        country: payoutCountry,
         bankId: selectedBank.id,
         bankDetail: {
           bankName: selectedBank.bankName,
@@ -297,7 +307,7 @@ export default function WithdrawFlow({
           accountName: selectedBank.accountName,
           bankCode: selectedBank.bankCode || "",
           provider: selectedBank.provider,
-          country: selectedBank.country,
+          country: selectedBank.country || payoutCountry,
         },
       };
 
@@ -436,7 +446,7 @@ export default function WithdrawFlow({
             <WithdrawProviderSelectionStep
               asset={asset}
               amount={amount}
-              amountUnit={fiatCurrency}
+              amountUnit={asset}
               fiatCurrency={fiatCurrency}
               selectedChain={selectedChain}
               providers={providers}
@@ -462,6 +472,8 @@ export default function WithdrawFlow({
               asset={asset}
               amount={amount}
               amountUnit={asset}
+              fiatCurrency={fiatCurrency}
+              country={payoutCountry}
               selectedChain={selectedChain}
               selectedBank={selectedBank}
               savedBanks={savedBanks}
