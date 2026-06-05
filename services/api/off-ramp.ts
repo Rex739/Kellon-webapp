@@ -2,11 +2,17 @@ import { ApiResponse, apiFetch, handleResponse } from "./index";
 
 /**
  * --- Offramp Request Interface ---
- * Mapped to: { fiatAmount, fiatCurrency, cryptoCurrencyCode, chain, bankId, recipient, ... }
+ * Mapped to the backend OfframpInput:
+ * { cryptoAmount, fiatCurrency, cryptoCurrencyCode, chain, bankId, bankDetail, rate, ...metadata }
  */
 export interface OfframpInitRequest {
-  fiatAmount: number;
+  /**
+   * Estimated fiat payout. The backend now drives the off-ramp from
+   * cryptoAmount, but fiatAmount is kept for compatibility and metadata.
+   */
+  fiatAmount?: number;
   fiatCurrency: string;
+  cryptoAmount: number;
   cryptoCurrencyCode: string; // Map from your asset symbol
   cryptocurrency?: string;
   asset?: string;
@@ -14,6 +20,10 @@ export interface OfframpInitRequest {
   chain: string; // Map from networkId
   network?: string; // Optional alias for chain
   rate?: number | string | null;
+  receiveAmount?: number;
+  receiveCurrency?: string;
+  estimatedFiatAmount?: number;
+  country?: string | null;
 
   // Banking & Recipient Info
   bankId?: string; // database UUID for a saved bank
@@ -123,11 +133,6 @@ async function post(
 ): Promise<ApiResponse<OfframpResponse>> {
   const candidates = Array.isArray(endpoints) ? endpoints : [endpoints];
   let lastResponse: Response | null = null;
-
-  console.log("[offramp] payload →");
-  Object.entries(body).forEach(([key, value]) => {
-    console.log(`  ${key}:`, value);
-  });
 
   for (const endpoint of candidates) {
     const res = await apiFetch(endpoint, {
