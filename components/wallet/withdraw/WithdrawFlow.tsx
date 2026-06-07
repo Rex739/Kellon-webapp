@@ -286,32 +286,40 @@ export default function WithdrawFlow({
 
     setIsSubmitting(true);
     try {
+      const providerName = normalizeProviderKey(selectedProvider.name);
+      const rate = selectedProviderRawRate
+        ? String(selectedProviderRawRate)
+        : undefined;
+      const providerReference =
+        providerName === "paycrest" ? `paycrest-${Date.now()}` : undefined;
       const payload: OfframpInitRequest = {
-        fiatAmount: estimatedFiatAmount,
         fiatCurrency,
         cryptoAmount: withdrawalCryptoAmount,
+        cryptoCurrency: asset,
         cryptoCurrencyCode: asset,
         cryptocurrency: asset,
         asset,
+        token: providerName === "paycrest" ? asset : undefined,
         chain: networkName,
         network: networkName,
-        rate: selectedProviderRawRate,
+        rate,
+        reference: providerReference,
+        narration: providerName === "paycrest" ? "Withdrawal" : undefined,
+        description: providerName === "paycrest" ? "Withdrawal" : undefined,
         receiveAmount: estimatedFiatAmount,
         receiveCurrency: fiatCurrency,
         estimatedFiatAmount,
         country: payoutCountry,
         bankId: selectedBank.id,
         bankDetail: {
+          id: selectedBank.id,
           bankName: selectedBank.bankName,
           accountNumber: selectedBank.accountNumber,
           accountName: selectedBank.accountName,
-          bankCode: selectedBank.bankCode || "",
-          provider: selectedBank.provider,
-          country: selectedBank.country || payoutCountry,
+          bankCode: selectedBank.bankCode || undefined,
         },
       };
 
-      const providerName = normalizeProviderKey(selectedProvider.name);
       let response;
 
       if (providerName === "moneygram") {
