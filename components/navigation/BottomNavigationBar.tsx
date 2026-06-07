@@ -28,6 +28,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
     "/buy",
     "/withdraw",
     "/send",
+    "/gifts",
     "/receive",
   ];
 
