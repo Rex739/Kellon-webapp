@@ -30,6 +30,7 @@ const BottomNavigationBar: FC<BottomNavigationBarProps> = ({
     "/send",
     "/gifts",
     "/receive",
+    "/notifications",
   ];
 
   if (HIDDEN_PATHS.includes(pathname)) {
