@@ -29,7 +29,7 @@ import {
   isPositiveTransaction,
 } from "@/lib/dashboard-utils";
 
-type NotificationCategory = "Announcement" | "Latest event" | "System";
+type NotificationCategory = "Announcement" | "Transactions" | "System";
 type NotificationCategoryFilter = "All" | NotificationCategory;
 
 type NotificationDisplay = NotificationDetailDisplay & {
@@ -57,7 +57,7 @@ const TRANSACTION_STATUSES = [
 
 const CATEGORY_FILTERS: NotificationCategoryFilter[] = [
   "All",
-  "Latest event",
+  "Transactions",
   "System",
   "Announcement",
 ];
@@ -321,7 +321,7 @@ function getNotificationCategory(
     return "System";
   }
 
-  return "Latest event";
+  return "Transactions";
 }
 
 function getNotificationDisplay(
@@ -338,7 +338,7 @@ function getNotificationDisplay(
     const isPositive = isPositiveTransaction(transaction.type);
 
     return {
-      category: "Latest event",
+      category: "Transactions",
       icon: isPositive ? "↙" : "↗",
       title: getTransactionTitle(transaction),
       content: rawContent,
@@ -398,7 +398,7 @@ function getNotificationDisplay(
 
     if (isBuy) {
       return {
-        category: "Latest event",
+        category: "Transactions",
         icon: "₦",
         title: asset === "stablecoin" ? "Stablecoin purchase" : `Buy ${asset}`,
         content:
@@ -420,7 +420,7 @@ function getNotificationDisplay(
       text.includes("withdraw")
     ) {
       return {
-        category: "Latest event",
+        category: "Transactions",
         icon: "↗",
         title: symbol ? `${symbol} sent` : "Transfer sent",
         content: rawContent,
@@ -431,7 +431,7 @@ function getNotificationDisplay(
     }
 
     return {
-      category: "Latest event",
+      category: "Transactions",
       icon: "↙",
       title: symbol ? `${symbol} received` : "Transfer received",
       content: rawContent,
@@ -511,7 +511,7 @@ function NotificationItem({
       className={cn(
         "flex w-full cursor-pointer items-center gap-3 rounded-2xl border px-4 py-4 text-left transition-all",
         isUnread
-          ? "border-primary-90/80 bg-primary-99/80 shadow-sm shadow-primary-90/20 dark:border-primary-70/20 dark:bg-primary-70/10"
+          ? "border-primary-90/80 bg-primary-99/80 dark:border-primary-70/20 dark:bg-primary-70/10"
           : "border-black/5 bg-white hover:border-primary-90 hover:bg-primary-99/60 dark:border-white/10 dark:bg-secondary-50 dark:hover:border-primary-80/30 dark:hover:bg-secondary-60/50",
       )}
     >
@@ -625,7 +625,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <section className="container mx-auto flex h-[100dvh] max-w-4xl flex-col overflow-hidden px-4 pb-6 pt-4 md:px-6 md:pb-12 md:pt-20">
+    <section className="container mx-auto flex h-[100dvh] max-w-4xl flex-col overflow-hidden px-4 pb-0 pt-4 md:px-6 md:pb-12 md:pt-20">
       <div className="flex items-center justify-between">
         <button
           type="button"
