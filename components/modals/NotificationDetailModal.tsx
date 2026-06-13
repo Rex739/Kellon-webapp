@@ -1,53 +1,55 @@
-"use client";
+"use client"
 
-import { Copy, Info, X } from "lucide-react";
-import { toast } from "sonner";
-import HydrationSafeRelativeTime from "@/components/HydrationSafeRelativeTime";
+import { Copy, Info, ReceiptText, X } from "lucide-react"
+import Link from "next/link"
+import { toast } from "sonner"
+import HydrationSafeRelativeTime from "@/components/HydrationSafeRelativeTime"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
-import type { Notification } from "@/types/db";
+} from "@/components/ui/drawer"
+import { useMediaQuery } from "@/hooks/use-media-query"
+import { cn } from "@/lib/utils"
+import type { Notification } from "@/types/db"
 
 export type NotificationDetailDisplay = {
-  category: string;
-  icon: string;
-  title: string;
-  content: string | null;
-  amountLabel?: string | null;
-  statusLabel?: string | null;
-  statusClassName?: string | null;
-  transactionId?: string | null;
-};
+  category: string
+  icon: string
+  title: string
+  content: string | null
+  amountLabel?: string | null
+  statusLabel?: string | null
+  statusClassName?: string | null
+  transactionId?: string | null
+}
 
 interface NotificationDetailModalProps {
-  isOpen: boolean;
-  notification: Notification | null;
-  display: NotificationDetailDisplay | null;
-  onClose: (open: boolean) => void;
+  isOpen: boolean
+  notification: Notification | null
+  display: NotificationDetailDisplay | null
+  onClose: (open: boolean) => void
 }
 
 function shortenId(value: string): string {
-  if (value.length <= 16) return value;
-  return `${value.slice(0, 8)}...${value.slice(-6)}`;
+  if (value.length <= 16) return value
+  return `${value.slice(0, 8)}...${value.slice(-6)}`
 }
 
 async function copyValue(value: string) {
   try {
-    await navigator.clipboard.writeText(value);
-    toast.success("Copied");
+    await navigator.clipboard.writeText(value)
+    toast.success("Copied")
   } catch {
-    toast.error("Unable to copy");
+    toast.error("Unable to copy")
   }
 }
 
@@ -57,16 +59,22 @@ export default function NotificationDetailModal({
   display,
   onClose,
 }: NotificationDetailModalProps) {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 768px)")
 
-  if (!notification || !display) return null;
+  if (!notification || !display) return null
 
   const details = [
     { label: "Type", value: display.category },
     display.statusLabel
-      ? { label: "Status", value: display.statusLabel, className: display.statusClassName }
+      ? {
+          label: "Status",
+          value: display.statusLabel,
+          className: display.statusClassName,
+        }
       : null,
-    display.amountLabel ? { label: "Amount", value: display.amountLabel } : null,
+    display.amountLabel
+      ? { label: "Amount", value: display.amountLabel }
+      : null,
     display.transactionId
       ? {
           label: "Transaction ID",
@@ -75,16 +83,14 @@ export default function NotificationDetailModal({
         }
       : null,
   ].filter(Boolean) as Array<{
-    label: string;
-    value: string;
-    className?: string | null;
-    copyValue?: string;
-  }>;
+    label: string
+    value: string
+    className?: string | null
+    copyValue?: string
+  }>
 
   const content = (
     <div className="px-4 pb-8 md:px-0 md:pb-0">
-      <div className="mx-auto mb-5 h-1.5 w-16 rounded-full bg-primary-90 dark:bg-primary-80/30 md:hidden" />
-
       <div className="mb-7 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-black dark:text-white">
@@ -160,15 +166,36 @@ export default function NotificationDetailModal({
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => onClose(false)}
-        className="h-[52px] w-full cursor-pointer rounded-2xl border border-black/5 bg-white text-sm font-bold text-black transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-secondary-60 dark:text-white dark:hover:bg-secondary-60/70"
+      <div
+        className={cn("grid gap-3", display.transactionId && "md:grid-cols-2")}
       >
-        Dismiss
-      </button>
+        {display.transactionId && (
+          <Button asChild variant="flow" size="action" className="w-full">
+            <Link
+              href={`/transactions/${display.transactionId}`}
+              onClick={() => onClose(false)}
+            >
+              <ReceiptText className="h-4 w-4" />
+              <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+                View full transaction
+              </span>
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+            </Link>
+          </Button>
+        )}
+
+        <Button
+          type="button"
+          variant="flowSecondary"
+          size="action"
+          className="w-full"
+          onClick={() => onClose(false)}
+        >
+          Dismiss
+        </Button>
+      </div>
     </div>
-  );
+  )
 
   if (isDesktop) {
     return (
@@ -180,7 +207,7 @@ export default function NotificationDetailModal({
           {content}
         </DialogContent>
       </Dialog>
-    );
+    )
   }
 
   return (
@@ -192,5 +219,5 @@ export default function NotificationDetailModal({
         {content}
       </DrawerContent>
     </Drawer>
-  );
+  )
 }
